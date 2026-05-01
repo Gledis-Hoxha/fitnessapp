@@ -9,6 +9,10 @@ import AppLayout from '@/components/layout/AppLayout';
 import Home from '@/pages/Home';
 import Fitness from '@/pages/Fitness';
 import Nutrition from '@/pages/Nutrition';
+import StartWorkout from '@/pages/fitness/StartWorkout';
+import ExercisePicker from '@/pages/fitness/ExercisePicker';
+import Routines from '@/pages/fitness/Routines';
+import Explore from '@/pages/fitness/Explore';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -39,6 +43,10 @@ const AuthenticatedApp = () => {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/fitness" element={<Fitness />} />
+        <Route path="/fitness/start-workout" element={<StartWorkout />} />
+        <Route path="/fitness/exercise-picker" element={<ExercisePicker />} />
+        <Route path="/fitness/routines" element={<Routines />} />
+        <Route path="/fitness/explore" element={<Explore />} />
         <Route path="/nutrition" element={<Nutrition />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />

@@ -1,0 +1,73 @@
+{
+  "name": "Workout",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "in_progress"
+    },
+    "started_at": {
+      "type": "string",
+      "description": "ISO timestamp when workout started"
+    },
+    "ended_at": {
+      "type": "string",
+      "description": "ISO timestamp when workout ended"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Total workout duration in seconds"
+    },
+    "exercises": {
+      "type": "array",
+      "description": "List of exercises with sets",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exercise_id": {
+            "type": "string"
+          },
+          "exercise_name": {
+            "type": "string"
+          },
+          "sets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "set_number": {
+                  "type": "number"
+                },
+                "weight_kg": {
+                  "type": "number"
+                },
+                "reps": {
+                  "type": "number"
+                },
+                "completed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "status",
+    "started_at"
+  ]
+}
