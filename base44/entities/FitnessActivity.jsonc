@@ -1,0 +1,56 @@
+{
+  "name": "FitnessActivity",
+  "type": "object",
+  "properties": {
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "running",
+        "walking",
+        "cycling",
+        "swimming",
+        "weight_training",
+        "yoga",
+        "hiit",
+        "stretching",
+        "other"
+      ],
+      "description": "Type of fitness activity"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Duration in minutes"
+    },
+    "calories_burned": {
+      "type": "number",
+      "description": "Estimated calories burned"
+    },
+    "distance_km": {
+      "type": "number",
+      "description": "Distance in kilometers (if applicable)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of activity"
+    },
+    "intensity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "description": "Intensity level"
+    }
+  },
+  "required": [
+    "activity_type",
+    "duration_minutes",
+    "date"
+  ]
+}
