@@ -1,0 +1,54 @@
+{
+  "name": "Routine",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Routine name"
+    },
+    "exercises": {
+      "type": "array",
+      "description": "List of exercises in this routine",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exercise_id": {
+            "type": "string"
+          },
+          "exercise_name": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          },
+          "muscle": {
+            "type": "string"
+          },
+          "sets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "set_number": {
+                  "type": "number"
+                },
+                "weight_kg": {
+                  "type": "number"
+                },
+                "reps": {
+                  "type": "number"
+                },
+                "completed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

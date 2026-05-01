@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Dumbbell, BookOpen, Compass } from "lucide-react";
 import { motion } from "framer-motion";
+import WorkoutHistory from "@/components/fitness/WorkoutHistory";
 
 const actions = [
   {
@@ -61,12 +62,10 @@ export default function Fitness() {
         ))}
       </div>
 
-      {/* Recent Workouts placeholder */}
+      {/* Workout History & Analytics */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">Recent Workouts</h2>
-        <div className="bg-card rounded-2xl border border-border p-6 text-center text-sm text-muted-foreground">
-          Your completed workouts will appear here.
-        </div>
+        <h2 className="text-lg font-semibold mb-3">Workout History</h2>
+        <WorkoutHistory />
       </div>
     </div>
   );

@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Plus, XCircle, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, XCircle, ArrowLeft, BookMarked } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import WorkoutTimer from "@/components/fitness/WorkoutTimer";
@@ -16,13 +17,30 @@ export default function StartWorkout() {
   const [exercises, setExercises] = useState([]);
   const [saving, setSaving] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const [showRoutineModal, setShowRoutineModal] = useState(false);
+  const [routineName, setRoutineName] = useState("");
+  const [routineSaved, setRoutineSaved] = useState(false);
+
+  // Pre-load exercises from a routine
+  useEffect(() => {
+    const routineExercises = location.state?.routineExercises;
+    if (routineExercises?.length) {
+      setExercises(routineExercises.map((e) => ({
+        exercise_id: e.exercise_id,
+        name: e.exercise_name,
+        muscle: e.muscle,
+        emoji: e.emoji,
+        sets: e.sets?.map((s) => ({ ...s, completed: false })) || [{ set_number: 1, weight_kg: 0, reps: 0, completed: false }],
+      })));
+      window.history.replaceState({}, "");
+    }
+  }, []);
 
   // When returning from ExercisePicker with an added exercise
   useEffect(() => {
     const added = location.state?.addedExercise;
     if (added) {
       setExercises((prev) => {
-        // Don't add duplicate
         if (prev.find((e) => e.exercise_id === added.id)) return prev;
         return [
           ...prev,
@@ -35,7 +53,6 @@ export default function StartWorkout() {
           },
         ];
       });
-      // Clear the state so it doesn't re-add on re-render
       window.history.replaceState({}, "");
     }
   }, [location.state]);
@@ -71,6 +88,23 @@ export default function StartWorkout() {
 
   const handleDiscard = async () => {
     navigate("/fitness");
+  };
+
+  const handleSaveRoutine = async () => {
+    if (!routineName.trim() || exercises.length === 0) return;
+    await base44.entities.Routine.create({
+      name: routineName.trim(),
+      exercises: exercises.map((e) => ({
+        exercise_id: e.exercise_id,
+        exercise_name: e.name,
+        emoji: e.emoji,
+        muscle: e.muscle,
+        sets: e.sets.map((s) => ({ ...s, completed: false })),
+      })),
+    });
+    setRoutineSaved(true);
+    setShowRoutineModal(false);
+    setRoutineName("");
   };
 
   return (
@@ -140,6 +174,16 @@ export default function StartWorkout() {
           </Button>
 
           <Button
+            onClick={() => setShowRoutineModal(true)}
+            variant="outline"
+            disabled={exercises.length === 0}
+            className="w-full gap-2 h-12"
+          >
+            <BookMarked className="w-5 h-5" />
+            {routineSaved ? "Routine Saved ✓" : "Save as Routine"}
+          </Button>
+
+          <Button
             onClick={() => setShowEndConfirm(true)}
             variant="ghost"
             className="w-full gap-2 h-12 text-destructive hover:text-destructive hover:bg-destructive/5"
@@ -149,6 +193,47 @@ export default function StartWorkout() {
           </Button>
         </div>
       </div>
+
+      {/* Save as Routine Modal */}
+      <AnimatePresence>
+        {showRoutineModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 60, opacity: 0 }}
+              className="bg-card rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl"
+            >
+              <div className="text-center">
+                <p className="text-2xl mb-2">📋</p>
+                <h2 className="font-bold text-lg">Save as Routine</h2>
+                <p className="text-sm text-muted-foreground mt-1">Give this workout a name to reuse it later.</p>
+              </div>
+              <Input
+                placeholder="e.g. Push Day, Leg Day..."
+                value={routineName}
+                onChange={(e) => setRoutineName(e.target.value)}
+                className="h-12"
+                autoFocus
+              />
+              <Button onClick={handleSaveRoutine} disabled={!routineName.trim()} className="w-full h-12">
+                Save Routine
+              </Button>
+              <button
+                onClick={() => setShowRoutineModal(false)}
+                className="w-full text-sm text-muted-foreground hover:text-foreground text-center py-1"
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* End Confirm Modal */}
       <AnimatePresence>
