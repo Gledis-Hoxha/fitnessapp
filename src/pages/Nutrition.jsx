@@ -1,23 +1,27 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Plus, Apple, Flame, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
-import { AnimatePresence, motion } from "framer-motion";
-import MealForm from "@/components/nutrition/MealForm";
-import MealCard from "@/components/nutrition/MealCard";
-import EmptyState from "@/components/shared/EmptyState";
-import StatCard from "@/components/shared/StatCard";
+import { AnimatePresence } from "framer-motion";
+import { Search, CalendarDays, FileDown, BookOpen, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import FoodSearchModal from "@/components/nutrition/FoodSearchModal";
+import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
+import DailyMacros from "@/components/nutrition/DailyMacros";
+import MealSection from "@/components/nutrition/MealSection";
+import NutritionSummary from "@/components/nutrition/NutritionSummary";
+
+const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function Nutrition() {
-  const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
   const today = format(new Date(), "yyyy-MM-dd");
+  const [activeMeal, setActiveMeal] = useState(null); // which meal section triggered modal
+  const [showSearch, setShowSearch] = useState(false); // top search bar modal
 
-  const { data: meals = [], isLoading } = useQuery({
+  const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
-    queryFn: () => base44.entities.NutritionEntry.list("-date", 100),
+    queryFn: () => base44.entities.NutritionEntry.list("-date", 200),
   });
 
   const createMutation = useMutation({
@@ -25,7 +29,6 @@ export default function Nutrition() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nutrition"] });
       queryClient.invalidateQueries({ queryKey: ["nutrition-home"] });
-      setShowForm(false);
     },
   });
 
@@ -39,64 +42,98 @@ export default function Nutrition() {
 
   const todayMeals = meals.filter((m) => m.date === today);
   const totalCalories = todayMeals.reduce((s, m) => s + (m.calories || 0), 0);
-  const totalProtein = todayMeals.reduce((s, m) => s + (m.protein_g || 0), 0);
+  const totalProtein  = todayMeals.reduce((s, m) => s + (m.protein_g || 0), 0);
+  const totalCarbs    = todayMeals.reduce((s, m) => s + (m.carbs_g || 0), 0);
+  const totalFat      = todayMeals.reduce((s, m) => s + (m.fat_g || 0), 0);
+
+  // Build logged dates for streak (unique days that have entries)
+  const loggedDates = [...new Set(meals.map((m) => m.date))];
+
+  const handleAdd = (data) => {
+    createMutation.mutate(data);
+  };
+
+  const openMealModal = (mealType) => setActiveMeal(mealType);
+  const closeModal = () => { setActiveMeal(null); setShowSearch(false); };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 pb-4">
+      {/* ── Row 1: Title + Search + Calendar ── */}
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">Nutrition</h1>
-          <p className="text-sm text-muted-foreground mt-1">Track your meals and macros</p>
+          <h1 className="text-2xl font-display font-bold text-white">Nutrition</h1>
+          <p className="text-xs text-white/50 mt-0.5">{format(new Date(), "EEEE, MMMM d")}</p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="gap-2">
-          <Plus className="w-4 h-4" /> Log Meal
-        </Button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSearch(true)}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition-colors"
+          >
+            <Search className="w-4 h-4 text-white/60" />
+            <span className="text-sm text-white/50 hidden sm:block">Search food…</span>
+          </button>
+          <button className="p-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition-colors">
+            <CalendarDays className="w-4 h-4 text-white/60" />
+          </button>
+        </div>
       </div>
 
-      {/* Today Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <StatCard title="Meals Today" value={todayMeals.length} icon={Apple} color="primary" />
-        <StatCard title="Calories" value={totalCalories} icon={Flame} color="accent" />
-        <StatCard title="Protein" value={`${totalProtein}g`} icon={TrendingUp} color="chart4" />
+      {/* ── Row 2: Weekly Streak ── */}
+      <WeeklyStreak loggedDates={loggedDates} />
+
+      {/* ── Row 3: Daily Macros ── */}
+      <DailyMacros
+        calories={totalCalories}
+        protein={totalProtein}
+        carbs={totalCarbs}
+        fat={totalFat}
+      />
+
+      {/* ── Rows 4–7: Meal Sections ── */}
+      {MEAL_TYPES.map((type) => (
+        <MealSection
+          key={type}
+          mealType={type}
+          entries={todayMeals.filter((m) => m.meal_type === type)}
+          onAdd={openMealModal}
+          onDelete={(id) => deleteMutation.mutate(id)}
+        />
+      ))}
+
+      {/* ── Summary + Charts ── */}
+      <NutritionSummary
+        calories={totalCalories}
+        protein={totalProtein}
+        carbs={totalCarbs}
+        fat={totalFat}
+      />
+
+      {/* ── Bottom Action Buttons ── */}
+      <div className="grid grid-cols-3 gap-3 pt-1">
+        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
+          <BookOpen className="w-5 h-5 text-green-400" />
+          <span className="text-xs text-white/60 font-medium">Meal Plans</span>
+        </button>
+        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
+          <FileDown className="w-5 h-5 text-green-400" />
+          <span className="text-xs text-white/60 font-medium">Export PDF</span>
+        </button>
+        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
+          <Settings className="w-5 h-5 text-green-400" />
+          <span className="text-xs text-white/60 font-medium">Options</span>
+        </button>
       </div>
 
-      {/* Form */}
+      {/* ── Modals ── */}
       <AnimatePresence>
-        {showForm && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-            <MealForm
-              onSubmit={(data) => createMutation.mutate(data)}
-              onCancel={() => setShowForm(false)}
-            />
-          </motion.div>
+        {(activeMeal || showSearch) && (
+          <FoodSearchModal
+            mealType={activeMeal || "snack"}
+            onAdd={handleAdd}
+            onClose={closeModal}
+          />
         )}
       </AnimatePresence>
-
-      {/* Meal List */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3">Meal History</h2>
-        {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : meals.length === 0 ? (
-          <EmptyState
-            icon={Apple}
-            title="No meals logged yet"
-            description="Start tracking your nutrition to see your meals here."
-          />
-        ) : (
-          <div className="space-y-3">
-            {meals.map((meal) => (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                onDelete={(id) => deleteMutation.mutate(id)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
