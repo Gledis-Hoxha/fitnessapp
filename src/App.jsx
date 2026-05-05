@@ -13,6 +13,7 @@ import StartWorkout from '@/pages/fitness/StartWorkout';
 import ExercisePicker from '@/pages/fitness/ExercisePicker';
 import Routines from '@/pages/fitness/Routines';
 import Explore from '@/pages/fitness/Explore';
+import Profile from '@/pages/Profile';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -48,6 +49,7 @@ const AuthenticatedApp = () => {
         <Route path="/fitness/routines" element={<Routines />} />
         <Route path="/fitness/explore" element={<Explore />} />
         <Route path="/nutrition" element={<Nutrition />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
