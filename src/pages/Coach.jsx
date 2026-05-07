@@ -65,7 +65,7 @@ export default function Coach() {
   }
 
   async function sendMessage(text) {
-    const msg = text || input.trim();
+    const msg = (typeof text === "string" ? text : input).trim();
     if (!msg || loading) return;
     setInput("");
     setLoading(true);
@@ -75,7 +75,6 @@ export default function Coach() {
       await base44.agents.addMessage(conv, { role: "user", content: msg });
     } finally {
       setLoading(false);
-      inputRef.current?.focus();
     }
   }
 
@@ -169,7 +168,7 @@ export default function Coach() {
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
             placeholder="Ask about workouts, meals, or your goals..."
             className="flex-1 bg-white/8 border border-white/15 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-blue-500/50 transition-colors"
           />
