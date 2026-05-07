@@ -170,7 +170,7 @@ export default function Coach() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {if (e.key === "Enter" && !e.shiftKey) {e.preventDefault();sendMessage(input);}}}
             placeholder="Ask about workouts, meals, or your goals..."
-            className="flex-1 bg-white/8 border border-white/15 rounded-2xl px-4 py-3 text-sm placeholder:text-white/30 outline-none focus:border-blue-500/50 transition-colors text-[#0d0c0c]" />
+            className="flex-1 bg-white/8 border border-white/15 rounded-2xl px-4 py-3 text-sm placeholder:text-white/30 outline-none focus:border-blue-500/50 transition-colors text-white" />
           
           <button
             onClick={() => sendMessage()}
