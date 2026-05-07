@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Dumbbell, BookOpen, Compass } from "lucide-react";
-import { motion } from "framer-motion";
+import { Dumbbell, BookOpen, Compass, Bell } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import WorkoutHistory from "@/components/fitness/WorkoutHistory";
+import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 
 const actions = [
   {
@@ -31,11 +33,18 @@ const actions = [
 ];
 
 export default function Fitness() {
+  const [showReminders, setShowReminders] = useState(false);
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-display font-bold text-foreground">Fitness</h1>
-        <p className="text-sm text-muted-foreground mt-1">What do you want to do today?</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-foreground">Fitness</h1>
+          <p className="text-sm text-muted-foreground mt-1">What do you want to do today?</p>
+        </div>
+        <button onClick={() => setShowReminders(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 text-xs text-white/60 hover:text-white transition-all">
+          <Bell className="w-3.5 h-3.5" /> Reminders
+        </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4">
@@ -67,6 +76,10 @@ export default function Fitness() {
         <h2 className="text-lg font-semibold mb-3">Workout History</h2>
         <WorkoutHistory />
       </div>
+
+      <AnimatePresence>
+        {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

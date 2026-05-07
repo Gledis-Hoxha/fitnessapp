@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { Search, CalendarDays, FileDown, BookOpen, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FoodSearchModal from "@/components/nutrition/FoodSearchModal";
+import MealPlanModal from "@/components/nutrition/MealPlanModal";
 import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
 import DailyMacros from "@/components/nutrition/DailyMacros";
 import MealSection from "@/components/nutrition/MealSection";
@@ -18,6 +19,7 @@ export default function Nutrition() {
   const today = format(new Date(), "yyyy-MM-dd");
   const [activeMeal, setActiveMeal] = useState(null); // which meal section triggered modal
   const [showSearch, setShowSearch] = useState(false); // top search bar modal
+  const [showMealPlans, setShowMealPlans] = useState(false);
 
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
@@ -110,7 +112,7 @@ export default function Nutrition() {
 
       {/* ── Bottom Action Buttons ── */}
       <div className="grid grid-cols-3 gap-3 pt-1">
-        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
+        <button onClick={() => setShowMealPlans(true)} className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
           <BookOpen className="w-5 h-5 text-green-400" />
           <span className="text-xs text-white/60 font-medium">Meal Plans</span>
         </button>
@@ -132,6 +134,9 @@ export default function Nutrition() {
             onAdd={handleAdd}
             onClose={closeModal}
           />
+        )}
+        {showMealPlans && (
+          <MealPlanModal onClose={() => setShowMealPlans(false)} />
         )}
       </AnimatePresence>
     </div>

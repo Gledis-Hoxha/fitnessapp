@@ -1,0 +1,31 @@
+{
+  "name": "WorkoutReminder",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Reminder label (e.g. 'Leg Day', 'Morning Run')"
+    },
+    "days": {
+      "type": "array",
+      "description": "Days of the week (0=Sun, 1=Mon, ...6=Sat)",
+      "items": {
+        "type": "number"
+      }
+    },
+    "time": {
+      "type": "string",
+      "description": "Reminder time in HH:MM format"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this reminder is active"
+    }
+  },
+  "required": [
+    "label",
+    "days",
+    "time"
+  ]
+}

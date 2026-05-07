@@ -1,0 +1,49 @@
+{
+  "name": "MealPlan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the meal plan template"
+    },
+    "foods": {
+      "type": "array",
+      "description": "List of food items in this plan",
+      "items": {
+        "type": "object",
+        "properties": {
+          "food_name": {
+            "type": "string"
+          },
+          "meal_type": {
+            "type": "string",
+            "enum": [
+              "breakfast",
+              "lunch",
+              "dinner",
+              "snack"
+            ]
+          },
+          "calories": {
+            "type": "number"
+          },
+          "protein_g": {
+            "type": "number"
+          },
+          "carbs_g": {
+            "type": "number"
+          },
+          "fat_g": {
+            "type": "number"
+          },
+          "serving_size": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
