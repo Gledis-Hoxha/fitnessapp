@@ -1,12 +1,13 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Home, Dumbbell, Apple, User } from "lucide-react";
+import { Home, Dumbbell, Apple, User, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { path: "/", label: "Home", icon: Home, activeColor: "text-green-400", activeBg: "bg-green-500/15" },
   { path: "/fitness", label: "Fitness", icon: Dumbbell, activeColor: "text-blue-400", activeBg: "bg-blue-500/15" },
   { path: "/nutrition", label: "Nutrition", icon: Apple, activeColor: "text-green-400", activeBg: "bg-green-500/15" },
-  { path: "/profile", label: "Profile", icon: User, activeColor: "text-purple-400", activeBg: "bg-purple-500/15" },
+  { path: "/coach", label: "Coach", icon: Sparkles, activeColor: "text-purple-400", activeBg: "bg-purple-500/15" },
+  { path: "/profile", label: "Profile", icon: User, activeColor: "text-pink-400", activeBg: "bg-pink-500/15" },
 ];
 
 export default function AppLayout() {
