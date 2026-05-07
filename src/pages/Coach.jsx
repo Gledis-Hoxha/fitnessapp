@@ -56,7 +56,7 @@ export default function Coach() {
   async function startNewChat() {
     const conv = await base44.agents.createConversation({
       agent_name: AGENT_NAME,
-      metadata: { name: `Chat ${new Date().toLocaleDateString()}` },
+      metadata: { name: `Chat ${new Date().toLocaleDateString()}` }
     });
     setActiveConversation(conv);
     setMessages(conv.messages || []);
@@ -78,7 +78,7 @@ export default function Coach() {
     }
   }
 
-  const isThinking = loading || (messages.length > 0 && messages[messages.length - 1]?.role === "user");
+  const isThinking = loading || messages.length > 0 && messages[messages.length - 1]?.role === "user";
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] -mt-2">
@@ -94,9 +94,9 @@ export default function Coach() {
           </div>
         </div>
         <button
-          onClick={async () => { await startNewChat(); }}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 text-xs text-white/60 hover:text-white transition-all"
-        >
+          onClick={async () => {await startNewChat();}}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 text-xs text-white/60 hover:text-white transition-all">
+          
           <RotateCcw className="w-3.5 h-3.5" />
           New Chat
         </button>
@@ -104,15 +104,15 @@ export default function Coach() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 pb-2 scroll-smooth">
-        {initializing ? (
-          <div className="flex items-center justify-center h-full">
+        {initializing ?
+        <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 border-2 border-blue-500/50 border-t-blue-500 rounded-full animate-spin" />
               <p className="text-sm text-white/40">Loading Coach...</p>
             </div>
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-6 pb-8">
+          </div> :
+        messages.length === 0 ?
+        <div className="flex flex-col items-center justify-center h-full gap-6 pb-8">
             <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 border border-blue-500/20 flex items-center justify-center">
               <Sparkles className="w-10 h-10 text-blue-400" />
             </div>
@@ -123,64 +123,64 @@ export default function Coach() {
               </p>
             </div>
             <CoachSuggestions onSelect={sendMessage} />
-          </div>
-        ) : (
-          <>
+          </div> :
+
+        <>
             <AnimatePresence initial={false}>
-              {messages.map((msg, i) => (
-                <CoachMessageBubble key={i} message={msg} />
-              ))}
+              {messages.map((msg, i) =>
+            <CoachMessageBubble key={i} message={msg} />
+            )}
             </AnimatePresence>
-            {isThinking && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-start gap-3"
-              >
+            {isThinking &&
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-3">
+            
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
                 <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3">
                   <div className="flex gap-1.5 items-center">
-                    {[0, 1, 2].map((i) => (
-                      <div
-                        key={i}
-                        className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                        style={{ animationDelay: `${i * 0.15}s` }}
-                      />
-                    ))}
+                    {[0, 1, 2].map((i) =>
+                <div
+                  key={i}
+                  className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                  style={{ animationDelay: `${i * 0.15}s` }} />
+
+                )}
                   </div>
                 </div>
               </motion.div>
-            )}
+          }
           </>
-        )}
+        }
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
       <div className="pt-3 border-t border-white/8">
-        {messages.length > 0 && messages.length < 3 && (
-          <CoachSuggestions onSelect={sendMessage} compact />
-        )}
+        {messages.length > 0 && messages.length < 3 &&
+        <CoachSuggestions onSelect={sendMessage} compact />
+        }
         <div className="flex gap-2 mt-2">
           <input
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
+            onKeyDown={(e) => {if (e.key === "Enter" && !e.shiftKey) {e.preventDefault();sendMessage(input);}}}
             placeholder="Ask about workouts, meals, or your goals..."
-            className="flex-1 bg-white/8 border border-white/15 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-blue-500/50 transition-colors"
-          />
+            className="flex-1 bg-white/8 border border-white/15 rounded-2xl px-4 py-3 text-sm placeholder:text-white/30 outline-none focus:border-blue-500/50 transition-colors text-[#0d0c0c]" />
+          
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0 disabled:opacity-30 hover:opacity-90 transition-all shadow-lg shadow-blue-500/25 active:scale-95"
-          >
+            className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0 disabled:opacity-30 hover:opacity-90 transition-all shadow-lg shadow-blue-500/25 active:scale-95">
+            
             <Send className="w-4 h-4 text-white" />
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
