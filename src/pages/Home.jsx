@@ -4,14 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Dumbbell, Apple, Flame, Clock, TrendingUp, ArrowRight } from "lucide-react";
 import { format, startOfDay, isToday } from "date-fns";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import StatCard from "@/components/shared/StatCard";
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then((u) => {
+      setUser(u);
+      if (!u?.onboarding_complete) setShowOnboarding(true);
+    }).catch(() => {});
   }, []);
 
   const today = format(new Date(), "yyyy-MM-dd");
@@ -41,10 +46,28 @@ export default function Home() {
     return "Good evening";
   };
 
-  const firstName = user?.full_name?.split(" ")[0] || "there";
+  const firstName = user?.username || user?.full_name?.split(" ")[0] || "there";
+
+  const handleOnboardingComplete = async () => {
+    const updated = await base44.auth.me();
+    setUser(updated);
+    setShowOnboarding(false);
+  };
+
+  const goalEmojis = {
+    lose_weight: "🔥", build_muscle: "💪", improve_endurance: "🏃",
+    stay_healthy: "❤️", increase_flexibility: "🧘", sport_performance: "🏆",
+    stress_relief: "😌", body_recomposition: "⚡",
+  };
 
   return (
     <div className="space-y-8">
+      <AnimatePresence>
+        {showOnboarding && (
+          <OnboardingFlow user={user} onComplete={handleOnboardingComplete} />
+        )}
+      </AnimatePresence>
+
       {/* Hero Greeting */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -64,6 +87,15 @@ export default function Home() {
             <p className="text-primary-foreground/80 mt-2 max-w-md text-sm md:text-base">
               Track your fitness and nutrition to stay on top of your wellness goals.
             </p>
+            {user?.fitness_goals?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {user.fitness_goals.slice(0, 3).map((g) => (
+                  <span key={g} className="text-xs bg-white/15 text-white/90 px-2.5 py-1 rounded-full font-medium">
+                    {goalEmojis[g] || "🎯"} {g.replace(/_/g, " ")}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

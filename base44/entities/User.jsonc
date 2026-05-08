@@ -1,0 +1,60 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "username": {
+      "type": "string",
+      "description": "Chosen username"
+    },
+    "age": {
+      "type": "number",
+      "description": "User age in years"
+    },
+    "height_cm": {
+      "type": "number",
+      "description": "Height in centimeters"
+    },
+    "weight_kg": {
+      "type": "number",
+      "description": "Weight in kilograms"
+    },
+    "activity_level": {
+      "type": "string",
+      "enum": [
+        "sedentary",
+        "lightly_active",
+        "moderately_active",
+        "very_active",
+        "athlete"
+      ],
+      "description": "General activity level"
+    },
+    "preferred_foods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Dietary preferences / food types the user likes"
+    },
+    "fitness_goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's fitness goals"
+    },
+    "onboarding_complete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has completed onboarding"
+    }
+  }
+}
