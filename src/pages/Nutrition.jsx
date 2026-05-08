@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, addDays, subDays, isToday } from "date-fns";
 import { AnimatePresence } from "framer-motion";
-import { Search, CalendarDays, FileDown, BookOpen, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, ChevronLeft, ChevronRight, BookOpen, FileDown, Settings } from "lucide-react";
 import FoodSearchModal from "@/components/nutrition/FoodSearchModal";
 import MealPlanModal from "@/components/nutrition/MealPlanModal";
 import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
@@ -16,10 +15,11 @@ const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function Nutrition() {
   const queryClient = useQueryClient();
-  const today = format(new Date(), "yyyy-MM-dd");
-  const [activeMeal, setActiveMeal] = useState(null); // which meal section triggered modal
-  const [showSearch, setShowSearch] = useState(false); // top search bar modal
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [activeMeal, setActiveMeal] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
   const [showMealPlans, setShowMealPlans] = useState(false);
+  const [streakSelectedDate, setStreakSelectedDate] = useState(null);
 
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
@@ -42,48 +42,90 @@ export default function Nutrition() {
     },
   });
 
-  const todayMeals = meals.filter((m) => m.date === today);
-  const totalCalories = todayMeals.reduce((s, m) => s + (m.calories || 0), 0);
-  const totalProtein  = todayMeals.reduce((s, m) => s + (m.protein_g || 0), 0);
-  const totalCarbs    = todayMeals.reduce((s, m) => s + (m.carbs_g || 0), 0);
-  const totalFat      = todayMeals.reduce((s, m) => s + (m.fat_g || 0), 0);
+  // When streak day is clicked, switch to that date
+  const handleStreakSelect = (dateStr) => {
+    setStreakSelectedDate(dateStr);
+    if (dateStr) setSelectedDate(dateStr);
+  };
 
-  // Build logged dates for streak (unique days that have entries)
+  const viewDate = streakSelectedDate || selectedDate;
+  const viewMeals = meals.filter((m) => m.date === viewDate);
+  const totalCalories = viewMeals.reduce((s, m) => s + (m.calories || 0), 0);
+  const totalProtein  = viewMeals.reduce((s, m) => s + (m.protein_g || 0), 0);
+  const totalCarbs    = viewMeals.reduce((s, m) => s + (m.carbs_g || 0), 0);
+  const totalFat      = viewMeals.reduce((s, m) => s + (m.fat_g || 0), 0);
+
   const loggedDates = [...new Set(meals.map((m) => m.date))];
 
   const handleAdd = (data) => {
-    createMutation.mutate(data);
+    createMutation.mutate({ ...data, date: viewDate });
   };
 
   const openMealModal = (mealType) => setActiveMeal(mealType);
   const closeModal = () => { setActiveMeal(null); setShowSearch(false); };
 
+  const goToPrevDay = () => {
+    const prev = format(subDays(new Date(viewDate + "T00:00:00"), 1), "yyyy-MM-dd");
+    setSelectedDate(prev);
+    setStreakSelectedDate(null);
+  };
+
+  const goToNextDay = () => {
+    const next = format(addDays(new Date(viewDate + "T00:00:00"), 1), "yyyy-MM-dd");
+    setSelectedDate(next);
+    setStreakSelectedDate(null);
+  };
+
+  const goToToday = () => {
+    setSelectedDate(format(new Date(), "yyyy-MM-dd"));
+    setStreakSelectedDate(null);
+  };
+
+  const displayedDateLabel = isToday(new Date(viewDate + "T00:00:00"))
+    ? "Today"
+    : format(new Date(viewDate + "T00:00:00"), "EEE, MMM d");
+
   return (
-    <div className="space-y-4 pb-4">
-      {/* ── Row 1: Title + Search + Calendar ── */}
-      <div className="flex items-center justify-between gap-3">
+    <div className="space-y-3 pb-4">
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between gap-3 pt-1">
         <div>
-          <h1 className="text-2xl font-display font-bold text-white">Nutrition</h1>
-          <p className="text-xs text-white/50 mt-0.5">{format(new Date(), "EEEE, MMMM d")}</p>
+          <h1 className="text-xl font-bold text-white tracking-tight">Nutrition</h1>
+          <p className="text-xs text-white/35 mt-0.5">{format(new Date(), "EEEE, MMMM d")}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowSearch(true)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition-colors"
-          >
-            <Search className="w-4 h-4 text-white/60" />
-            <span className="text-sm text-white/50 hidden sm:block">Search food…</span>
-          </button>
-          <button className="p-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition-colors">
-            <CalendarDays className="w-4 h-4 text-white/60" />
-          </button>
-        </div>
+        <button
+          onClick={() => setShowSearch(true)}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/8 transition-colors"
+        >
+          <Search className="w-4 h-4 text-white/50" />
+          <span className="text-sm text-white/40 hidden sm:block">Search food…</span>
+        </button>
       </div>
 
-      {/* ── Row 2: Weekly Streak ── */}
-      <WeeklyStreak loggedDates={loggedDates} />
+      {/* ── Date Navigator ── */}
+      <div className="flex items-center justify-between bg-[#111] border border-white/8 rounded-2xl px-4 py-3">
+        <button onClick={goToPrevDay} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <div className="flex flex-col items-center gap-0.5">
+          <span className="text-sm font-bold text-white">{displayedDateLabel}</span>
+          {!isToday(new Date(viewDate + "T00:00:00")) && (
+            <button onClick={goToToday} className="text-[10px] text-green-400 hover:underline">Back to today</button>
+          )}
+        </div>
+        <button onClick={goToNextDay} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
 
-      {/* ── Row 3: Daily Macros ── */}
+      {/* ── Weekly Streak ── */}
+      <WeeklyStreak
+        loggedDates={loggedDates}
+        selectedDate={streakSelectedDate}
+        onSelectDate={handleStreakSelect}
+      />
+
+      {/* ── Daily Macros ── */}
       <DailyMacros
         calories={totalCalories}
         protein={totalProtein}
@@ -91,18 +133,18 @@ export default function Nutrition() {
         fat={totalFat}
       />
 
-      {/* ── Rows 4–7: Meal Sections ── */}
+      {/* ── Meal Sections ── */}
       {MEAL_TYPES.map((type) => (
         <MealSection
           key={type}
           mealType={type}
-          entries={todayMeals.filter((m) => m.meal_type === type)}
+          entries={viewMeals.filter((m) => m.meal_type === type)}
           onAdd={openMealModal}
           onDelete={(id) => deleteMutation.mutate(id)}
         />
       ))}
 
-      {/* ── Summary + Charts ── */}
+      {/* ── Summary ── */}
       <NutritionSummary
         calories={totalCalories}
         protein={totalProtein}
@@ -110,19 +152,19 @@ export default function Nutrition() {
         fat={totalFat}
       />
 
-      {/* ── Bottom Action Buttons ── */}
+      {/* ── Bottom Actions ── */}
       <div className="grid grid-cols-3 gap-3 pt-1">
-        <button onClick={() => setShowMealPlans(true)} className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
+        <button onClick={() => setShowMealPlans(true)} className="flex flex-col items-center gap-2 bg-[#111] border border-white/8 rounded-2xl py-4 hover:bg-white/5 transition-colors">
           <BookOpen className="w-5 h-5 text-green-400" />
-          <span className="text-xs text-white/60 font-medium">Meal Plans</span>
+          <span className="text-xs text-white/50 font-medium">Meal Plans</span>
         </button>
-        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
+        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/8 rounded-2xl py-4 hover:bg-white/5 transition-colors">
           <FileDown className="w-5 h-5 text-green-400" />
-          <span className="text-xs text-white/60 font-medium">Export PDF</span>
+          <span className="text-xs text-white/50 font-medium">Export PDF</span>
         </button>
-        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/10 rounded-2xl py-4 hover:bg-white/5 transition-colors">
+        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/8 rounded-2xl py-4 hover:bg-white/5 transition-colors">
           <Settings className="w-5 h-5 text-green-400" />
-          <span className="text-xs text-white/60 font-medium">Options</span>
+          <span className="text-xs text-white/50 font-medium">Options</span>
         </button>
       </div>
 

@@ -37,10 +37,10 @@ export default function Fitness() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pt-1">
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">Fitness</h1>
-          <p className="text-sm text-muted-foreground mt-1">What do you want to do today?</p>
+          <h1 className="text-xl font-bold text-white tracking-tight">Fitness</h1>
+          <p className="text-xs text-white/35 mt-0.5">What do you want to do today?</p>
         </div>
         <button onClick={() => setShowReminders(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 text-xs text-white/60 hover:text-white transition-all">
           <Bell className="w-3.5 h-3.5" /> Reminders

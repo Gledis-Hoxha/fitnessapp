@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, Mail, UserPlus, Users, Camera, Dumbbell, Apple, Pencil, Share2 } from "lucide-react";
+import { Bell, Mail, Camera, Dumbbell, Apple, Pencil, Share2, Flame, Clock, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileFitnessTab from "@/components/profile/ProfileFitnessTab";
@@ -11,6 +11,20 @@ import InboxPanel from "@/components/profile/InboxPanel";
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import ShareProfileModal from "@/components/profile/ShareProfileModal";
 import { toast } from "sonner";
+
+const today = format(new Date(), "yyyy-MM-dd");
+
+function MiniStatCard({ icon: Icon, label, value, color }) {
+  return (
+    <div className="bg-[#111] border border-white/8 rounded-xl p-3 flex flex-col gap-1.5">
+      <div className={`p-1.5 rounded-lg w-fit ${color}`}>
+        <Icon className="w-3.5 h-3.5" />
+      </div>
+      <p className="text-base font-bold text-white leading-none">{value}</p>
+      <p className="text-[10px] text-white/35 font-medium">{label}</p>
+    </div>
+  );
+}
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -24,7 +38,6 @@ export default function Profile() {
   const avatarInputRef = useRef(null);
 
   const refreshUser = () => base44.auth.me().then(setUser).catch(() => {});
-
   useEffect(() => { refreshUser(); }, []);
 
   const { data: workouts = [] } = useQuery({
@@ -32,18 +45,34 @@ export default function Profile() {
     queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 50),
   });
 
+  const { data: activities = [] } = useQuery({
+    queryKey: ["fitness-home"],
+    queryFn: () => base44.entities.FitnessActivity.list("-created_date", 50),
+  });
+
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
     queryFn: () => base44.entities.NutritionEntry.list("-date", 200),
   });
 
-  // Notifications count (today's unlogged meals + no workout today)
-  const today = format(new Date(), "yyyy-MM-dd");
   const todayMeals = meals.filter((m) => m.date === today);
+  const todayActivities = activities.filter((a) => a.date === today);
   const todayWorkout = workouts.find((w) => w.date === today);
-  const notifCount = (todayMeals.length === 0 ? 1 : 0) + (!todayWorkout ? 1 : 0);
 
+  const todayCalBurned = todayActivities.reduce((s, a) => s + (a.calories_burned || 0), 0);
+  const todayMinutes = todayActivities.reduce((s, a) => s + (a.duration_minutes || 0), 0);
+  const todayCalEaten = todayMeals.reduce((s, m) => s + (m.calories || 0), 0);
+  const todayProtein = todayMeals.reduce((s, m) => s + (m.protein_g || 0), 0);
+
+  const notifCount = (todayMeals.length === 0 ? 1 : 0) + (!todayWorkout ? 1 : 0);
   const firstName = user?.username || user?.full_name?.split(" ")[0] || "User";
+
+  const greeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  };
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -57,96 +86,102 @@ export default function Profile() {
   };
 
   return (
-    <div className="space-y-0 -mt-2">
+    <div className="space-y-4 pb-4">
       {/* ── Top Bar ── */}
-      <div className="flex items-center justify-between pb-4">
+      <div className="flex items-center justify-between pt-1">
         <button
           onClick={() => setShowNotifications(true)}
-          className="relative p-2.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 transition-colors"
+          className="relative p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors"
         >
-          <Bell className="w-5 h-5 text-white/70" />
+          <Bell className="w-4.5 h-4.5 text-white/60" />
           {notifCount > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
               {notifCount}
             </span>
           )}
         </button>
-        <span className="text-sm font-semibold text-white">Profile</span>
+        <span className="text-sm font-semibold text-white/70 tracking-wide">Profile</span>
         <button
           onClick={() => setShowInbox(true)}
-          className="p-2.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 transition-colors"
+          className="p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors"
         >
-          <Mail className="w-5 h-5 text-white/70" />
+          <Mail className="w-4.5 h-4.5 text-white/60" />
         </button>
       </div>
 
       {/* ── Profile Hero ── */}
-      <div className="flex flex-col items-center gap-3 pb-5">
-        {/* Avatar */}
+      <div className="flex flex-col items-center gap-3">
         <div className="relative">
           {avatarUrl ? (
-            <img src={avatarUrl} alt="Profile" className="w-24 h-24 rounded-full object-cover shadow-lg shadow-green-500/20 border-2 border-white/10" />
+            <img src={avatarUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover border border-white/10" />
           ) : (
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-4xl font-bold text-white shadow-lg shadow-green-500/30">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-3xl font-bold text-white">
               {user?.full_name?.[0]?.toUpperCase() || "U"}
             </div>
           )}
           <button onClick={() => avatarInputRef.current?.click()} disabled={uploadingAvatar}
-            className="absolute bottom-0 right-0 p-1.5 rounded-full bg-white/15 border border-white/20 hover:bg-white/25 transition-colors disabled:opacity-50">
-            <Camera className="w-3.5 h-3.5 text-white" />
+            className="absolute bottom-0 right-0 p-1.5 rounded-full bg-[#111] border border-white/15 hover:bg-white/10 transition-colors disabled:opacity-50">
+            <Camera className="w-3 h-3 text-white/70" />
           </button>
           <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
         </div>
 
         <div className="text-center">
-          <h2 className="text-xl font-bold text-white">{user?.full_name || "Your Name"}</h2>
-          <p className="text-sm text-white/50">{user?.email || ""}</p>
-          <p className="text-xs text-green-400 mt-1 font-medium">🌿 VitalFlow Member</p>
+          <h2 className="text-lg font-bold text-white">{user?.full_name || "Your Name"}</h2>
+          <p className="text-xs text-white/35">{user?.email || ""}</p>
         </div>
 
-        {/* Followers / Following */}
-        <div className="flex items-center gap-8 mt-1">
+        <div className="flex items-center gap-8">
           {[
             { label: "Workouts", value: workouts.length },
-            { label: "Followers", value: 0 },
-            { label: "Following", value: 0 },
+            { label: "Streak", value: `${[...new Set(meals.map(m=>m.date))].length}d` },
+            { label: "Activities", value: activities.length },
           ].map((s) => (
             <div key={s.label} className="text-center">
-              <p className="text-lg font-bold text-white">{s.value}</p>
-              <p className="text-xs text-white/40">{s.label}</p>
+              <p className="text-base font-bold text-white">{s.value}</p>
+              <p className="text-[10px] text-white/30 font-medium">{s.label}</p>
             </div>
           ))}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex gap-3 mt-1">
-          <button onClick={() => setShowEdit(true)} className="flex items-center gap-2 px-5 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors">
-            <Pencil className="w-3.5 h-3.5" /> Edit Profile
+        <div className="flex gap-2">
+          <button onClick={() => setShowEdit(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-600/90 hover:bg-green-600 text-white text-xs font-semibold transition-colors">
+            <Pencil className="w-3 h-3" /> Edit Profile
           </button>
-          <button onClick={() => setShowShare(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-sm font-semibold transition-colors">
-            <Share2 className="w-4 h-4" /> Share
+          <button onClick={() => setShowShare(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/8 text-white text-xs font-semibold transition-colors">
+            <Share2 className="w-3 h-3" /> Share
           </button>
         </div>
       </div>
 
+      {/* ── Today's Overview ── */}
+      <div className="space-y-2">
+        <div className="flex items-baseline justify-between">
+          <p className="text-xs font-semibold text-white/40 uppercase tracking-widest">Today's Overview</p>
+          <p className="text-[10px] text-white/25">{format(new Date(), "EEE, MMM d")}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <MiniStatCard icon={Clock} label="Active minutes" value={todayMinutes} color="bg-blue-500/15 text-blue-400" />
+          <MiniStatCard icon={Flame} label="Calories burned" value={todayCalBurned} color="bg-orange-500/15 text-orange-400" />
+          <MiniStatCard icon={Apple} label="Calories eaten" value={todayCalEaten} color="bg-green-500/15 text-green-400" />
+          <MiniStatCard icon={TrendingUp} label="Protein today" value={`${todayProtein}g`} color="bg-purple-500/15 text-purple-400" />
+        </div>
+      </div>
+
       {/* ── Tabs ── */}
-      <div className="flex gap-1 bg-white/5 border border-white/10 rounded-2xl p-1 mb-4">
+      <div className="flex gap-1 bg-white/4 border border-white/8 rounded-2xl p-1">
         {[
-          { id: "fitness", label: "Fitness", icon: Dumbbell, color: "text-blue-400" },
-          { id: "nutrition", label: "Nutrition", icon: Apple, color: "text-green-400" },
+          { id: "fitness", label: "Fitness", icon: Dumbbell, color: "text-blue-400", bg: "bg-blue-500/15" },
+          { id: "nutrition", label: "Nutrition", icon: Apple, color: "text-green-400", bg: "bg-green-500/15" },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              activeTab === tab.id
-                ? tab.id === "fitness"
-                  ? "bg-blue-500/20 text-blue-400 shadow"
-                  : "bg-green-500/20 text-green-400 shadow"
-                : "text-white/40 hover:text-white/70"
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+              activeTab === tab.id ? `${tab.bg} ${tab.color}` : "text-white/30 hover:text-white/50"
             }`}
           >
-            <tab.icon className="w-4 h-4" />
+            <tab.icon className="w-3.5 h-3.5" />
             {tab.label}
           </button>
         ))}
