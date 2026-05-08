@@ -1,23 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, Mail, UserPlus, Users, Camera, Dumbbell, Apple, ChevronRight } from "lucide-react";
+import { Bell, Mail, UserPlus, Users, Camera, Dumbbell, Apple, Pencil, Share2 } from "lucide-react";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import ProfileFitnessTab from "@/components/profile/ProfileFitnessTab";
 import ProfileNutritionTab from "@/components/profile/ProfileNutritionTab";
 import NotificationPanel from "@/components/profile/NotificationPanel";
 import InboxPanel from "@/components/profile/InboxPanel";
+import EditProfileModal from "@/components/profile/EditProfileModal";
+import ShareProfileModal from "@/components/profile/ShareProfileModal";
+import { toast } from "sonner";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("fitness");
   const [showNotifications, setShowNotifications] = useState(false);
   const [showInbox, setShowInbox] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef(null);
 
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
+  const refreshUser = () => base44.auth.me().then(setUser).catch(() => {});
+
+  useEffect(() => { refreshUser(); }, []);
 
   const { data: workouts = [] } = useQuery({
     queryKey: ["workouts"],
@@ -35,7 +43,18 @@ export default function Profile() {
   const todayWorkout = workouts.find((w) => w.date === today);
   const notifCount = (todayMeals.length === 0 ? 1 : 0) + (!todayWorkout ? 1 : 0);
 
-  const firstName = user?.full_name?.split(" ")[0] || "User";
+  const firstName = user?.username || user?.full_name?.split(" ")[0] || "User";
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setAvatarUrl(file_url);
+    setUploadingAvatar(false);
+    toast.success("Profile photo updated!");
+    e.target.value = "";
+  };
 
   return (
     <div className="space-y-0 -mt-2">
@@ -65,12 +84,18 @@ export default function Profile() {
       <div className="flex flex-col items-center gap-3 pb-5">
         {/* Avatar */}
         <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-4xl font-bold text-white shadow-lg shadow-green-500/30">
-            {user?.full_name?.[0]?.toUpperCase() || "U"}
-          </div>
-          <button className="absolute bottom-0 right-0 p-1.5 rounded-full bg-white/15 border border-white/20 hover:bg-white/25 transition-colors">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="Profile" className="w-24 h-24 rounded-full object-cover shadow-lg shadow-green-500/20 border-2 border-white/10" />
+          ) : (
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-4xl font-bold text-white shadow-lg shadow-green-500/30">
+              {user?.full_name?.[0]?.toUpperCase() || "U"}
+            </div>
+          )}
+          <button onClick={() => avatarInputRef.current?.click()} disabled={uploadingAvatar}
+            className="absolute bottom-0 right-0 p-1.5 rounded-full bg-white/15 border border-white/20 hover:bg-white/25 transition-colors disabled:opacity-50">
             <Camera className="w-3.5 h-3.5 text-white" />
           </button>
+          <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
         </div>
 
         <div className="text-center">
@@ -95,15 +120,11 @@ export default function Profile() {
 
         {/* Action buttons */}
         <div className="flex gap-3 mt-1">
-          <button className="flex items-center gap-2 px-5 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors">
-            Edit Profile
+          <button onClick={() => setShowEdit(true)} className="flex items-center gap-2 px-5 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors">
+            <Pencil className="w-3.5 h-3.5" /> Edit Profile
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-sm font-semibold transition-colors">
-            <UserPlus className="w-4 h-4" />
-            Share
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-sm font-semibold transition-colors">
-            <Users className="w-4 h-4" />
+          <button onClick={() => setShowShare(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-sm font-semibold transition-colors">
+            <Share2 className="w-4 h-4" /> Share
           </button>
         </div>
       </div>
@@ -133,22 +154,21 @@ export default function Profile() {
 
       {/* ── Tab Content ── */}
       {activeTab === "fitness" ? (
-        <ProfileFitnessTab workouts={workouts} />
+        <ProfileFitnessTab workouts={workouts} user={user} />
       ) : (
-        <ProfileNutritionTab meals={meals} />
+        <ProfileNutritionTab meals={meals} user={user} />
       )}
 
       {/* ── Panels ── */}
       {showNotifications && (
-        <NotificationPanel
-          todayMeals={todayMeals}
-          todayWorkout={todayWorkout}
-          onClose={() => setShowNotifications(false)}
-        />
+        <NotificationPanel todayMeals={todayMeals} todayWorkout={todayWorkout} onClose={() => setShowNotifications(false)} />
       )}
-      {showInbox && (
-        <InboxPanel onClose={() => setShowInbox(false)} />
-      )}
+      {showInbox && <InboxPanel onClose={() => setShowInbox(false)} />}
+
+      <AnimatePresence>
+        {showEdit && <EditProfileModal user={user} onClose={() => setShowEdit(false)} onSaved={refreshUser} />}
+        {showShare && <ShareProfileModal user={user} workoutCount={workouts.length} onClose={() => setShowShare(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

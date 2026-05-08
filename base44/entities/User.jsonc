@@ -26,6 +26,10 @@
       "type": "number",
       "description": "Weight in kilograms"
     },
+    "goal_weight_kg": {
+      "type": "number",
+      "description": "Goal weight in kilograms"
+    },
     "activity_level": {
       "type": "string",
       "enum": [
@@ -42,7 +46,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Dietary preferences / food types the user likes"
+      "description": "Dietary preferences"
     },
     "fitness_goals": {
       "type": "array",
