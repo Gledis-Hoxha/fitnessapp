@@ -45,6 +45,11 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Profile />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/fitness" element={<Fitness />} />
+        <Route path="/fitness/start-workout" element={<StartWorkout />} />
+        <Route path="/fitness/exercise-picker" element={<ExercisePicker />} />
+        <Route path="/fitness/routines" element={<Routines />} />
+        <Route path="/fitness/explore" element={<Explore />} />
+        <Route path="/nutrition" element={<Nutrition />} />
         <Route path="/coach" element={<Coach />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
