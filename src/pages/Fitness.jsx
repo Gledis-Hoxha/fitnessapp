@@ -4,6 +4,7 @@ import { Dumbbell, BookOpen, Compass, Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import WorkoutHistory from "@/components/fitness/WorkoutHistory";
 import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
+import StepTracker from "@/components/fitness/StepTracker";
 
 const actions = [
   {
@@ -70,6 +71,9 @@ export default function Fitness() {
           </motion.div>
         ))}
       </div>
+
+      {/* Step Tracker */}
+      <StepTracker />
 
       {/* Workout History & Analytics */}
       <div>
