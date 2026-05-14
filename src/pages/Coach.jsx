@@ -118,7 +118,7 @@ export default function Coach() {
             </div>
             <div className="text-center">
               <h2 className="text-xl font-bold text-white">Hey! I'm your Coach 👋</h2>
-              <p className="text-sm text-white/45 mt-2 max-w-xs">
+              <p className="text-sm text-white/45 mt-2 max-w-xs hidden">
                 Ask me anything about fitness, nutrition, workouts, or meal plans. I'll give you personalized advice!
               </p>
             </div>
