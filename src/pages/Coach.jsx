@@ -117,10 +117,10 @@ export default function Coach() {
               <Sparkles className="w-10 h-10 text-blue-400" />
             </div>
             <div className="text-center">
-              <h2 className="text-xl font-bold text-white">Hey! I'm your Coach </h2>
-              <p className="text-sm text-white/45 mt-2 max-w-xs hidden">
-                Ask me anything about fitness, nutrition, workouts, or meal plans. I'll give you personalized advice!
-              </p>
+              <h2 className="text-xl font-bold text-white">Hey! I'm your Coach 👋</h2>
+              
+
+            
             </div>
             <CoachSuggestions onSelect={sendMessage} />
           </div> :
