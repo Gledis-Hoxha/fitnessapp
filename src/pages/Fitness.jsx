@@ -58,7 +58,7 @@ export default function Fitness() {
           
             <Link
             to={to}
-            className={`flex items-center gap-4 p-6 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] rounded-[14px] ${color}`}>
+            className={`flex items-center gap-4 p-6 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] rounded-2xl ${color}`}>
             
               <div className={`p-3 rounded-xl ${iconBg}`}>
                 <Icon className="w-6 h-6" />
