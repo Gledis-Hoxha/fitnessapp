@@ -7,31 +7,31 @@ import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 import StepTracker from "@/components/fitness/StepTracker";
 
 const actions = [
-  {
-    to: "/fitness/start-workout",
-    icon: Dumbbell,
-    label: "Start Workout",
-    description: "Track exercises in real time",
-    color: "bg-primary text-primary-foreground",
-    iconBg: "bg-white/20",
-  },
-  {
-    to: "/fitness/routines",
-    icon: BookOpen,
-    label: "Start Routine",
-    description: "Follow a saved routine",
-    color: "bg-accent text-white",
-    iconBg: "bg-white/20",
-  },
-  {
-    to: "/fitness/explore",
-    icon: Compass,
-    label: "Explore",
-    description: "Discover exercises & tips",
-    color: "bg-card text-foreground border border-border",
-    iconBg: "bg-secondary",
-  },
-];
+{
+  to: "/fitness/start-workout",
+  icon: Dumbbell,
+  label: "Start Workout",
+  description: "Track exercises in real time",
+  color: "text-primary-foreground bg-gray-500",
+  iconBg: "bg-white/20"
+},
+{
+  to: "/fitness/routines",
+  icon: BookOpen,
+  label: "Start Routine",
+  description: "Follow a saved routine",
+  color: "text-white bg-gray-500",
+  iconBg: "bg-white/20"
+},
+{
+  to: "/fitness/explore",
+  icon: Compass,
+  label: "Explore",
+  description: "Discover exercises & tips",
+  color: "text-foreground border border-border bg-gray-500",
+  iconBg: "bg-secondary"
+}];
+
 
 export default function Fitness() {
   const [showReminders, setShowReminders] = useState(false);
@@ -49,17 +49,17 @@ export default function Fitness() {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {actions.map(({ to, icon: Icon, label, description, color, iconBg }, i) => (
-          <motion.div
-            key={to}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-          >
+        {actions.map(({ to, icon: Icon, label, description, color, iconBg }, i) =>
+        <motion.div
+          key={to}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.08 }}>
+          
             <Link
-              to={to}
-              className={`flex items-center gap-4 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] ${color}`}
-            >
+            to={to}
+            className={`flex items-center gap-4 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] ${color}`}>
+            
               <div className={`p-3 rounded-xl ${iconBg}`}>
                 <Icon className="w-6 h-6" />
               </div>
@@ -69,7 +69,7 @@ export default function Fitness() {
               </div>
             </Link>
           </motion.div>
-        ))}
+        )}
       </div>
 
       {/* Step Tracker */}
@@ -84,6 +84,6 @@ export default function Fitness() {
       <AnimatePresence>
         {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
       </AnimatePresence>
-    </div>
-  );
+    </div>);
+
 }
