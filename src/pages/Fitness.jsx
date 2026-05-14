@@ -12,7 +12,7 @@ const actions = [
   icon: Dumbbell,
   label: "Start Workout",
   description: "Track exercises in real time",
-  color: "text-primary-foreground bg-gray-500",
+  color: "text-primary-foreground bg-[#27272b]",
   iconBg: "bg-white/20"
 },
 {
@@ -20,7 +20,7 @@ const actions = [
   icon: BookOpen,
   label: "Start Routine",
   description: "Follow a saved routine",
-  color: "text-white bg-gray-500",
+  color: "text-white bg-[#27272b]",
   iconBg: "bg-white/20"
 },
 {
@@ -28,7 +28,7 @@ const actions = [
   icon: Compass,
   label: "Explore",
   description: "Discover exercises & tips",
-  color: "text-foreground border border-border bg-gray-500",
+  color: "text-foreground border border-border bg-[#27272b]",
   iconBg: "bg-secondary"
 }];
 
