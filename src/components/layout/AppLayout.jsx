@@ -17,7 +17,7 @@ export default function AppLayout() {
       {/* Top Header */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-black/95 backdrop-blur-md border-b border-white/8">
         <div className="max-w-5xl mx-auto px-4 h-12 flex items-center">
-          <h1 className="font-display tracking-tight text-white font-extrabold text-lg">Protein
+          <h1 className="font-display tracking-tight text-white text-lg font-bold capitalize">Protein
 
           </h1>
         </div>
