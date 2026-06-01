@@ -60,5 +60,15 @@
       "default": false,
       "description": "Whether the user has completed onboarding"
     }
-  }
+  },
+  "required": [
+    "username",
+    "age",
+    "height_cm",
+    "weight_kg",
+    "goal_weight_kg",
+    "activity_level",
+    "preferred_foods",
+    "fitness_goals"
+  ]
 }
