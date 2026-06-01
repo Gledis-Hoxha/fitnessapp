@@ -46,12 +46,7 @@ export default function MealSection({ mealType, entries = [], onAdd, onDelete })
             transition={{ duration: 0.2 }}
           >
             {entries.length === 0 ? (
-              <div
-                onClick={() => onAdd(mealType)}
-                className="px-4 py-5 text-center text-sm text-white/30 cursor-pointer hover:text-white/50 transition-colors border-t border-white/5"
-              >
-                + Tap to add food
-              </div>
+              <div className="border-t border-white/5 px-4 py-3" />
             ) : (
               <div className="divide-y divide-white/5">
                 {entries.map((entry) => (

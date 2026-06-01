@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { format, startOfWeek, addDays, isToday, subWeeks, addWeeks } from "date-fns";
-import { Dumbbell, Clock, Zap, Calendar, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Dumbbell, Clock, Calendar, ChevronLeft, ChevronRight, User } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import MuscleMap from "@/components/fitness/MuscleMap";
 
 function StatPill({ label, value, color }) {
   return (
@@ -38,12 +39,6 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
     name: w.date ? format(new Date(w.date), "MMM d") : `W${i + 1}`,
     min: Math.round((w.duration_seconds || 0) / 60),
   }));
-
-  const exerciseCounts = {};
-  workouts.forEach(w => w.exercises?.forEach(ex => {
-    exerciseCounts[ex.exercise_name] = (exerciseCounts[ex.exercise_name] || 0) + 1;
-  }));
-  const topExercises = Object.entries(exerciseCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
   const selectedDateStr = selectedDay ? format(selectedDay, "yyyy-MM-dd") : null;
   const selectedWorkouts = selectedDateStr ? workouts.filter(w => w.date === selectedDateStr) : [];
@@ -151,26 +146,8 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
         </div>
       )}
 
-      {/* Top Exercises */}
-      {topExercises.length > 0 && (
-        <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="w-4 h-4 text-blue-400" />
-            <p className="text-sm font-semibold text-white">Top Exercises</p>
-          </div>
-          <div className="space-y-2">
-            {topExercises.map(([name, count], i) => (
-              <div key={name} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-white/30 w-4">{i + 1}</span>
-                  <span className="text-sm text-white">{name}</span>
-                </div>
-                <span className="text-xs text-blue-400 font-semibold">{count}x</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Muscle Map */}
+      <MuscleMap workouts={workouts} />
 
       {/* Personal Measures from onboarding */}
       <div className="bg-[#111] border border-white/10 rounded-2xl p-4">

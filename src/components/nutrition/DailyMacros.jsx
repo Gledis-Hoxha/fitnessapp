@@ -7,16 +7,19 @@ export default function DailyMacros({ calories = 0, protein = 0, carbs = 0, fat 
   ];
 
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
-      <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Today's Intake</p>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="bg-[#111] border border-white/10 rounded-2xl px-4 py-3">
+      <p className="text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-2">Today's Intake</p>
+      <div className="grid grid-cols-4 gap-2">
         {macros.map((m) => {
           const pct = Math.min(100, m.max ? (m.value / m.max) * 100 : 0);
           return (
-            <div key={m.label} className={`rounded-xl p-3 ${m.bg}`}>
-              <p className="text-xs text-white/50 mb-1">{m.label}</p>
-              <p className={`text-xl font-bold ${m.color}`}>{m.value}<span className="text-xs font-normal text-white/40 ml-1">{m.unit}</span></p>
-              <div className="mt-2 h-1.5 rounded-full bg-white/10">
+            <div key={m.label} className="flex flex-col gap-1">
+              <div className="flex items-baseline gap-0.5">
+                <p className={`text-base font-bold ${m.color}`}>{m.value}</p>
+                <span className="text-[10px] text-white/30">{m.unit}</span>
+              </div>
+              <p className="text-[10px] text-white/40">{m.label}</p>
+              <div className="h-1 rounded-full bg-white/10">
                 <div className={`h-full rounded-full ${m.bar} transition-all duration-700`} style={{ width: `${pct}%` }} />
               </div>
             </div>
