@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, addDays, subDays, isToday } from "date-fns";
 import { AnimatePresence } from "framer-motion";
-import { Search, ChevronLeft, ChevronRight, BookOpen, FileDown, Settings } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, BookOpen, FileDown } from "lucide-react";
 import FoodSearchModal from "@/components/nutrition/FoodSearchModal";
 import MealPlanModal from "@/components/nutrition/MealPlanModal";
 import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
@@ -110,14 +110,14 @@ export default function Nutrition() {
       )}
 
       {/* ── Date Navigator ── */}
-      <div className="flex items-center justify-between bg-[#111] border border-white/8 rounded-2xl px-4 py-3">
+      <div className="flex items-center justify-between px-1">
         <button onClick={goToPrevDay} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <div className="flex flex-col items-center gap-0.5">
-          <span className="text-sm font-bold text-white">{displayedDateLabel}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-white">{displayedDateLabel}</span>
           {!isToday(new Date(viewDate + "T00:00:00")) && (
-            <button onClick={goToToday} className="text-[10px] text-green-400 hover:underline">Back to today</button>
+            <button onClick={goToToday} className="text-[10px] text-green-400 hover:underline">Today</button>
           )}
         </div>
         <button onClick={goToNextDay} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
@@ -176,7 +176,7 @@ export default function Nutrition() {
       />
 
       {/* ── Bottom Actions ── */}
-      <div className="grid grid-cols-3 gap-3 pt-1">
+      <div className="grid grid-cols-2 gap-3 pt-1">
         <button onClick={() => setShowMealPlans(true)} className="flex flex-col items-center gap-2 bg-[#111] border border-white/8 rounded-2xl py-4 hover:bg-white/5 transition-colors">
           <BookOpen className="w-5 h-5 text-green-400" />
           <span className="text-xs text-white/50 font-medium">Meal Plans</span>
@@ -184,10 +184,6 @@ export default function Nutrition() {
         <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/8 rounded-2xl py-4 hover:bg-white/5 transition-colors">
           <FileDown className="w-5 h-5 text-green-400" />
           <span className="text-xs text-white/50 font-medium">Export PDF</span>
-        </button>
-        <button className="flex flex-col items-center gap-2 bg-[#111] border border-white/8 rounded-2xl py-4 hover:bg-white/5 transition-colors">
-          <Settings className="w-5 h-5 text-green-400" />
-          <span className="text-xs text-white/50 font-medium">Options</span>
         </button>
       </div>
 

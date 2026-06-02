@@ -4,6 +4,7 @@ import { Dumbbell, Apple, User, Sparkles, Bell, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
 import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
+import SettingsModal from "@/components/shared/SettingsModal";
 
 const navItems = [
 { path: "/fitness", label: "Fitness", icon: Dumbbell, activeColor: "text-blue-400", activeBg: "bg-blue-500/15" },
@@ -15,6 +16,7 @@ const navItems = [
 export default function AppLayout() {
   const location = useLocation();
   const [showReminders, setShowReminders] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const isNutrition = location.pathname === "/nutrition";
 
@@ -34,7 +36,7 @@ export default function AppLayout() {
             >
               <Bell className="w-4 h-4 text-white/60" />
             </button>
-            <button className="p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors">
+            <button onClick={() => setShowSettings(true)} className="p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors">
               <Settings className="w-4 h-4 text-white/60" />
             </button>
           </div>
@@ -74,6 +76,7 @@ export default function AppLayout() {
 
       <AnimatePresence>
         {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
+        {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
       </AnimatePresence>
     </div>);
 
