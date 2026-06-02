@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, addDays, subDays, isToday } from "date-fns";
@@ -11,6 +12,7 @@ import DailyMacros from "@/components/nutrition/DailyMacros";
 import MealSection from "@/components/nutrition/MealSection";
 import NutritionSummary from "@/components/nutrition/NutritionSummary";
 import MealRecommender from "@/components/nutrition/MealRecommender";
+import MacroProgressChart from "@/components/nutrition/MacroProgressChart";
 
 const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 
@@ -86,22 +88,26 @@ export default function Nutrition() {
     ? "Today"
     : format(new Date(viewDate + "T00:00:00"), "EEE, MMM d");
 
+  // Portal: inject search into header
+  const [portalEl, setPortalEl] = useState(null);
+  useEffect(() => {
+    const el = document.getElementById("nutrition-search-portal");
+    if (el) setPortalEl(el);
+  }, []);
+
   return (
     <div className="space-y-3 pb-4">
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Nutrition</h1>
-          <p className="text-xs text-white/35 mt-0.5">{format(new Date(), "EEEE, MMMM d")}</p>
-        </div>
+      {/* ── Search portal into header ── */}
+      {portalEl && createPortal(
         <button
           onClick={() => setShowSearch(true)}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/8 transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-1.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/8 transition-colors"
         >
-          <Search className="w-4 h-4 text-white/50" />
-          <span className="text-sm text-white/40 hidden sm:block">Search food…</span>
-        </button>
-      </div>
+          <Search className="w-3.5 h-3.5 text-white/50 flex-shrink-0" />
+          <span className="text-xs text-white/35 truncate">Search food…</span>
+        </button>,
+        portalEl
+      )}
 
       {/* ── Date Navigator ── */}
       <div className="flex items-center justify-between bg-[#111] border border-white/8 rounded-2xl px-4 py-3">
@@ -128,6 +134,14 @@ export default function Nutrition() {
 
       {/* ── Daily Macros ── */}
       <DailyMacros
+        calories={totalCalories}
+        protein={totalProtein}
+        carbs={totalCarbs}
+        fat={totalFat}
+      />
+
+      {/* ── Daily Progress Chart ── */}
+      <MacroProgressChart
         calories={totalCalories}
         protein={totalProtein}
         carbs={totalCarbs}

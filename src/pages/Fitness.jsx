@@ -1,28 +1,17 @@
 import { useState } from "react";
-import { Dumbbell, Bell } from "lucide-react";
+import { Dumbbell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import WorkoutHistory from "@/components/fitness/WorkoutHistory";
-import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 import StepTracker from "@/components/fitness/StepTracker";
 import HeartRateTracker from "@/components/fitness/HeartRateTracker";
 import SleepTracker from "@/components/fitness/SleepTracker";
 import WorkoutStartModal from "@/components/fitness/WorkoutStartModal";
 
 export default function Fitness() {
-  const [showReminders, setShowReminders] = useState(false);
   const [showStartModal, setShowStartModal] = useState(false);
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between pt-1">
-        <div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Fitness</h1>
-          <p className="text-xs text-white/35 mt-0.5">What do you want to do today?</p>
-        </div>
-        <button onClick={() => setShowReminders(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 text-xs text-white/60 hover:text-white transition-all">
-          <Bell className="w-3.5 h-3.5" /> Reminders
-        </button>
-      </div>
+    <div className="space-y-5 pt-1">
 
       {/* Start Workout CTA */}
       <motion.button
@@ -57,7 +46,6 @@ export default function Fitness() {
       </div>
 
       <AnimatePresence>
-        {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
         {showStartModal && <WorkoutStartModal onClose={() => setShowStartModal(false)} />}
       </AnimatePresence>
     </div>

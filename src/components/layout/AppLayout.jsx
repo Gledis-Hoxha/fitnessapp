@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Dumbbell, Apple, User, Sparkles } from "lucide-react";
+import { Dumbbell, Apple, User, Sparkles, Bell, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AnimatePresence } from "framer-motion";
+import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 
 const navItems = [
 { path: "/fitness", label: "Fitness", icon: Dumbbell, activeColor: "text-blue-400", activeBg: "bg-blue-500/15" },
@@ -11,15 +14,30 @@ const navItems = [
 
 export default function AppLayout() {
   const location = useLocation();
+  const [showReminders, setShowReminders] = useState(false);
+
+  const isNutrition = location.pathname === "/nutrition";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top Header */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-black/95 backdrop-blur-md border-b border-white/8">
-        <div className="max-w-5xl mx-auto px-4 h-12 flex items-center">
-          <h1 className="font-display tracking-tight text-white text-lg font-bold capitalize text-left">Protein
-
-          </h1>
+        <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between gap-3">
+          <h1 className="font-display tracking-tight text-white text-lg font-bold capitalize">Protein</h1>
+          <div className="flex items-center gap-1.5 flex-1 justify-end">
+            {isNutrition && (
+              <div id="nutrition-search-portal" className="flex-1 max-w-xs" />
+            )}
+            <button
+              onClick={() => setShowReminders(true)}
+              className="p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors"
+            >
+              <Bell className="w-4 h-4 text-white/60" />
+            </button>
+            <button className="p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors">
+              <Settings className="w-4 h-4 text-white/60" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -53,6 +71,10 @@ export default function AppLayout() {
           })}
         </div>
       </nav>
+
+      <AnimatePresence>
+        {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
+      </AnimatePresence>
     </div>);
 
 }
