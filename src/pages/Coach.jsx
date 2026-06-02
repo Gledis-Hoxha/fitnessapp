@@ -103,7 +103,7 @@ export default function Coach() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-4 pb-2 scroll-smooth">
+      <div className="flex-1 overflow-y-auto space-y-4 pb-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {initializing ?
         <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
@@ -137,9 +137,6 @@ export default function Coach() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-start gap-3">
             
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
                 <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3">
                   <div className="flex gap-1.5 items-center">
                     {[0, 1, 2].map((i) =>

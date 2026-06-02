@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Sparkles } from "lucide-react";
 
 export default function CoachMessageBubble({ message }) {
   const isUser = message.role === "user";
@@ -11,11 +10,6 @@ export default function CoachMessageBubble({ message }) {
       animate={{ opacity: 1, y: 0 }}
       className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}
     >
-      {!isUser && (
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0 mt-0.5">
-          <Sparkles className="w-4 h-4 text-white" />
-        </div>
-      )}
       <div className={`max-w-[85%] ${isUser ? "items-end" : "items-start"} flex flex-col`}>
         <div
           className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${

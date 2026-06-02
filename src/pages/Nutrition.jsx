@@ -10,6 +10,7 @@ import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
 import DailyMacros from "@/components/nutrition/DailyMacros";
 import MealSection from "@/components/nutrition/MealSection";
 import NutritionSummary from "@/components/nutrition/NutritionSummary";
+import MealRecommender from "@/components/nutrition/MealRecommender";
 
 const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 
@@ -143,6 +144,14 @@ export default function Nutrition() {
           onDelete={(id) => deleteMutation.mutate(id)}
         />
       ))}
+
+      {/* ── Meal Recommender ── */}
+      <MealRecommender
+        todayCalories={totalCalories}
+        todayProtein={totalProtein}
+        viewDate={viewDate}
+        onAddMeal={handleAdd}
+      />
 
       {/* ── Summary ── */}
       <NutritionSummary

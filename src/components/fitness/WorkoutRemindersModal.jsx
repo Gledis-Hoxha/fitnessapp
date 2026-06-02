@@ -1,9 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { X, Plus, Trash2, Bell, BellOff } from "lucide-react";
+import { X, Plus, Trash2, Bell, BellOff, Smartphone } from "lucide-react";
 import { toast } from "sonner";
+
+// Request browser push permission and schedule in-browser notifications
+function usePushNotifications(reminders) {
+  const scheduledRef = useRef(new Set());
+
+  useEffect(() => {
+    if (!("Notification" in window)) return;
+    if (Notification.permission !== "granted") return;
+
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+
+    reminders.filter((r) => r.enabled && r.days?.includes(dayOfWeek)).forEach((r) => {
+      const key = `${r.id}-${now.toDateString()}`;
+      if (scheduledRef.current.has(key)) return;
+
+      const [h, m] = (r.time || "07:00").split(":").map(Number);
+      const target = new Date(now);
+      target.setHours(h, m, 0, 0);
+      const delay = target - now;
+      if (delay > 0 && delay < 86400000) {
+        scheduledRef.current.add(key);
+        setTimeout(() => {
+          new Notification("💪 Workout Time!", {
+            body: `Time to start: ${r.label}`,
+            icon: "/favicon.ico",
+            badge: "/favicon.ico",
+          });
+        }, delay);
+      }
+    });
+  }, [reminders]);
+}
+
+async function requestPushPermission() {
+  if (!("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  const result = await Notification.requestPermission();
+  return result === "granted";
+}
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -13,11 +53,23 @@ export default function WorkoutRemindersModal({ onClose }) {
   const [label, setLabel] = useState("");
   const [time, setTime] = useState("07:00");
   const [days, setDays] = useState([1, 3, 5]); // Mon, Wed, Fri default
+  const [pushGranted, setPushGranted] = useState(
+    typeof Notification !== "undefined" && Notification.permission === "granted"
+  );
 
   const { data: reminders = [], isLoading } = useQuery({
     queryKey: ["workout-reminders"],
     queryFn: () => base44.entities.WorkoutReminder.list("-created_date", 50),
   });
+
+  usePushNotifications(reminders);
+
+  const handleEnablePush = async () => {
+    const granted = await requestPushPermission();
+    setPushGranted(granted);
+    if (granted) toast.success("Push notifications enabled!");
+    else toast.error("Permission denied. Enable notifications in browser settings.");
+  };
 
   const createReminder = useMutation({
     mutationFn: (data) => base44.entities.WorkoutReminder.create(data),
@@ -105,8 +157,19 @@ export default function WorkoutRemindersModal({ onClose }) {
                   </button>
                 </div>
               ))}
-              {reminders.length > 0 && (
-                <p className="text-xs text-white/25 text-center pt-2">Reminders are displayed in-app. Enable browser notifications for alerts.</p>
+              {!pushGranted && (
+                <button
+                  onClick={handleEnablePush}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500/15 border border-blue-500/20 text-blue-400 text-xs font-semibold hover:bg-blue-500/25 transition-colors mt-1"
+                >
+                  <Smartphone className="w-3.5 h-3.5" />
+                  Enable phone notifications
+                </button>
+              )}
+              {pushGranted && reminders.length > 0 && (
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-green-400 pt-1">
+                  <Bell className="w-3 h-3" /> Push notifications active
+                </div>
               )}
             </>
           )}
