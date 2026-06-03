@@ -72,7 +72,7 @@ export default function HeartRateTracker() {
         className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
         
         <div className={`p-2 rounded-xl ${status === "connected" ? "bg-red-500/20" : "bg-white/8"}`}>
-          <Heart className={`w-4 h-4 text-[hsl(var(--background))] ${status === "connected" ? "text-red-400 animate-pulse" : ""}`} />
+          <Heart className={`w-4 h-4 text-[#ebdbdb] ${status === "connected" ? "text-red-400 animate-pulse" : "text-white/50"}`} />
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-white">Heart Rate</p>
