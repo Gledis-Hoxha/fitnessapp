@@ -3,36 +3,24 @@ import { motion } from "framer-motion";
 import { X, Key, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { setExerciseApiKey } from "@/lib/exerciseApi";
 import { setUsdaApiKey } from "@/lib/usdaApi";
 
 export default function ApiKeySetupModal({ type, onClose, onSaved }) {
   const [key, setKey] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const isExercise = type === "exercise";
-
-  const config = isExercise
-    ? {
-        title: "ExerciseDB API Key",
-        description: "Get your free RapidAPI key to access 1300+ exercises with animated GIFs and instructions.",
-        link: "https://rapidapi.com/justin-WFnsXH_t6/api/exercisedb",
-        linkLabel: "Get free API key on RapidAPI →",
-        placeholder: "Paste your RapidAPI key here",
-      }
-    : {
-        title: "USDA Food Database Key",
-        description: "Get your free USDA API key to search 300,000+ food items with full nutritional data.",
-        link: "https://fdc.nal.usda.gov/api-key-signup.html",
-        linkLabel: "Get free USDA API key →",
-        placeholder: "Paste your USDA FDC API key here",
-      };
+  const config = {
+    title: "USDA Food Database Key",
+    description: "Get your free USDA API key to search 300,000+ food items with full nutritional data.",
+    link: "https://fdc.nal.usda.gov/api-key-signup.html",
+    linkLabel: "Get free USDA API key →",
+    placeholder: "Paste your USDA FDC API key here",
+  };
 
   const handleSave = () => {
     if (!key.trim()) return;
     setSaving(true);
-    if (isExercise) setExerciseApiKey(key.trim());
-    else setUsdaApiKey(key.trim());
+    setUsdaApiKey(key.trim());
     setSaving(false);
     onSaved?.();
     onClose();

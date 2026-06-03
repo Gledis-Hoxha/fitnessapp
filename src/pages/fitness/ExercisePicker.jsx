@@ -1,11 +1,23 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Plus, Search, Loader2, ChevronDown, Key } from "lucide-react";
+import { ArrowLeft, Plus, Search, Loader2, Dumbbell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { searchExercises, getExercisesByBodyPart, getBodyPartList, getExercises, mapExercise, isExerciseApiConfigured } from "@/lib/exerciseApi";
-import ExerciseDetailModal from "@/components/fitness/ExerciseDetailModal";
-import ApiKeySetupModal from "@/components/shared/ApiKeySetupModal";
+import { searchExercises, mapExercise, BODY_PARTS, DEFAULT_SEARCHES } from "@/lib/exerciseApi";
+
+const BODY_PART_EMOJIS = {
+  all: "⚡",
+  back: "🔙",
+  cardio: "🏃",
+  chest: "🏋️",
+  "lower arms": "🤝",
+  "lower legs": "🦶",
+  neck: "🧠",
+  shoulders: "💪",
+  "upper arms": "💪",
+  "upper legs": "🦵",
+  waist: "⚡",
+};
 
 export default function ExercisePicker() {
   const navigate = useNavigate();
@@ -14,78 +26,79 @@ export default function ExercisePicker() {
 
   const [query, setQuery] = useState("");
   const [exercises, setExercises] = useState([]);
-  const [bodyParts, setBodyParts] = useState([]);
   const [selectedBodyPart, setSelectedBodyPart] = useState("all");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selected, setSelected] = useState(null);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [showSetup, setShowSetup] = useState(!isExerciseApiConfigured());
+  const debounceRef = useRef(null);
 
-  const LIMIT = 20;
-
-  // Load body part list on mount
+  // Load default exercises on mount
   useEffect(() => {
-    if (!isExerciseApiConfigured()) return;
-    getBodyPartList()
-      .then((list) => setBodyParts(["all", ...list]))
-      .catch(() => {});
-    loadExercises(0, "all", "");
+    loadDefault();
   }, []);
 
-  const loadExercises = useCallback(async (off, bodyPart, q) => {
+  const loadDefault = async () => {
     setLoading(true);
     setError(null);
     try {
-      let data;
-      if (q.trim().length >= 2) {
-        data = await searchExercises(q, 30);
-      } else if (bodyPart !== "all") {
-        data = await getExercisesByBodyPart(bodyPart, LIMIT);
-      } else {
-        data = await getExercises(LIMIT, off);
-      }
-      const mapped = data.map(mapExercise);
-      if (off === 0) {
-        setExercises(mapped);
-      } else {
-        setExercises((prev) => [...prev, ...mapped]);
-      }
-      setHasMore(mapped.length === LIMIT && !q.trim());
-    } catch (e) {
-      setError("Could not load exercises. Check your RapidAPI key.");
+      // Load a mix from multiple default searches in parallel
+      const results = await Promise.all(
+        DEFAULT_SEARCHES.slice(0, 6).map((q) => searchExercises(q))
+      );
+      const flat = results.flat();
+      // Deduplicate by name
+      const seen = new Set();
+      const unique = flat.filter((ex) => {
+        if (seen.has(ex.name)) return false;
+        seen.add(ex.name);
+        return true;
+      });
+      setExercises(unique.map(mapExercise));
+    } catch {
+      setError("Could not load exercises. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  // Debounce search
+  const doSearch = async (q, bodyPart) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const opts = bodyPart !== "all" ? { bodyPart } : {};
+      const results = await searchExercises(q || "", opts);
+      if (!results.length && q) {
+        // retry with simplified query
+        const simplified = q.split(" ")[0];
+        if (simplified !== q) {
+          const retry = await searchExercises(simplified, opts);
+          setExercises(retry.map(mapExercise));
+          return;
+        }
+      }
+      setExercises(results.map(mapExercise));
+    } catch {
+      setError("Could not load exercises. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Debounced search
   useEffect(() => {
-    if (query.trim().length === 0) {
-      loadExercises(0, selectedBodyPart, "");
-      setOffset(0);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!query.trim() && selectedBodyPart === "all") {
+      loadDefault();
       return;
     }
-    if (query.trim().length < 2) return;
-    const t = setTimeout(() => {
-      loadExercises(0, selectedBodyPart, query);
-      setOffset(0);
+    debounceRef.current = setTimeout(() => {
+      doSearch(query, selectedBodyPart);
     }, 400);
-    return () => clearTimeout(t);
+    return () => clearTimeout(debounceRef.current);
   }, [query, selectedBodyPart]);
 
   const handleBodyPartChange = (bp) => {
     setSelectedBodyPart(bp);
-    setOffset(0);
     setQuery("");
-    loadExercises(0, bp, "");
-  };
-
-  const loadMore = () => {
-    const newOffset = offset + LIMIT;
-    setOffset(newOffset);
-    loadExercises(newOffset, selectedBodyPart, query);
   };
 
   const handlePick = (exercise) => {
@@ -93,18 +106,18 @@ export default function ExercisePicker() {
   };
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="flex flex-col min-h-0 pb-6 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-xl hover:bg-secondary transition-colors"
+          className="p-2 rounded-xl hover:bg-white/10 transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5 text-white" />
         </button>
         <div>
           <h1 className="text-xl font-bold text-white">Choose Exercise</h1>
-          <p className="text-xs text-white/40">300k+ exercises from ExerciseDB</p>
+          <p className="text-xs text-white/40">1,300+ exercises with animated demos</p>
         </div>
       </div>
 
@@ -114,7 +127,7 @@ export default function ExercisePicker() {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search exercises..."
+          placeholder="Search exercises (e.g. squat, curl, bench...)"
           className="pl-9 bg-white/8 border-white/10 text-white placeholder:text-white/35 h-11"
           autoFocus
         />
@@ -122,16 +135,17 @@ export default function ExercisePicker() {
 
       {/* Body Part Filter */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-        {bodyParts.map((bp) => (
+        {BODY_PARTS.map((bp) => (
           <button
             key={bp}
             onClick={() => handleBodyPartChange(bp)}
-            className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
               selectedBodyPart === bp
-                ? "bg-primary text-white"
+                ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25"
                 : "bg-white/8 text-white/50 hover:bg-white/12"
             }`}
           >
+            <span>{BODY_PART_EMOJIS[bp]}</span>
             {bp}
           </button>
         ))}
@@ -146,91 +160,74 @@ export default function ExercisePicker() {
 
       {/* Exercise List */}
       <div className="space-y-2">
-        <AnimatePresence mode="wait">
-          {exercises.map((ex, i) => (
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <Loader2 className="w-7 h-7 text-blue-400 animate-spin" />
+            <p className="text-white/30 text-sm">Loading exercises...</p>
+          </div>
+        )}
+
+        {!loading && exercises.length === 0 && !error && (
+          <div className="text-center py-12">
+            <Dumbbell className="w-10 h-10 text-white/20 mx-auto mb-3" />
+            <p className="text-white/30 text-sm">No exercises found</p>
+            <p className="text-white/20 text-xs mt-1">Try a different search term</p>
+          </div>
+        )}
+
+        <AnimatePresence mode="popLayout">
+          {!loading && exercises.map((ex, i) => (
             <motion.button
-              key={ex.id}
-              initial={{ opacity: 0, y: 10 }}
+              key={ex.id + i}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.03, 0.3) }}
-              onClick={() => setSelected(ex)}
-              className="w-full flex items-center gap-3 p-4 bg-[#1a1a1e] border border-white/8 rounded-2xl hover:border-primary/40 transition-all active:scale-[0.98] text-left"
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: Math.min(i * 0.025, 0.25) }}
+              onClick={() => handlePick(ex)}
+              className="w-full flex items-center gap-3 p-3 bg-[#161618] border border-white/8 rounded-2xl hover:border-blue-500/40 hover:bg-[#1a1a1f] transition-all active:scale-[0.98] text-left group"
             >
-              {ex.gifUrl ? (
-                <img
-                  src={ex.gifUrl}
-                  alt={ex.name}
-                  className="w-12 h-12 rounded-xl object-cover bg-white/5"
-                  loading="lazy"
-                />
-              ) : (
-                <span className="text-2xl w-12 text-center">{ex.emoji}</span>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-white text-sm capitalize truncate">{ex.name}</p>
-                <p className="text-xs text-white/40 capitalize mt-0.5">
-                  {ex.muscle} · {ex.bodyPart} · {ex.equipment}
-                </p>
+              {/* GIF / Fallback */}
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center">
+                {ex.gifUrl ? (
+                  <img
+                    src={ex.gifUrl}
+                    alt={ex.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="text-2xl">{ex.emoji}</span>
+                )}
               </div>
-              <div className="p-2 rounded-xl bg-primary/10 flex-shrink-0">
-                <Plus className="w-4 h-4 text-primary" />
+
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-white text-sm capitalize leading-snug">{ex.name}</p>
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {ex.muscle && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium capitalize">
+                      {ex.muscle}
+                    </span>
+                  )}
+                  {ex.bodyPart && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/8 text-white/40 capitalize">
+                      {ex.bodyPart}
+                    </span>
+                  )}
+                  {ex.equipment && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/30 capitalize">
+                      {ex.equipment}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-2 rounded-xl bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors flex-shrink-0">
+                <Plus className="w-4 h-4 text-blue-400" />
               </div>
             </motion.button>
           ))}
         </AnimatePresence>
-
-        {loading && (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 text-primary animate-spin" />
-          </div>
-        )}
-
-        {!loading && hasMore && exercises.length > 0 && (
-          <button
-            onClick={loadMore}
-            className="w-full flex items-center justify-center gap-2 py-3 text-sm text-white/40 hover:text-white/70 transition-colors"
-          >
-            <ChevronDown className="w-4 h-4" />
-            Load more
-          </button>
-        )}
-
-        {!loading && exercises.length === 0 && !error && (
-          <div className="text-center py-10 text-white/30 text-sm">No exercises found</div>
-        )}
       </div>
-
-      {/* Detail Modal */}
-      <AnimatePresence>
-        {selected && (
-          <ExerciseDetailModal
-            exercise={selected}
-            onAdd={handlePick}
-            onClose={() => setSelected(null)}
-          />
-        )}
-        {showSetup && (
-          <ApiKeySetupModal
-            type="exercise"
-            onClose={() => { setShowSetup(false); navigate(-1); }}
-            onSaved={() => {
-              setShowSetup(false);
-              getBodyPartList().then((list) => setBodyParts(["all", ...list])).catch(() => {});
-              loadExercises(0, "all", "");
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Key config button */}
-      {!showSetup && (
-        <button
-          onClick={() => setShowSetup(true)}
-          className="fixed bottom-24 right-4 p-3 rounded-full bg-[#1a1a1e] border border-white/10 text-white/40 hover:text-white/70 transition-colors shadow-lg"
-        >
-          <Key className="w-4 h-4" />
-        </button>
-      )}
     </div>
   );
 }

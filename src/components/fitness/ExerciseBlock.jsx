@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Copy, Trash2 } from "lucide-react";
+import { Check, Copy, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function ExerciseBlock({ exercise, onChange, onRemove }) {
+  const [showGif, setShowGif] = useState(false);
+
   const updateSet = (setIdx, field, value) => {
     const newSets = exercise.sets.map((s, i) =>
       i === setIdx ? { ...s, [field]: value } : s
@@ -18,8 +21,7 @@ export default function ExerciseBlock({ exercise, onChange, onRemove }) {
   const duplicateSet = (setIdx) => {
     const original = exercise.sets[setIdx];
     const newSet = { ...original, completed: false, set_number: exercise.sets.length + 1 };
-    const newSets = [...exercise.sets, newSet];
-    onChange({ ...exercise, sets: newSets });
+    onChange({ ...exercise, sets: [...exercise.sets, newSet] });
   };
 
   const removeSet = (setIdx) => {
@@ -40,43 +42,96 @@ export default function ExerciseBlock({ exercise, onChange, onRemove }) {
     onChange({ ...exercise, sets: [...exercise.sets, newSet] });
   };
 
+  const completedCount = exercise.sets.filter((s) => s.completed).length;
+  const totalSets = exercise.sets.length;
+
   return (
-    <div className="bg-card rounded-2xl border border-border overflow-hidden">
+    <div className="bg-[#141416] border border-white/10 rounded-2xl overflow-hidden">
       {/* Exercise Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/50">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">{exercise.emoji}</span>
-          <div>
-            <p className="font-semibold text-sm">{exercise.name}</p>
-            <p className="text-xs text-muted-foreground">{exercise.muscle}</p>
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/8">
+        {/* GIF thumbnail toggle */}
+        <button
+          onClick={() => setShowGif((v) => !v)}
+          className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center hover:opacity-80 transition-opacity"
+          title={showGif ? "Hide GIF" : "Show exercise GIF"}
+        >
+          {exercise.gifUrl ? (
+            <img
+              src={exercise.gifUrl}
+              alt={exercise.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-xl">{exercise.emoji || "🏋️"}</span>
+          )}
+        </button>
+
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-white text-sm capitalize truncate">{exercise.name}</p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-[10px] text-white/40 capitalize">{exercise.muscle}</span>
+            <span className="text-white/20 text-[10px]">·</span>
+            <span className={cn(
+              "text-[10px] font-semibold",
+              completedCount === totalSets ? "text-green-400" : "text-white/35"
+            )}>
+              {completedCount}/{totalSets} sets
+            </span>
           </div>
         </div>
-        <button onClick={() => onRemove(exercise.exercise_id)} className="p-1.5 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors">
+
+        {exercise.gifUrl && (
+          <button
+            onClick={() => setShowGif((v) => !v)}
+            className="p-1.5 rounded-lg hover:bg-white/8 text-white/30 hover:text-white/60 transition-colors flex-shrink-0"
+          >
+            {showGif ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+        )}
+
+        <button
+          onClick={() => onRemove(exercise.exercise_id)}
+          className="p-1.5 rounded-lg hover:bg-red-500/15 hover:text-red-400 text-white/25 transition-colors flex-shrink-0"
+        >
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
+      {/* Expandable GIF */}
+      {showGif && exercise.gifUrl && (
+        <div className="flex justify-center py-4 px-4 bg-white/3 border-b border-white/8">
+          <img
+            src={exercise.gifUrl}
+            alt={exercise.name}
+            className="h-44 rounded-xl object-contain"
+          />
+        </div>
+      )}
+
       {/* Sets Table Header */}
-      <div className="grid grid-cols-[36px_1fr_1fr_1fr_44px_36px] gap-2 px-4 py-2 text-xs font-medium text-muted-foreground border-b border-border">
-        <span>Set</span>
+      <div className="grid grid-cols-[32px_1fr_1fr_36px_40px_28px] gap-2 px-4 py-2 text-[10px] font-semibold text-white/30 uppercase tracking-wider border-b border-white/6">
+        <span>#</span>
         <span>KG</span>
         <span>Reps</span>
         <span></span>
-        <span className="text-center">Done</span>
+        <span className="text-center">✓</span>
         <span></span>
       </div>
 
       {/* Sets */}
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-white/5">
         {exercise.sets.map((set, i) => (
           <div
             key={i}
             className={cn(
-              "grid grid-cols-[36px_1fr_1fr_1fr_44px_36px] gap-2 items-center px-4 py-2.5 transition-colors",
-              set.completed ? "bg-primary/5" : ""
+              "grid grid-cols-[32px_1fr_1fr_36px_40px_28px] gap-2 items-center px-4 py-2.5 transition-colors",
+              set.completed ? "bg-green-500/5" : ""
             )}
           >
-            <span className={cn("text-sm font-bold", set.completed ? "text-primary" : "text-muted-foreground")}>
+            <span className={cn(
+              "text-xs font-bold",
+              set.completed ? "text-green-400" : "text-white/25"
+            )}>
               {set.set_number}
             </span>
             <Input
@@ -84,45 +139,41 @@ export default function ExerciseBlock({ exercise, onChange, onRemove }) {
               value={set.weight_kg || ""}
               onChange={(e) => updateSet(i, "weight_kg", Number(e.target.value))}
               placeholder="0"
-              className="h-8 text-center text-sm px-1"
+              className="h-8 text-center text-sm px-1 bg-white/6 border-white/10 text-white"
             />
             <Input
               type="number"
               value={set.reps || ""}
               onChange={(e) => updateSet(i, "reps", Number(e.target.value))}
               placeholder="0"
-              className="h-8 text-center text-sm px-1"
+              className="h-8 text-center text-sm px-1 bg-white/6 border-white/10 text-white"
             />
-            {/* Duplicate */}
             <button
               onClick={() => duplicateSet(i)}
-              className="flex items-center justify-center p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="flex items-center justify-center p-1.5 rounded-lg hover:bg-white/8 transition-colors text-white/25 hover:text-white/60"
               title="Duplicate set"
             >
-              <Copy className="w-3.5 h-3.5" />
+              <Copy className="w-3 h-3" />
             </button>
-            {/* Check */}
             <button
               onClick={() => toggleComplete(i)}
               className={cn(
-                "flex items-center justify-center h-8 w-8 rounded-lg border-2 transition-all duration-200",
+                "flex items-center justify-center h-8 w-8 rounded-lg border-2 transition-all duration-200 mx-auto",
                 set.completed
-                  ? "bg-primary border-primary text-primary-foreground"
-                  : "border-border hover:border-primary/50"
+                  ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/25"
+                  : "border-white/15 hover:border-green-500/50"
               )}
             >
-              <Check className="w-4 h-4" />
+              <Check className="w-3.5 h-3.5" />
             </button>
-            {/* Remove set */}
-            {exercise.sets.length > 1 && (
+            {exercise.sets.length > 1 ? (
               <button
                 onClick={() => removeSet(i)}
-                className="flex items-center justify-center p-1 rounded hover:text-destructive transition-colors text-muted-foreground/50"
+                className="flex items-center justify-center p-1 rounded hover:text-red-400 transition-colors text-white/15"
               >
                 <Trash2 className="w-3 h-3" />
               </button>
-            )}
-            {exercise.sets.length <= 1 && <span />}
+            ) : <span />}
           </div>
         ))}
       </div>
@@ -131,7 +182,7 @@ export default function ExerciseBlock({ exercise, onChange, onRemove }) {
       <div className="px-4 py-3">
         <button
           onClick={addSet}
-          className="w-full text-xs font-medium text-primary hover:text-primary/80 py-1.5 border border-dashed border-primary/30 hover:border-primary/60 rounded-lg transition-colors"
+          className="w-full text-xs font-semibold text-white/35 hover:text-white/60 py-2 border border-dashed border-white/10 hover:border-white/20 rounded-xl transition-colors"
         >
           + Add Set
         </button>

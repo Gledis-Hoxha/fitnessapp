@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { X, Target, Key, Ruler, Bell, LogOut, User, ChevronRight } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
-import { setExerciseApiKey } from "@/lib/exerciseApi";
 import { setUsdaApiKey } from "@/lib/usdaApi";
 
 const MACRO_GOALS_KEY = "macro_goals";
@@ -32,7 +31,6 @@ export default function SettingsModal({ onClose }) {
   const [tab, setTab] = useState("goals");
   const [goals, setGoals] = useState(getMacroGoals());
   const [units, setUnits] = useState(getUnitPrefs());
-  const [exerciseKey, setExerciseKeyState] = useState(localStorage.getItem("rapidapi_key") || "");
   const [usdaKey, setUsdaKeyState] = useState(localStorage.getItem("usda_api_key") || "");
 
   const saveGoals = () => {
@@ -51,7 +49,6 @@ export default function SettingsModal({ onClose }) {
   };
 
   const saveApiKeys = () => {
-    if (exerciseKey.trim()) setExerciseApiKey(exerciseKey.trim());
     if (usdaKey.trim()) setUsdaApiKey(usdaKey.trim());
     toast.success("API keys saved!");
   };
@@ -168,35 +165,30 @@ export default function SettingsModal({ onClose }) {
             <>
               <p className="text-xs text-white/40">API keys are stored locally on your device only and never sent to our servers.</p>
               <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-semibold text-blue-400 mb-1.5 block">ExerciseDB (RapidAPI)</label>
-                  <input
-                    type="password"
-                    value={exerciseKey}
-                    onChange={(e) => setExerciseKeyState(e.target.value)}
-                    placeholder="Paste your RapidAPI key…"
-                    className="w-full bg-white/8 border border-white/12 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-blue-500/50"
-                  />
-                  <p className="text-[10px] text-white/25 mt-1">Powers the exercise library & explore page with 1,300+ exercises</p>
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-green-400 mb-1.5 block">USDA FoodData (API Key)</label>
-                  <input
-                    type="password"
-                    value={usdaKey}
-                    onChange={(e) => setUsdaKeyState(e.target.value)}
-                    placeholder="Paste your USDA API key…"
-                    className="w-full bg-white/8 border border-white/12 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-green-500/50"
-                  />
-                  <p className="text-[10px] text-white/25 mt-1">Powers food search with 300,000+ items and full nutritional data</p>
-                </div>
-              </div>
-              <div className="bg-white/4 border border-white/8 rounded-xl px-4 py-3">
-                <p className="text-[10px] text-white/35 leading-relaxed">
-                  🔒 Keys are saved to your browser's local storage and never transmitted to our servers.
-                  Get a free ExerciseDB key at <span className="text-blue-400">rapidapi.com</span> and a USDA key at <span className="text-green-400">fdc.nal.usda.gov</span>.
-                </p>
-              </div>
+                 <div className="bg-blue-500/8 border border-blue-500/15 rounded-xl px-4 py-3 flex items-start gap-2.5">
+                   <span className="text-blue-400 text-lg">🏋️</span>
+                   <div>
+                     <p className="text-xs font-semibold text-blue-400 mb-0.5">FitGIF Exercise Library</p>
+                     <p className="text-[10px] text-white/35 leading-relaxed">1,300+ animated exercise GIFs are built-in — no API key needed!</p>
+                   </div>
+                 </div>
+                 <div>
+                   <label className="text-xs font-semibold text-green-400 mb-1.5 block">USDA FoodData (API Key)</label>
+                   <input
+                     type="password"
+                     value={usdaKey}
+                     onChange={(e) => setUsdaKeyState(e.target.value)}
+                     placeholder="Paste your USDA API key…"
+                     className="w-full bg-white/8 border border-white/12 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-green-500/50"
+                   />
+                   <p className="text-[10px] text-white/25 mt-1">Powers food search with 300,000+ items and full nutritional data</p>
+                 </div>
+               </div>
+               <div className="bg-white/4 border border-white/8 rounded-xl px-4 py-3">
+                 <p className="text-[10px] text-white/35 leading-relaxed">
+                   🔒 Keys are saved to your browser's local storage only. Get a free USDA key at <span className="text-green-400">fdc.nal.usda.gov</span>.
+                 </p>
+               </div>
               <button onClick={saveApiKeys} className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all border border-white/10">
                 Save API Keys
               </button>
