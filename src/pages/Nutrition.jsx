@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, addDays, subDays, isToday } from "date-fns";
 import { AnimatePresence } from "framer-motion";
-import { Search, ChevronLeft, ChevronRight, BookOpen, FileDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, FileDown } from "lucide-react";
 import FoodSearchModal from "@/components/nutrition/FoodSearchModal";
 import MealPlanModal from "@/components/nutrition/MealPlanModal";
 import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
@@ -23,6 +23,7 @@ export default function Nutrition() {
   const [showSearch, setShowSearch] = useState(false);
   const [showMealPlans, setShowMealPlans] = useState(false);
   const [streakSelectedDate, setStreakSelectedDate] = useState(null);
+  const { showNutritionSearch, setShowNutritionSearch } = useOutletContext() || {};
 
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
@@ -65,7 +66,7 @@ export default function Nutrition() {
   };
 
   const openMealModal = (mealType) => setActiveMeal(mealType);
-  const closeModal = () => { setActiveMeal(null); setShowSearch(false); };
+  const closeModal = () => { setActiveMeal(null); setShowSearch(false); setShowNutritionSearch?.(false); };
 
   const goToPrevDay = () => {
     const prev = format(subDays(new Date(viewDate + "T00:00:00"), 1), "yyyy-MM-dd");
@@ -88,26 +89,15 @@ export default function Nutrition() {
     ? "Today"
     : format(new Date(viewDate + "T00:00:00"), "EEE, MMM d");
 
-  // Portal: inject search into header
-  const [portalEl, setPortalEl] = useState(null);
-  useEffect(() => {
-    const el = document.getElementById("nutrition-search-portal");
-    if (el) setPortalEl(el);
-  }, []);
+  // Sync header search trigger with local state
+  const isSearchOpen = showNutritionSearch || showSearch;
+  const handleSearchClose = () => {
+    setShowSearch(false);
+    setShowNutritionSearch?.(false);
+  };
 
   return (
     <div className="space-y-3 pb-4">
-      {/* ── Search portal into header ── */}
-      {portalEl && createPortal(
-        <button
-          onClick={() => setShowSearch(true)}
-          className="flex items-center gap-2 w-full px-3 py-1.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/8 transition-colors"
-        >
-          <Search className="w-3.5 h-3.5 text-white/50 flex-shrink-0" />
-          <span className="text-xs text-white/35 truncate">Search food…</span>
-        </button>,
-        portalEl
-      )}
 
       {/* ── Date Navigator ── */}
       <div className="flex items-center justify-between px-1">
@@ -189,11 +179,11 @@ export default function Nutrition() {
 
       {/* ── Modals ── */}
       <AnimatePresence>
-        {(activeMeal || showSearch) && (
+        {(activeMeal || isSearchOpen) && (
           <FoodSearchModal
             mealType={activeMeal || "snack"}
             onAdd={handleAdd}
-            onClose={closeModal}
+            onClose={handleSearchClose}
           />
         )}
         {showMealPlans && (
