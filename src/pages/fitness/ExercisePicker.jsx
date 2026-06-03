@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Plus, Search, Loader2, Dumbbell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { searchExercises, mapExercise, BODY_PARTS, DEFAULT_SEARCHES } from "@/lib/exerciseApi";
+import { searchExercises, mapExercise, BODY_PARTS, loadDefaultExercises } from "@/lib/exerciseApi";
 
 const BODY_PART_EMOJIS = {
   all: "⚡",
@@ -40,19 +41,8 @@ export default function ExercisePicker() {
     setLoading(true);
     setError(null);
     try {
-      // Load a mix from multiple default searches in parallel
-      const results = await Promise.all(
-        DEFAULT_SEARCHES.slice(0, 6).map((q) => searchExercises(q))
-      );
-      const flat = results.flat();
-      // Deduplicate by name
-      const seen = new Set();
-      const unique = flat.filter((ex) => {
-        if (seen.has(ex.name)) return false;
-        seen.add(ex.name);
-        return true;
-      });
-      setExercises(unique.map(mapExercise));
+      const results = await loadDefaultExercises();
+      setExercises(results.map(mapExercise));
     } catch {
       setError("Could not load exercises. Please try again.");
     } finally {
@@ -128,7 +118,7 @@ export default function ExercisePicker() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search exercises (e.g. squat, curl, bench...)"
-          className="pl-9 bg-white/8 border-white/10 text-white placeholder:text-white/35 h-11"
+          className="pl-9 bg-white border-white/20 text-black placeholder:text-black/40 h-11"
           autoFocus
         />
       </div>

@@ -50,11 +50,30 @@ export const BODY_PARTS = [
   "waist",
 ];
 
-// Default exercises to show on load (broad searches per body part)
+// Default exercise terms to show on load (used sequentially if needed)
 export const DEFAULT_SEARCHES = [
   "squat", "bench press", "deadlift", "pull up", "shoulder press",
   "curl", "row", "lunge", "plank", "push up",
 ];
+
+// Load a default set with a single API call
+export async function loadDefaultExercises() {
+  const terms = ["squat", "bench press", "deadlift", "pull up", "shoulder press"];
+  const results = [];
+  for (const term of terms) {
+    try {
+      const data = await searchExercises(term);
+      results.push(...data);
+    } catch {}
+  }
+  // Deduplicate by name
+  const seen = new Set();
+  return results.filter((ex) => {
+    if (seen.has(ex.name)) return false;
+    seen.add(ex.name);
+    return true;
+  });
+}
 
 function bodyPartEmoji(bodyPart) {
   const map = {

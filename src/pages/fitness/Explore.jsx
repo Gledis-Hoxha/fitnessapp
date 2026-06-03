@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { searchExercises, mapExercise, BODY_PARTS, DEFAULT_SEARCHES } from "@/lib/exerciseApi";
+import { searchExercises, mapExercise, BODY_PARTS, loadDefaultExercises } from "@/lib/exerciseApi";
 import ExerciseDetailModal from "@/components/fitness/ExerciseDetailModal";
 
 const BODY_PART_EMOJIS = {
@@ -30,17 +30,8 @@ export default function Explore() {
     setLoading(true);
     setError(null);
     try {
-      const results = await Promise.all(
-        DEFAULT_SEARCHES.map((q) => searchExercises(q))
-      );
-      const flat = results.flat();
-      const seen = new Set();
-      const unique = flat.filter((ex) => {
-        if (seen.has(ex.name)) return false;
-        seen.add(ex.name);
-        return true;
-      });
-      setExercises(unique.map(mapExercise));
+      const results = await loadDefaultExercises();
+      setExercises(results.map(mapExercise));
     } catch {
       setError("Could not load exercises. Please try again.");
     } finally {
