@@ -13,6 +13,7 @@ import MealSection from "@/components/nutrition/MealSection";
 import NutritionSummary from "@/components/nutrition/NutritionSummary";
 import MealRecommender from "@/components/nutrition/MealRecommender";
 import MacroProgressChart from "@/components/nutrition/MacroProgressChart";
+import HydrationTracker from "@/components/nutrition/HydrationTracker";
 
 const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 
@@ -148,6 +149,9 @@ export default function Nutrition() {
           onDelete={(id) => deleteMutation.mutate(id)}
         />
       ))}
+
+      {/* ── Hydration ── */}
+      <HydrationTracker date={viewDate} />
 
       {/* ── Meal Recommender ── */}
       <MealRecommender

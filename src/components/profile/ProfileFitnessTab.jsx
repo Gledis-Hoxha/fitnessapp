@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { format, startOfWeek, addDays, isToday, subWeeks, addWeeks } from "date-fns";
-import { Dumbbell, Clock, Calendar, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Dumbbell, Clock, Calendar, ChevronLeft, ChevronRight, User, Pencil, Check, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import MuscleMap from "@/components/fitness/MuscleMap";
+import FitnessAchievements from "@/components/fitness/FitnessAchievements";
+import { base44 } from "@/api/base44Client";
+import { toast } from "sonner";
 
 function StatPill({ label, value, color }) {
   return (
@@ -23,6 +26,22 @@ const GOAL_LABELS = {
 export default function ProfileFitnessTab({ workouts = [], user }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
+  const [editingWeight, setEditingWeight] = useState(false);
+  const [editingGoalWeight, setEditingGoalWeight] = useState(false);
+  const [weightVal, setWeightVal] = useState(user?.weight_kg || "");
+  const [goalWeightVal, setGoalWeightVal] = useState(user?.goal_weight_kg || "");
+
+  const saveWeight = async () => {
+    await base44.auth.updateMe({ weight_kg: Number(weightVal) || undefined });
+    toast.success("Weight updated!");
+    setEditingWeight(false);
+  };
+
+  const saveGoalWeight = async () => {
+    await base44.auth.updateMe({ goal_weight_kg: Number(goalWeightVal) || undefined });
+    toast.success("Goal weight updated!");
+    setEditingGoalWeight(false);
+  };
 
   const totalSets = workouts.reduce(
     (a, w) => a + (w.exercises?.reduce((b, ex) => b + (ex.sets?.filter(s => s.completed).length || 0), 0) || 0), 0
@@ -149,27 +168,75 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       {/* Muscle Map */}
       <MuscleMap workouts={workouts} />
 
-      {/* Personal Measures from onboarding */}
+      {/* Personal Measures */}
       <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-3">
           <User className="w-4 h-4 text-blue-400" />
           <p className="text-sm font-semibold text-white">Personal Measures</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
+          {/* Static fields */}
           {[
             { label: "Age", value: user?.age ? `${user.age} yrs` : "—", color: "text-blue-300" },
             { label: "Height", value: user?.height_cm ? `${user.height_cm} cm` : "—", color: "text-blue-300" },
-            { label: "Weight", value: user?.weight_kg ? `${user.weight_kg} kg` : "—", color: "text-green-400" },
             { label: "BMI", value: bmi || "—", color: "text-yellow-400" },
             { label: "Activity Level", value: user?.activity_level ? user.activity_level.replace(/_/g, " ") : "—", color: "text-purple-400" },
-            { label: "Goal Weight", value: user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—", color: "text-orange-400" },
           ].map((m) => (
             <div key={m.label} className="bg-white/5 rounded-xl px-3 py-2.5">
               <p className="text-xs text-white/40">{m.label}</p>
               <p className={`text-sm font-semibold mt-0.5 capitalize ${m.color}`}>{m.value}</p>
             </div>
           ))}
+
+          {/* Editable: Weight */}
+          <div className="bg-white/5 rounded-xl px-3 py-2.5">
+            <div className="flex items-center justify-between mb-0.5">
+              <p className="text-xs text-white/40">Weight</p>
+              {!editingWeight ? (
+                <button onClick={() => { setWeightVal(user?.weight_kg || ""); setEditingWeight(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
+                  <Pencil className="w-3 h-3 text-white/30" />
+                </button>
+              ) : (
+                <div className="flex gap-1">
+                  <button onClick={saveWeight} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
+                  <button onClick={() => setEditingWeight(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
+                </div>
+              )}
+            </div>
+            {editingWeight ? (
+              <input type="number" value={weightVal} onChange={(e) => setWeightVal(e.target.value)}
+                className="w-full bg-white/10 border border-green-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
+                autoFocus onKeyDown={(e) => e.key === "Enter" && saveWeight()} />
+            ) : (
+              <p className="text-sm font-semibold text-green-400">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
+            )}
+          </div>
+
+          {/* Editable: Goal Weight */}
+          <div className="bg-white/5 rounded-xl px-3 py-2.5">
+            <div className="flex items-center justify-between mb-0.5">
+              <p className="text-xs text-white/40">Goal Weight</p>
+              {!editingGoalWeight ? (
+                <button onClick={() => { setGoalWeightVal(user?.goal_weight_kg || ""); setEditingGoalWeight(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
+                  <Pencil className="w-3 h-3 text-white/30" />
+                </button>
+              ) : (
+                <div className="flex gap-1">
+                  <button onClick={saveGoalWeight} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
+                  <button onClick={() => setEditingGoalWeight(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
+                </div>
+              )}
+            </div>
+            {editingGoalWeight ? (
+              <input type="number" value={goalWeightVal} onChange={(e) => setGoalWeightVal(e.target.value)}
+                className="w-full bg-white/10 border border-orange-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
+                autoFocus onKeyDown={(e) => e.key === "Enter" && saveGoalWeight()} />
+            ) : (
+              <p className="text-sm font-semibold text-orange-400">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
+            )}
+          </div>
         </div>
+
         {user?.fitness_goals?.length > 0 && (
           <div className="mt-3">
             <p className="text-xs text-white/40 mb-2">Fitness Goals</p>
@@ -183,6 +250,9 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
           </div>
         )}
       </div>
+
+      {/* Achievements */}
+      <FitnessAchievements workouts={workouts} />
     </div>
   );
 }

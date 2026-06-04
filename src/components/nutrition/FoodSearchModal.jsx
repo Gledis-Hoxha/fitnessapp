@@ -126,7 +126,8 @@ export default function FoodSearchModal({ onClose, onAdd, mealType }) {
       fat_g: fat || 0,
       date: new Date().toISOString().split("T")[0],
     });
-    onClose();
+    // Small delay so mutation fires before closing
+    setTimeout(onClose, 50);
   };
 
   return (

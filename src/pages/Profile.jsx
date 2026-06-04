@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, Mail, Camera, Dumbbell, Apple, Pencil, Share2, Flame, Clock, TrendingUp } from "lucide-react";
+import { Camera, Dumbbell, Apple, Pencil, Share2, Flame, Clock, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileFitnessTab from "@/components/profile/ProfileFitnessTab";
 import ProfileNutritionTab from "@/components/profile/ProfileNutritionTab";
-import NotificationPanel from "@/components/profile/NotificationPanel";
-import InboxPanel from "@/components/profile/InboxPanel";
+
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import ShareProfileModal from "@/components/profile/ShareProfileModal";
 import { toast } from "sonner";
@@ -31,8 +30,6 @@ function MiniStatCard({ icon: Icon, label, value, color }) {
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("fitness");
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showInbox, setShowInbox] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(null);
@@ -66,15 +63,7 @@ export default function Profile() {
   const todayCalEaten = todayMeals.reduce((s, m) => s + (m.calories || 0), 0);
   const todayProtein = todayMeals.reduce((s, m) => s + (m.protein_g || 0), 0);
 
-  const notifCount = (todayMeals.length === 0 ? 1 : 0) + (!todayWorkout ? 1 : 0);
-  const firstName = user?.username || user?.full_name?.split(" ")[0] || "User";
 
-  const greeting = () => {
-    const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
-  };
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -90,25 +79,8 @@ export default function Profile() {
   return (
     <div className="space-y-4 pb-4">
       {/* ── Top Bar ── */}
-      <div className="flex items-center justify-between pt-1">
-        <button
-          onClick={() => setShowNotifications(true)}
-          className="relative p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors"
-        >
-          <Bell className="w-4.5 h-4.5 text-white/60" />
-          {notifCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
-              {notifCount}
-            </span>
-          )}
-        </button>
+      <div className="flex items-center justify-center pt-1">
         <span className="text-sm font-semibold text-white/70 tracking-wide">Profile</span>
-        <button
-          onClick={() => setShowInbox(true)}
-          className="p-2 rounded-xl bg-white/6 hover:bg-white/10 border border-white/8 transition-colors"
-        >
-          <Mail className="w-4.5 h-4.5 text-white/60" />
-        </button>
       </div>
 
       {/* ── Profile Hero ── */}
@@ -195,12 +167,6 @@ export default function Profile() {
       ) : (
         <ProfileNutritionTab meals={meals} user={user} />
       )}
-
-      {/* ── Panels ── */}
-      {showNotifications && (
-        <NotificationPanel todayMeals={todayMeals} todayWorkout={todayWorkout} onClose={() => setShowNotifications(false)} />
-      )}
-      {showInbox && <InboxPanel onClose={() => setShowInbox(false)} />}
 
       <AnimatePresence>
         {showEdit && <EditProfileModal user={user} onClose={() => setShowEdit(false)} onSaved={refreshUser} />}

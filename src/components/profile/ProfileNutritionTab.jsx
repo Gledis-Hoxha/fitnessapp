@@ -1,17 +1,9 @@
 import { format, subDays } from "date-fns";
-import { Scale, Trophy, Bell, StickyNote, Image, Trash2, Plus } from "lucide-react";
+import { Scale, Bell, StickyNote, Image, Trash2, Plus } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
-
-const ACHIEVEMENTS = [
-{ emoji: "🥇", label: "First Meal Logged", condition: (meals) => meals.length >= 1 },
-{ emoji: "🔥", label: "7 Days Streak", condition: () => false },
-{ emoji: "💪", label: "50 Meals Logged", condition: (meals) => meals.length >= 50 },
-{ emoji: "🥗", label: "Protein Goal Hit", condition: () => false },
-{ emoji: "⚡", label: "10 Days Logged", condition: () => false }];
-
 
 const DEFAULT_REMINDERS = [
 { id: "breakfast", time: "8:00 AM", label: "Log Breakfast", active: true },
@@ -123,25 +115,6 @@ export default function ProfileNutritionTab({ meals = [], user }) {
             <Line type="monotone" dataKey="cal" stroke="#4ade80" strokeWidth={2} dot={{ fill: "#4ade80", r: 3 }} activeDot={{ r: 5 }} />
           </LineChart>
         </ResponsiveContainer>
-      </div>
-
-      {/* Achievements */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Trophy className="w-4 h-4 text-yellow-400" />
-          <p className="text-sm font-semibold text-white">Achievements</p>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {ACHIEVEMENTS.map((a) => {
-            const unlocked = a.condition(meals);
-            return (
-              <div key={a.label} className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all ${unlocked ? "bg-yellow-500/10 border-yellow-500/30" : "bg-white/3 border-white/5 opacity-40"}`}>
-                <span className="text-2xl">{a.emoji}</span>
-                <p className="text-[10px] text-center text-white/60 leading-tight">{a.label}</p>
-              </div>);
-
-          })}
-        </div>
       </div>
 
       {/* Reminders — fully toggleable */}
