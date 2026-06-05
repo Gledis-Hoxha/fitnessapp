@@ -33,7 +33,7 @@ export default function AppLayout() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="font-display font-bold text-lg text-white normal-case text-left">StrengthStack</span>
+            <span className="font-inter font-bold text-lg text-white normal-case text-left">StrengthStack</span>
           </div>
           <div className="flex items-center gap-1">
             <button
