@@ -124,7 +124,7 @@ export default function StartWorkout() {
               <ArrowLeft className="w-5 h-5 text-white/70" />
             </button>
             <div>
-              <h1 className="text-xl font-display font-bold text-white">Active Workout</h1>
+              <h1 className="text-xl font-bold text-white">Active Workout</h1>
               <p className="text-xs text-white/35">{format(new Date(), "EEEE, MMMM d")}</p>
             </div>
           </div>

@@ -82,7 +82,6 @@ export default function ExercisePicker() {
     debounceRef.current = setTimeout(() => {
       doSearch(query, selectedBodyPart);
     }, 400);
-    return () => clearTimeout(debounceRef.current);
   }, [query, selectedBodyPart]);
 
   const handleBodyPartChange = (bp) => {
