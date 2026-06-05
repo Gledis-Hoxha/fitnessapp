@@ -114,16 +114,15 @@ export default function Nutrition() {
 
       
 
-      {/* Macro Progress */}
-      <MacroProgressChart
-        calories={todayCalories}
-        protein={todayProtein}
-        carbs={todayCarbs}
-        fat={todayFat} />
-      
-
-      {/* Hydration */}
-      <HydrationTracker date={selectedDate} />
+      {/* Hydration (left) + Daily Nutrition Values (right) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
+        <HydrationTracker date={selectedDate} />
+        <MacroProgressChart
+          calories={todayCalories}
+          protein={todayProtein}
+          carbs={todayCarbs}
+          fat={todayFat} />
+      </div>
 
       {/* Nutrition Summary */}
       <NutritionSummary
