@@ -13,6 +13,10 @@
     "routine_name": {
       "type": "string",
       "description": "Name of the assigned routine (denormalized for display)"
+    },
+    "reminder_time": {
+      "type": "string",
+      "description": "Time to send a workout reminder on this day (HH:MM). Empty means no reminder."
     }
   },
   "required": [

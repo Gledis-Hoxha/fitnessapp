@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { CalendarDays, Plus, X } from "lucide-react";
+import { CalendarDays, Plus, X, Bell, BellOff } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
+import { usePlanNotifications, requestNotificationPermission } from "@/lib/usePlanNotifications";
 
 const DAYS = [
   { idx: 1, label: "Mon" },
@@ -18,21 +20,38 @@ export default function WeeklyPlanner({ routines = [] }) {
   const queryClient = useQueryClient();
   const [pickerDay, setPickerDay] = useState(null);
   const todayIdx = new Date().getDay();
+  const [pushGranted, setPushGranted] = useState(
+    typeof Notification !== "undefined" && Notification.permission === "granted"
+  );
 
   const { data: plans = [] } = useQuery({
     queryKey: ["weeklyPlan"],
     queryFn: () => base44.entities.WeeklyPlan.list("-created_date", 50),
   });
 
+  usePlanNotifications(plans);
+
   const planByDay = {};
   plans.forEach((p) => { planByDay[p.day] = p; });
+
+  const timeMutation = useMutation({
+    mutationFn: ({ id, reminder_time }) => base44.entities.WeeklyPlan.update(id, { reminder_time }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["weeklyPlan"] }),
+  });
+
+  const handleEnablePush = async () => {
+    const granted = await requestNotificationPermission();
+    setPushGranted(granted);
+    if (granted) toast.success("Notifications enabled!");
+    else toast.error("Permission denied. Enable notifications in browser settings.");
+  };
 
   const assignMutation = useMutation({
     mutationFn: async ({ day, routine }) => {
       const existing = planByDay[day];
       const payload = { day, routine_id: routine.id, routine_name: routine.name };
       if (existing) return base44.entities.WeeklyPlan.update(existing.id, payload);
-      return base44.entities.WeeklyPlan.create(payload);
+      return base44.entities.WeeklyPlan.create({ ...payload, reminder_time: "07:00" });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["weeklyPlan"] });
@@ -67,14 +86,27 @@ export default function WeeklyPlanner({ routines = [] }) {
                 <p className={`text-xs font-bold ${isToday ? "text-primary" : "text-foreground"}`}>{label}</p>
               </div>
               {plan ? (
-                <div className="flex-1 flex items-center justify-between min-w-0">
-                  <span className="text-sm text-foreground truncate">{plan.routine_name}</span>
-                  <button
-                    onClick={() => clearMutation.mutate(plan.id)}
-                    className="p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-colors flex-shrink-0"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                <div className="flex-1 flex items-center justify-between gap-2 min-w-0">
+                  <span className="text-sm text-foreground truncate flex-1">{plan.routine_name}</span>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {plan.reminder_time ? (
+                      <Bell className="w-3.5 h-3.5 text-primary" />
+                    ) : (
+                      <BellOff className="w-3.5 h-3.5 text-muted-foreground" />
+                    )}
+                    <input
+                      type="time"
+                      value={plan.reminder_time || ""}
+                      onChange={(e) => timeMutation.mutate({ id: plan.id, reminder_time: e.target.value })}
+                      className="bg-secondary/60 border border-border rounded-lg px-1.5 py-1 text-xs text-foreground outline-none focus:border-primary/50 w-[88px]"
+                    />
+                    <button
+                      onClick={() => clearMutation.mutate(plan.id)}
+                      className="p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
@@ -88,6 +120,20 @@ export default function WeeklyPlanner({ routines = [] }) {
           );
         })}
       </div>
+
+      {!pushGranted ? (
+        <button
+          onClick={handleEnablePush}
+          className="w-full flex items-center justify-center gap-2 py-2.5 mt-3 rounded-xl bg-primary/15 border border-primary/20 text-primary text-xs font-semibold hover:bg-primary/25 transition-colors"
+        >
+          <Bell className="w-3.5 h-3.5" />
+          Enable workout reminders
+        </button>
+      ) : (
+        <div className="flex items-center justify-center gap-1.5 text-[10px] text-accent pt-3">
+          <Bell className="w-3 h-3" /> Reminders active for scheduled days
+        </div>
+      )}
 
       {/* Routine picker */}
       <AnimatePresence>
