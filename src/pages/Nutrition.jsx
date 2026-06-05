@@ -95,7 +95,7 @@ export default function Nutrition() {
       
 
       {/* Date Navigator */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-4 flex items-center justify-between hidden">
         <button onClick={() => changeDate(-1)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
           <ChevronLeft className="w-5 h-5 text-white/50" />
         </button>
