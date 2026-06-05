@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Clock, CheckCircle } from "lucide-react";
+import { Clock, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function formatTime(seconds) {
@@ -10,7 +10,7 @@ function formatTime(seconds) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-export default function WorkoutTimer({ startedAt, onFinish }) {
+export default function WorkoutTimer({ startedAt, onFinish, onEnd }) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -29,14 +29,26 @@ export default function WorkoutTimer({ startedAt, onFinish }) {
           <span className="font-mono font-bold text-lg tracking-widest">{formatTime(elapsed)}</span>
           <span className="text-xs text-primary-foreground/70 ml-1">Workout in progress</span>
         </div>
-        <Button
-          size="sm"
-          onClick={onFinish}
-          className="bg-white text-primary hover:bg-white/90 font-semibold gap-1.5 text-xs"
-        >
-          <CheckCircle className="w-4 h-4" />
-          Finish
-        </Button>
+        <div className="flex items-center gap-2">
+          {onEnd && (
+            <Button
+              size="sm"
+              onClick={onEnd}
+              className="bg-red-500/20 text-white hover:bg-red-500/30 font-semibold gap-1.5 text-xs"
+            >
+              <XCircle className="w-4 h-4" />
+              End
+            </Button>
+          )}
+          <Button
+            size="sm"
+            onClick={onFinish}
+            className="bg-white text-primary hover:bg-white/90 font-semibold gap-1.5 text-xs"
+          >
+            <CheckCircle className="w-4 h-4" />
+            Finish
+          </Button>
+        </div>
       </div>
     </div>
   );

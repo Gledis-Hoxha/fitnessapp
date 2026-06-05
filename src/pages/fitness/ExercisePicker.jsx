@@ -86,34 +86,27 @@ export default function ExercisePicker() {
 
   return (
     <div className="flex flex-col min-h-0 pb-6 space-y-4">
-      {/* Header */}
+      {/* Header with inline search */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+          className="p-2 rounded-xl hover:bg-white/10 transition-colors flex-shrink-0">
           
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>
-        <div>
-          
-          
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search exercises (e.g. squat, bench...)"
+            className="pl-9 bg-white border-white/20 text-black placeholder:text-black/40 h-11"
+            autoFocus />
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search exercises (e.g. squat, curl, bench...)"
-          className="pl-9 bg-white border-white/20 text-black placeholder:text-black/40 h-11"
-          autoFocus />
-        
-      </div>
-
       {/* Body Part Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="flex flex-wrap gap-2">
         {BODY_PARTS.map((bp) =>
         <button
           key={bp}

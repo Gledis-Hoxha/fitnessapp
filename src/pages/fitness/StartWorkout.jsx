@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Input } from "@/components/ui/input";
-import { Plus, XCircle, ArrowLeft, BookMarked, Dumbbell, CheckCircle2 } from "lucide-react";
+import { Plus, ArrowLeft, BookMarked, Dumbbell, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import WorkoutTimer from "@/components/fitness/WorkoutTimer";
@@ -111,7 +111,7 @@ export default function StartWorkout() {
 
   return (
     <>
-      <WorkoutTimer startedAt={startedAt.current} onFinish={handleFinish} />
+      <WorkoutTimer startedAt={startedAt.current} onFinish={handleFinish} onEnd={() => setShowEndConfirm(true)} />
 
       <div className="pt-14 space-y-4">
         {/* Header */}
@@ -183,26 +183,15 @@ export default function StartWorkout() {
             Add Exercise
           </button>
 
-          <div className="grid grid-cols-2 gap-2.5">
-            {/* Save as Routine */}
-            <button
-              onClick={() => setShowRoutineModal(true)}
-              disabled={exercises.length === 0}
-              className="flex items-center justify-center gap-2 h-12 rounded-2xl bg-white/6 border border-white/10 text-white/50 font-medium text-sm hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-[0.98]"
-            >
-              <BookMarked className="w-4 h-4" />
-              {routineSaved ? "Saved ✓" : "Save Routine"}
-            </button>
-
-            {/* End Workout */}
-            <button
-              onClick={() => setShowEndConfirm(true)}
-              className="flex items-center justify-center gap-2 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium text-sm hover:bg-red-500/15 transition-all active:scale-[0.98]"
-            >
-              <XCircle className="w-4 h-4" />
-              End Workout
-            </button>
-          </div>
+          {/* Save as Routine */}
+          <button
+            onClick={() => setShowRoutineModal(true)}
+            disabled={exercises.length === 0}
+            className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-white/6 border border-white/10 text-white/50 font-medium text-sm hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-[0.98]"
+          >
+            <BookMarked className="w-4 h-4" />
+            {routineSaved ? "Saved ✓" : "Save Routine"}
+          </button>
         </div>
       </div>
 
