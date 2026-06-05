@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Droplets, Plus, Minus } from "lucide-react";
 import { format } from "date-fns";
 
@@ -28,6 +28,30 @@ export default function HydrationTracker({ date }) {
   const pct = Math.min(100, (glasses / GOAL) * 100);
   const done = glasses >= GOAL;
 
+  const bottleRef = useRef(null);
+  const dragging = useRef(false);
+
+  const setFromClientY = (clientY) => {
+    const el = bottleRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const ratio = (rect.bottom - clientY) / rect.height; // 0 at bottom, 1 at top
+    const val = Math.round(Math.max(0, Math.min(1, ratio)) * GOAL);
+    update(val);
+  };
+
+  const handleDown = (e) => {
+    dragging.current = true;
+    setFromClientY(e.touches ? e.touches[0].clientY : e.clientY);
+  };
+
+  const handleMove = (e) => {
+    if (!dragging.current) return;
+    setFromClientY(e.touches ? e.touches[0].clientY : e.clientY);
+  };
+
+  const handleUp = () => { dragging.current = false; };
+
   return (
     <div className="bg-[#111] border border-white/8 rounded-2xl p-4 h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
@@ -40,9 +64,18 @@ export default function HydrationTracker({ date }) {
         </span>
       </div>
 
-      {/* Vertical filling bottle */}
+      {/* Vertical filling bottle — drag up/down to fill/empty */}
       <div className="flex justify-center mb-4">
-        <div className="relative w-20 h-44 rounded-[2rem] border-2 border-white/15 bg-white/5 overflow-hidden">
+        <div
+          ref={bottleRef}
+          onMouseDown={handleDown}
+          onMouseMove={handleMove}
+          onMouseUp={handleUp}
+          onMouseLeave={handleUp}
+          onTouchStart={handleDown}
+          onTouchMove={handleMove}
+          onTouchEnd={handleUp}
+          className="relative w-20 h-44 rounded-[2rem] border-2 border-white/15 bg-white/5 overflow-hidden cursor-ns-resize select-none touch-none">
           {/* Water fill */}
           <div
             className="absolute inset-x-0 bottom-0 transition-all duration-500 ease-out"
