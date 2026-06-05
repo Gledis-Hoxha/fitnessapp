@@ -82,15 +82,7 @@ export default function AppLayout() {
                   "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                 )}>
                 
-                {active ? (
-                  <img
-                    src="https://media.base44.com/images/public/69f4cab318774ed99e230d09/917a67682_Untitleddesign.png"
-                    alt={label}
-                    className="w-6 h-6 object-cover rounded-full"
-                  />
-                ) : (
-                  <Icon className="w-5 h-5" />
-                )}
+                <Icon className="w-5 h-5" />
               </Link>);
 
           })}
