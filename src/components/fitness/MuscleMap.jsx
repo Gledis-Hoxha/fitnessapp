@@ -32,10 +32,10 @@ function getMuscleHeatmap(workouts) {
 function getColor(count, max) {
   if (!count || !max) return null;
   const intensity = count / max;
-  if (intensity > 0.7) return "#16a34a";
-  if (intensity > 0.4) return "#65a30d";
-  if (intensity > 0.15) return "#d97706";
-  return "#2563eb";
+  if (intensity > 0.7) return "#22c55e";
+  if (intensity > 0.4) return "#84cc16";
+  if (intensity > 0.15) return "#f59e0b";
+  return "#3b82f6";
 }
 
 const MUSCLE_LABELS = {
@@ -64,20 +64,20 @@ export default function MuscleMap({ workouts = [] }) {
   const trained = muscles.filter((m) => m.count > 0);
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-4">
+    <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-primary" />
-          <p className="text-sm font-semibold text-foreground">Muscles Trained</p>
+          <Activity className="w-4 h-4 text-blue-400" />
+          <p className="text-sm font-semibold text-white">Muscles Trained</p>
         </div>
         {trained.length > 0 && (
-          <span className="text-xs text-muted-foreground">{trained.length} muscle groups</span>
+          <span className="text-xs text-white/30">{trained.length} muscle groups</span>
         )}
       </div>
 
       {trained.length === 0 ? (
         <div className="text-center py-6">
-          <p className="text-xs text-muted-foreground italic">Complete workouts to see muscle tracking</p>
+          <p className="text-xs text-white/25 italic">Complete workouts to see muscle tracking</p>
         </div>
       ) : (
         <>
@@ -86,8 +86,8 @@ export default function MuscleMap({ workouts = [] }) {
               const pct = max > 0 ? (count / max) * 100 : 0;
               return (
                 <div key={id} className="flex items-center gap-3">
-                  <p className="text-xs text-muted-foreground w-20 flex-shrink-0">{label}</p>
-                  <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
+                  <p className="text-xs text-white/40 w-20 flex-shrink-0">{label}</p>
+                  <div className="flex-1 h-1.5 bg-white/8 rounded-full overflow-hidden">
                     {count > 0 && (
                       <div
                         className="h-full rounded-full transition-all duration-500"
@@ -95,7 +95,7 @@ export default function MuscleMap({ workouts = [] }) {
                       />
                     )}
                   </div>
-                  <span className="text-xs font-semibold w-6 text-right" style={{ color: color || "hsl(215,16%,47%)" }}>
+                  <span className="text-xs font-semibold w-6 text-right flex-shrink-0" style={{ color: color || "rgba(255,255,255,0.2)" }}>
                     {count > 0 ? `${count}x` : ""}
                   </span>
                 </div>
@@ -103,7 +103,7 @@ export default function MuscleMap({ workouts = [] }) {
             })}
           </div>
 
-          <div className="flex flex-wrap gap-1.5 pt-3 border-t border-border">
+          <div className="flex flex-wrap gap-1.5 pt-3 border-t border-white/8">
             {trained.sort((a, b) => b.count - a.count).slice(0, 4).map(({ id, label, count, color }) => (
               <span
                 key={id}

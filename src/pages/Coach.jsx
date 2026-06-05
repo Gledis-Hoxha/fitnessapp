@@ -50,16 +50,16 @@ export default function Coach() {
   return (
     <div className="flex flex-col" style={{ height: "calc(100vh - 10rem)" }}>
       {/* Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-border mb-4">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <Bot className="w-5 h-5 text-primary" />
+      <div className="flex items-center gap-3 pb-4 border-b border-white/8 mb-4">
+        <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
+          <Bot className="w-5 h-5 text-blue-400" />
         </div>
         <div>
-          <h1 className="text-lg font-bold text-foreground">AI Fitness Coach</h1>
-          <p className="text-xs text-muted-foreground">Personalized fitness & nutrition guidance</p>
+          <h1 className="text-lg font-bold text-white">AI Fitness Coach</h1>
+          <p className="text-xs text-white/35">Personalized fitness & nutrition guidance</p>
         </div>
         <div className="ml-auto">
-          <span className="flex items-center gap-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 px-2.5 py-1 rounded-full">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
             <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
             Online
           </span>
@@ -70,12 +70,12 @@ export default function Coach() {
       <div className="flex-1 overflow-y-auto space-y-4 pb-4">
         {messages.length === 0 && !loading && (
           <div className="pt-6 text-center space-y-5">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto border border-primary/10">
-              <Sparkles className="w-10 h-10 text-primary" />
+            <div className="w-20 h-20 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto">
+              <Sparkles className="w-10 h-10 text-blue-400" />
             </div>
             <div>
-              <p className="text-lg font-bold text-foreground">Your AI Fitness Coach</p>
-              <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
+              <p className="text-lg font-bold text-white">Your AI Fitness Coach</p>
+              <p className="text-sm text-white/40 mt-1 max-w-xs mx-auto">
                 Ask me about workouts, nutrition, meal plans, or anything fitness-related!
               </p>
             </div>
@@ -89,12 +89,12 @@ export default function Coach() {
 
         {loading && (
           <div className="flex gap-3 justify-start">
-            <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3">
+            <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex gap-1.5">
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-white/20 rounded-full animate-bounce"
                     style={{ animationDelay: `${i * 0.15}s` }}
                   />
                 ))}
@@ -113,19 +113,19 @@ export default function Coach() {
       </div>
 
       {/* Input */}
-      <div className="pt-3 border-t border-border">
-        <div className="flex gap-2 p-2 rounded-xl bg-secondary border border-border">
+      <div className="pt-3 border-t border-white/8">
+        <div className="flex gap-2 p-2 rounded-xl bg-white/5 border border-white/10">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask your coach anything..."
-            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none px-2"
+            className="flex-1 bg-transparent text-sm text-white placeholder:text-white/30 outline-none px-2"
           />
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || loading}
-            className="p-2.5 rounded-lg bg-primary text-primary-foreground disabled:opacity-40 hover:opacity-90 transition-opacity"
+            className="p-2.5 rounded-lg bg-blue-600 text-white disabled:opacity-40 hover:bg-blue-500 transition-colors"
           >
             <Send className="w-4 h-4" />
           </button>

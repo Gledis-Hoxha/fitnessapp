@@ -48,35 +48,35 @@ export default function Profile() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Profile Header Card */}
-      <div className="bg-card rounded-2xl border border-border p-5">
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
+            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400">
               {user?.full_name?.[0]?.toUpperCase() || "?"}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-foreground">{user?.full_name || "Your Profile"}</h2>
-              <p className="text-sm text-muted-foreground">{user?.email || ""}</p>
+              <h2 className="text-xl font-bold text-white">{user?.full_name || "Your Profile"}</h2>
+              <p className="text-sm text-white/40">{user?.email || ""}</p>
             </div>
           </div>
           <div className="flex gap-1">
             <button
               onClick={() => setShowInbox(true)}
-              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
             >
               <Inbox className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowShare(true)}
-              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
             >
               <Share2 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowEdit(true)}
-              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
             >
               <Pencil className="w-4 h-4" />
             </button>
@@ -87,7 +87,7 @@ export default function Profile() {
         {user?.fitness_goals?.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {user.fitness_goals.map((g) => (
-              <span key={g} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">
+              <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full font-medium">
                 {GOAL_LABELS[g] || g.replace(/_/g, " ")}
               </span>
             ))}
@@ -96,7 +96,7 @@ export default function Profile() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-xl bg-secondary">
+      <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/8">
         {[
           { id: "fitness", label: "Fitness", icon: Dumbbell },
           { id: "nutrition", label: "Nutrition", icon: Apple },
@@ -106,8 +106,8 @@ export default function Profile() {
             onClick={() => setTab(id)}
             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${
               tab === id
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-white/10 text-white"
+                : "text-white/40 hover:text-white"
             }`}
           >
             <Icon className="w-4 h-4" />

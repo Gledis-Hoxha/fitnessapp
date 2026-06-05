@@ -73,63 +73,63 @@ export default function ProfileNutritionTab({ meals = [], user }) {
   return (
     <div className="space-y-4">
       {/* Weight & Stats */}
-      <div className="bg-card border border-border rounded-2xl p-4">
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Scale className="w-4 h-4 text-accent" />
-          <p className="text-sm font-semibold text-foreground">Weight & Stats</p>
+          <Scale className="w-4 h-4 text-green-400" />
+          <p className="text-sm font-semibold text-white">Weight & Stats</p>
         </div>
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-secondary rounded-xl p-3 text-center">
-            <p className="text-lg font-bold text-accent">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
-            <p className="text-xs text-muted-foreground mt-0.5 leading-tight">Current Weight</p>
+          <div className="bg-white/5 rounded-xl p-3 text-center">
+            <p className="text-lg font-bold text-green-400">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
+            <p className="text-xs text-white/40 mt-0.5 leading-tight">Current Weight</p>
           </div>
-          <div className="bg-secondary rounded-xl p-3 text-center">
-            <p className="text-lg font-bold text-muted-foreground">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
-            <p className="text-xs text-muted-foreground mt-0.5 leading-tight">Goal Weight</p>
+          <div className="bg-white/5 rounded-xl p-3 text-center">
+            <p className="text-lg font-bold text-white/60">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
+            <p className="text-xs text-white/40 mt-0.5 leading-tight">Goal Weight</p>
           </div>
-          <div className="bg-secondary rounded-xl p-3 text-center">
-            <p className="text-lg font-bold text-amber-500">{avgCalories ? `${avgCalories}` : "—"}</p>
-            <p className="text-xs text-muted-foreground mt-0.5 leading-tight">Avg kcal/day</p>
+          <div className="bg-white/5 rounded-xl p-3 text-center">
+            <p className="text-lg font-bold text-yellow-400">{avgCalories ? `${avgCalories}` : "—"}</p>
+            <p className="text-xs text-white/40 mt-0.5 leading-tight">Avg kcal/day</p>
           </div>
         </div>
         {recommendedCal && (
-          <div className="mt-3 bg-accent/10 border border-accent/20 rounded-xl px-4 py-2.5 flex items-center justify-between">
-            <p className="text-xs text-accent/80">Recommended daily calories</p>
-            <p className="text-sm font-bold text-accent">{recommendedCal} kcal</p>
+          <div className="mt-3 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-2.5 flex items-center justify-between">
+            <p className="text-xs text-green-400/70">Recommended daily calories</p>
+            <p className="text-sm font-bold text-green-400">{recommendedCal} kcal</p>
           </div>
         )}
       </div>
 
       {/* Calorie Trend */}
-      <div className="bg-card border border-border rounded-2xl p-4">
-        <p className="text-sm font-semibold text-foreground mb-3">7-Day Calorie Trend</p>
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+        <p className="text-sm font-semibold text-white mb-3">7-Day Calorie Trend</p>
         <ResponsiveContainer width="100%" height={130}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(214,32%,91%)" />
-            <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(215,16%,47%)" }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 10, fill: "hsl(215,16%,47%)" }} axisLine={false} tickLine={false} unit=" kcal" width={50} />
-            <Tooltip formatter={(v) => [`${v} kcal`]} contentStyle={{ background: "#fff", border: "1px solid hsl(214,32%,91%)", borderRadius: 10, fontSize: 11 }} />
-            <Line type="monotone" dataKey="cal" stroke="hsl(142,71%,45%)" strokeWidth={2} dot={{ fill: "hsl(142,71%,45%)", r: 3 }} activeDot={{ r: 5 }} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+            <XAxis dataKey="name" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.35)" }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.35)" }} axisLine={false} tickLine={false} unit=" kcal" width={50} />
+            <Tooltip formatter={(v) => [`${v} kcal`]} contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 10, fontSize: 11 }} />
+            <Line type="monotone" dataKey="cal" stroke="#22c55e" strokeWidth={2} dot={{ fill: "#22c55e", r: 3 }} activeDot={{ r: 5 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Meal Reminders */}
-      <div className="bg-card border border-border rounded-2xl p-4">
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Bell className="w-4 h-4 text-accent" />
-          <p className="text-sm font-semibold text-foreground">Meal Reminders</p>
+          <Bell className="w-4 h-4 text-green-400" />
+          <p className="text-sm font-semibold text-white">Meal Reminders</p>
         </div>
         <div className="space-y-2">
           {reminders.map((r) => (
-            <div key={r.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+            <div key={r.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
               <div>
-                <p className={`text-sm ${r.active ? "text-foreground" : "text-muted-foreground"}`}>{r.label}</p>
-                <p className="text-xs text-muted-foreground">{r.time}</p>
+                <p className={`text-sm ${r.active ? "text-white" : "text-white/40"}`}>{r.label}</p>
+                <p className="text-xs text-white/30">{r.time}</p>
               </div>
               <button
                 onClick={() => toggleReminder(r.id)}
-                className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${r.active ? "bg-accent" : "bg-secondary"}`}
+                className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${r.active ? "bg-green-500" : "bg-white/10"}`}
               >
                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${r.active ? "left-6" : "left-1"}`} />
               </button>
@@ -139,16 +139,16 @@ export default function ProfileNutritionTab({ meals = [], user }) {
       </div>
 
       {/* Progress Photos */}
-      <div className="bg-card border border-border rounded-2xl p-4">
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Image className="w-4 h-4 text-accent" />
-            <p className="text-sm font-semibold text-foreground">Progress Photos</p>
+            <Image className="w-4 h-4 text-green-400" />
+            <p className="text-sm font-semibold text-white">Progress Photos</p>
           </div>
           <button
             onClick={() => photoInputRef.current?.click()}
             disabled={uploading}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-accent/10 text-accent text-xs font-semibold hover:bg-accent/20 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-green-500/15 text-green-400 text-xs font-semibold hover:bg-green-500/25 transition-colors disabled:opacity-50"
           >
             <Plus className="w-3.5 h-3.5" /> {uploading ? "Uploading…" : "Add Photo"}
           </button>
@@ -157,10 +157,10 @@ export default function ProfileNutritionTab({ meals = [], user }) {
         {progressPhotos.length === 0 ? (
           <button
             onClick={() => photoInputRef.current?.click()}
-            className="w-full aspect-[3/1] rounded-xl bg-secondary border border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-secondary/80 transition-colors"
+            className="w-full aspect-[3/1] rounded-xl bg-white/3 border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-colors"
           >
-            <Image className="w-8 h-8 text-muted-foreground/30" />
-            <p className="text-xs text-muted-foreground">Upload your first progress photo</p>
+            <Image className="w-8 h-8 text-white/15" />
+            <p className="text-xs text-white/25">Upload your first progress photo</p>
           </button>
         ) : (
           <div className="grid grid-cols-3 gap-2">
@@ -180,19 +180,19 @@ export default function ProfileNutritionTab({ meals = [], user }) {
             ))}
             <button
               onClick={() => photoInputRef.current?.click()}
-              className="aspect-square rounded-xl bg-secondary border border-dashed border-border flex items-center justify-center hover:bg-secondary/80 transition-colors"
+              className="aspect-square rounded-xl bg-white/5 border border-dashed border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors"
             >
-              <Plus className="w-5 h-5 text-muted-foreground" />
+              <Plus className="w-5 h-5 text-white/30" />
             </button>
           </div>
         )}
       </div>
 
       {/* Notes */}
-      <div className="bg-card border border-border rounded-2xl p-4">
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-3">
-          <StickyNote className="w-4 h-4 text-accent" />
-          <p className="text-sm font-semibold text-foreground">Notes</p>
+          <StickyNote className="w-4 h-4 text-green-400" />
+          <p className="text-sm font-semibold text-white">Notes</p>
         </div>
         <div className="flex gap-2 mb-3">
           <input
@@ -200,27 +200,27 @@ export default function ProfileNutritionTab({ meals = [], user }) {
             onChange={(e) => setNote(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addNote()}
             placeholder="Add a note..."
-            className="flex-1 bg-secondary border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground outline-none focus:border-primary text-foreground"
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm placeholder:text-white/25 outline-none focus:border-green-500/40 text-white"
           />
           <button
             onClick={addNote}
-            className="px-4 py-2 rounded-xl bg-accent hover:opacity-90 text-accent-foreground text-sm font-semibold transition-opacity"
+            className="px-4 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-400 text-sm font-semibold transition-colors"
           >
             Add
           </button>
         </div>
         <div className="space-y-2 max-h-48 overflow-y-auto">
           {notes.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-2">No notes yet</p>
+            <p className="text-xs text-white/25 text-center py-2">No notes yet</p>
           ) : notes.map((n) => (
-            <div key={n.id} className="flex items-start gap-2 bg-secondary rounded-xl px-3 py-2 group">
+            <div key={n.id} className="flex items-start gap-2 bg-white/5 rounded-xl px-3 py-2 group">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-foreground">{n.text}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{format(new Date(n.date), "MMM d, h:mm a")}</p>
+                <p className="text-sm text-white">{n.text}</p>
+                <p className="text-xs text-white/30 mt-0.5">{format(new Date(n.date), "MMM d, h:mm a")}</p>
               </div>
               <button
                 onClick={() => deleteNote(n.id)}
-                className="p-1 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 mt-0.5 shrink-0"
+                className="p-1 rounded-lg hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 mt-0.5 shrink-0"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

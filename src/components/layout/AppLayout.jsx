@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Home, Dumbbell, Apple, Bot, User, Bell, Settings } from "lucide-react";
+import { Dumbbell, Apple, Bot, User, Bell, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
 import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
@@ -21,32 +21,32 @@ export default function AppLayout() {
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
       {/* Top Header */}
-      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3">
+      <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
-              <Dumbbell className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+              <Dumbbell className="w-4 h-4 text-blue-400" />
             </div>
-            <span className="font-display font-bold text-lg text-foreground">Protein</span>
+            <span className="font-display font-bold text-lg text-white">Protein</span>
           </div>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowNotifications(true)}
-              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white"
             >
               <Bell className="w-5 h-5" />
             </button>
             <button
               onClick={() => setShowReminders(true)}
-              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white"
             >
               <Dumbbell className="w-5 h-5" />
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white"
             >
               <Settings className="w-5 h-5" />
             </button>
@@ -62,7 +62,7 @@ export default function AppLayout() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background/95 backdrop-blur-md border-t border-border">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#0a0a0f]/95 backdrop-blur-md border-t border-white/8">
         <div className="max-w-2xl mx-auto flex items-center justify-around px-4 py-2">
           {navItems.map(({ path, label, icon: Icon }) => {
             const active = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
@@ -73,12 +73,12 @@ export default function AppLayout() {
                 className={cn(
                   "flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200",
                   active
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-blue-400"
+                    : "text-white/30 hover:text-white"
                 )}
               >
                 <Icon className={cn("w-5 h-5", active && "scale-110 transition-transform")} />
-                <span className={cn("text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
+                <span className={cn("text-[10px] font-medium", active ? "text-blue-400" : "text-white/30")}>
                   {label}
                 </span>
               </Link>
