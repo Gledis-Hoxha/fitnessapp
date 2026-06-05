@@ -111,7 +111,7 @@ export default function ExercisePicker() {
         <button
           key={bp}
           onClick={() => handleBodyPartChange(bp)}
-          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all hidden ${
           selectedBodyPart === bp ?
           "bg-blue-500 text-white shadow-lg shadow-blue-500/25" :
           "bg-white/8 text-white/50 hover:bg-white/12"}`
