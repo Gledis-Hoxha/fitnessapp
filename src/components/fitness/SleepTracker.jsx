@@ -123,12 +123,12 @@ export default function SleepTracker() {
                 <div>
                   <p className="text-xs text-white/40 mb-1">Bedtime</p>
                   <input type="time" value={form.bedtime} onChange={(e) => setForm({ ...form, bedtime: e.target.value })}
-                className="w-full bg-white/8 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-indigo-500/50" />
+                className="w-full bg-white/8 border border-white/10 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500/50 text-gray-950" />
                 </div>
                 <div>
                   <p className="text-xs text-white/40 mb-1">Wake Time</p>
                   <input type="time" value={form.wake_time} onChange={(e) => setForm({ ...form, wake_time: e.target.value })}
-                className="w-full bg-white/8 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-indigo-500/50" />
+                className="w-full bg-white/8 border border-white/10 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500/50 text-gray-950" />
                 </div>
               </div>
               <div>
