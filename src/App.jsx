@@ -6,14 +6,14 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AppLayout from '@/components/layout/AppLayout';
-import Fitness from '@/pages/Fitness';
-import Nutrition from '@/pages/Nutrition';
+import Fitness from '@/pages/Fitness.jsx';
+import Nutrition from '@/pages/Nutrition.jsx';
 import StartWorkout from '@/pages/fitness/StartWorkout';
 import ExercisePicker from '@/pages/fitness/ExercisePicker';
 import Routines from '@/pages/fitness/Routines';
 import Explore from '@/pages/fitness/Explore';
-import Profile from '@/pages/Profile';
-import Coach from '@/pages/Coach';
+import Profile from '@/pages/Profile.jsx';
+import Coach from '@/pages/Coach.jsx';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();

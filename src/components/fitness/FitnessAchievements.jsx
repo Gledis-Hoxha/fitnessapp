@@ -21,7 +21,7 @@ export default function FitnessAchievements({ workouts = [] }) {
   const unlocked = results.filter(a => a.unlocked);
 
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+    <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Trophy className="w-4 h-4 text-yellow-400" />

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 function StatPill({ label, value, color }) {
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl p-4 text-center">
+    <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-white/40 mt-1">{label}</p>
     </div>
@@ -77,7 +77,7 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       </div>
 
       {/* Weekly Calendar */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-blue-400" />
@@ -151,7 +151,7 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
 
       {/* Duration Chart */}
       {chartData.length > 1 && (
-        <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+        <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
           <p className="text-sm font-semibold text-white mb-3">Workout Duration</p>
           <ResponsiveContainer width="100%" height={130}>
             <BarChart data={chartData} barSize={18}>
@@ -169,7 +169,7 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       <MuscleMap workouts={workouts} />
 
       {/* Personal Measures */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center gap-2 mb-3">
           <User className="w-4 h-4 text-blue-400" />
           <p className="text-sm font-semibold text-white">Personal Measures</p>
