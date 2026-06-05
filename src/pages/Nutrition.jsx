@@ -80,7 +80,7 @@ export default function Nutrition() {
         </div>
         <button
           onClick={() => handleAddFood(null)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 font-semibold text-sm hover:bg-green-500/30 transition-colors mx-3">
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 font-semibold text-sm hover:bg-green-500/30 transition-colors mx-20">
           
           <Plus className="w-4 h-4" />
           Add Food
