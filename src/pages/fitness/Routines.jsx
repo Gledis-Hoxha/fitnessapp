@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import WeeklyPlanner from "@/components/fitness/WeeklyPlanner";
 
 export default function Routines() {
   const navigate = useNavigate();
@@ -35,6 +36,8 @@ export default function Routines() {
           <p className="text-sm text-muted-foreground">Your saved workout routines</p>
         </div>
       </div>
+
+      <WeeklyPlanner routines={routines} />
 
       {isLoading ? (
         <div className="flex justify-center py-10">

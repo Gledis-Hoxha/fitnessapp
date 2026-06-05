@@ -1,0 +1,62 @@
+{
+  "name": "WeeklyPlan",
+  "type": "object",
+  "properties": {
+    "day": {
+      "type": "number",
+      "description": "Day of week (0=Sun, 1=Mon, ...6=Sat)"
+    },
+    "routine_id": {
+      "type": "string",
+      "description": "ID of the assigned routine"
+    },
+    "routine_name": {
+      "type": "string",
+      "description": "Name of the assigned routine (denormalized for display)"
+    }
+  },
+  "required": [
+    "day"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
