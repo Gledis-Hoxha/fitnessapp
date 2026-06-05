@@ -26,8 +26,12 @@ export default function AppLayout() {
       <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-              <Dumbbell className="w-4 h-4 text-blue-400" />
+            <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center">
+              <img
+                src="https://media.base44.com/images/public/69f4cab318774ed99e230d09/917a67682_Untitleddesign.png"
+                alt="StrengthStack logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="font-display font-bold text-lg text-white normal-case text-left">StrengthStack</span>
           </div>
