@@ -11,7 +11,7 @@ export default function WorkoutStartModal({ onClose }) {
       label: "New Workout",
       description: "Start fresh and track exercises in real time",
       color: "bg-blue-500/15 border-blue-500/20 text-blue-400",
-      onClick: () => { navigate("/fitness/start-workout"); onClose(); },
+      onClick: () => { navigate("/fitness/exercise-picker", { state: { returnTo: "/fitness/start-workout" } }); onClose(); },
     },
     {
       icon: BookOpen,
