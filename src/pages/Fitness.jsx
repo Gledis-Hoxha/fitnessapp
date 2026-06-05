@@ -15,8 +15,8 @@ export default function Fitness() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white hidden">Fitness</h1>
-          <p className="text-sm text-white/40 mt-0.5 hidden">Track & crush your workouts</p>
+          
+          
         </div>
         <button
           onClick={() => setShowStartModal(true)}

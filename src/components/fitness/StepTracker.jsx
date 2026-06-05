@@ -193,9 +193,9 @@ export default function StepTracker() {
           </div>
           <div className="text-center">
             <p className="text-sm font-semibold text-white">Enable Step Tracking</p>
-            <p className="text-xs text-white/35 mt-1 max-w-xs hidden">
-              Grant motion & health permission to track your daily steps, calories burned, and distance walked.
-            </p>
+            
+
+          
           </div>
           <motion.button
           whileTap={{ scale: 0.96 }}

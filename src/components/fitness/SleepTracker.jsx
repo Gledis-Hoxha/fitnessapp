@@ -112,10 +112,10 @@ export default function SleepTracker() {
           className="border-t border-white/8 px-4 pb-4 pt-3 space-y-4">
           
             {/* BLE hint */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl hidden">
-              <Bluetooth className="w-3.5 h-3.5 text-indigo-400" />
-              <p className="text-xs text-white/40">Sync from Apple Health / Galaxy Health / Oura, or log manually below.</p>
-            </div>
+            
+
+
+          
 
             {/* Log form */}
             <div className="space-y-3">
