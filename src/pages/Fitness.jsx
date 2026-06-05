@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Plus, History } from "lucide-react";
+import { Plus, History, Activity } from "lucide-react";
 import WorkoutHistory from "@/components/fitness/WorkoutHistory";
 import WorkoutStartModal from "@/components/fitness/WorkoutStartModal";
+import StepTracker from "@/components/fitness/StepTracker";
+import SleepTracker from "@/components/fitness/SleepTracker";
+import HeartRateTracker from "@/components/fitness/HeartRateTracker";
 
 export default function Fitness() {
   const [showStartModal, setShowStartModal] = useState(false);
@@ -23,6 +26,16 @@ export default function Fitness() {
           Start Workout
         </button>
       </div>
+
+      {/* Health Trackers */}
+      <div className="flex items-center gap-2">
+        <Activity className="w-4 h-4 text-white/30" />
+        <p className="text-xs font-semibold text-white/30 uppercase tracking-widest">Health Tracking</p>
+      </div>
+
+      <StepTracker />
+      <HeartRateTracker />
+      <SleepTracker />
 
       {/* Section label */}
       <div className="flex items-center gap-2">
