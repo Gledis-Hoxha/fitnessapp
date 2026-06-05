@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Footprints, Flame, MapPin, Target, RefreshCw, CheckCircle, AlertCircle, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Footprints, Flame, MapPin, Target, RefreshCw, CheckCircle, AlertCircle, Lock, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
 
 const DAILY_STEP_GOAL = 10000;
@@ -32,6 +33,7 @@ function StatBox({ icon: Icon, label, value, unit, color, progress }) {
 }
 
 export default function StepTracker() {
+  const navigate = useNavigate();
   const [status, setStatus] = useState("idle"); // idle | requesting | granted | denied | unsupported
   const [steps, setSteps] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
@@ -310,6 +312,14 @@ export default function StepTracker() {
         }
         </>
       }
+
+      {/* Daily Review */}
+      <button
+        onClick={() => navigate(`/fitness/daily-review?steps=${steps}&calories=${calories}&distance=${distanceKm}`)}
+        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500/15 border border-blue-500/25 text-blue-400 text-xs font-semibold hover:bg-blue-500/25 transition-colors">
+        <ClipboardList className="w-3.5 h-3.5" />
+        View Daily Review
+      </button>
     </div>);
 
 }

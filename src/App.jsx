@@ -12,6 +12,7 @@ import StartWorkout from '@/pages/fitness/StartWorkout';
 import ExercisePicker from '@/pages/fitness/ExercisePicker';
 import Routines from '@/pages/fitness/Routines';
 import Explore from '@/pages/fitness/Explore';
+import DailyReview from '@/pages/fitness/DailyReview';
 import Profile from '@/pages/Profile.jsx';
 import Coach from '@/pages/Coach.jsx';
 
@@ -49,6 +50,7 @@ const AuthenticatedApp = () => {
         <Route path="/fitness/exercise-picker" element={<ExercisePicker />} />
         <Route path="/fitness/routines" element={<Routines />} />
         <Route path="/fitness/explore" element={<Explore />} />
+        <Route path="/fitness/daily-review" element={<DailyReview />} />
         <Route path="/nutrition" element={<Nutrition />} />
         <Route path="/coach" element={<Coach />} />
       </Route>
