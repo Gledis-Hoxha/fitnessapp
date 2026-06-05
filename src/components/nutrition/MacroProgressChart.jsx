@@ -48,7 +48,7 @@ export default function MacroProgressChart({ calories = 0, protein = 0, carbs = 
   const over = calories > goals.calories;
 
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl px-4 py-4 flex items-center gap-5">
+    <div className="bg-[#111] border border-white/10 rounded-2xl p-4 h-full flex flex-col items-center justify-center gap-4">
       {/* Calorie circular progress */}
       <div className="relative flex items-center justify-center flex-shrink-0">
         <Ring pct={calPct} size={104} stroke={9} color={over ? "#ef4444" : "#22c55e"} />
@@ -60,7 +60,7 @@ export default function MacroProgressChart({ calories = 0, protein = 0, carbs = 
       </div>
 
       {/* Macro mini rings */}
-      <div className="flex-1 grid grid-cols-3 gap-2">
+      <div className="w-full grid grid-cols-3 gap-2">
         <MacroStat label="Protein" value={protein} goal={goals.protein} color="#3b82f6" />
         <MacroStat label="Carbs" value={carbs} goal={goals.carbs} color="#eab308" />
         <MacroStat label="Fat" value={fat} goal={goals.fat} color="#f97316" />
