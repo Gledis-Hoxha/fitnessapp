@@ -66,25 +66,23 @@ export default function AppLayout() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#0a0a0f]/95 backdrop-blur-md border-t border-white/8">
-        <div className="max-w-2xl mx-auto flex items-center justify-around px-4 py-2">
+      <nav className="fixed bottom-4 left-0 right-0 z-30 px-4">
+        <div className="max-w-md mx-auto flex items-center justify-between gap-2 bg-[#2e2b3a]/95 backdrop-blur-md rounded-full p-2 shadow-2xl border border-white/8">
           {navItems.map(({ path, label, icon: Icon }) => {
             const active = location.pathname === path || path !== "/" && location.pathname.startsWith(path);
             return (
               <Link
                 key={path}
                 to={path}
+                aria-label={label}
                 className={cn(
-                  "flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200",
+                  "flex-1 flex items-center justify-center aspect-square rounded-full transition-all duration-200",
                   active ?
-                  "text-blue-400" :
-                  "text-white/30 hover:text-white"
+                  "bg-white text-[#2e2b3a] shadow-lg" :
+                  "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                 )}>
                 
-                <Icon className={cn("w-5 h-5", active && "scale-110 transition-transform")} />
-                <span className={cn("text-[10px] font-medium", active ? "text-blue-400" : "text-white/30")}>
-                  {label}
-                </span>
+                <Icon className="w-5 h-5" />
               </Link>);
 
           })}
