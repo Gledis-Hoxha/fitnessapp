@@ -29,7 +29,7 @@ export default function AppLayout() {
             <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
               <Dumbbell className="w-4 h-4 text-blue-400" />
             </div>
-            <span className="font-display font-bold text-lg text-white">Protein</span>
+            <span className="font-display font-bold text-lg text-white">StrengthStack</span>
           </div>
           <div className="flex items-center gap-1">
             <button
