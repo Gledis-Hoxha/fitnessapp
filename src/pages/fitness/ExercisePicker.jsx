@@ -95,8 +95,8 @@ export default function ExercisePicker() {
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-white hidden">Choose Exercise</h1>
-          <p className="text-xs text-white/40 hidden">1,300+ exercises with animated demos</p>
+          
+          
         </div>
       </div>
 
