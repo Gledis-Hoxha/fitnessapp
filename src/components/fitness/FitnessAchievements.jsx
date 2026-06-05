@@ -21,19 +21,19 @@ export default function FitnessAchievements({ workouts = [] }) {
   const unlocked = results.filter(a => a.unlocked);
 
   return (
-    <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
+    <div className="bg-card border border-border rounded-2xl p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Trophy className="w-4 h-4 text-yellow-400" />
-          <p className="text-sm font-semibold text-white">Achievements</p>
+          <Trophy className="w-4 h-4 text-amber-500" />
+          <p className="text-sm font-semibold text-foreground">Achievements</p>
         </div>
-        <span className="text-xs text-yellow-400 font-semibold">{unlocked.length}/{ACHIEVEMENTS.length}</span>
+        <span className="text-xs text-amber-500 font-semibold">{unlocked.length}/{ACHIEVEMENTS.length}</span>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 bg-white/8 rounded-full mb-4 overflow-hidden">
+      <div className="h-1.5 bg-secondary rounded-full mb-4 overflow-hidden">
         <div
-          className="h-full rounded-full bg-yellow-400 transition-all duration-500"
+          className="h-full rounded-full bg-amber-400 transition-all duration-500"
           style={{ width: `${(unlocked.length / ACHIEVEMENTS.length) * 100}%` }}
         />
       </div>
@@ -44,22 +44,22 @@ export default function FitnessAchievements({ workouts = [] }) {
             key={a.id}
             className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all ${
               a.unlocked
-                ? "bg-yellow-500/10 border-yellow-500/30"
-                : "bg-white/3 border-white/5 opacity-35 grayscale"
+                ? "bg-amber-50 border-amber-200"
+                : "bg-secondary border-border opacity-50 grayscale"
             }`}
             title={a.desc}
           >
             <span className="text-2xl">{a.emoji}</span>
-            <p className="text-[10px] text-center text-white/70 leading-tight font-medium">{a.label}</p>
+            <p className="text-[10px] text-center text-foreground/70 leading-tight font-medium">{a.label}</p>
             {a.unlocked && (
-              <span className="text-[9px] text-yellow-400 font-semibold">Unlocked!</span>
+              <span className="text-[9px] text-amber-600 font-semibold">Unlocked!</span>
             )}
           </div>
         ))}
       </div>
 
       {unlocked.length === 0 && (
-        <p className="text-xs text-white/25 text-center mt-2">Complete workouts to unlock achievements</p>
+        <p className="text-xs text-muted-foreground text-center mt-2">Complete workouts to unlock achievements</p>
       )}
     </div>
   );

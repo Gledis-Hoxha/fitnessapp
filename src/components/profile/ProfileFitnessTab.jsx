@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format, startOfWeek, addDays, isToday, subWeeks, addWeeks } from "date-fns";
+import { format, startOfWeek, addDays, isToday, addWeeks } from "date-fns";
 import { Dumbbell, Clock, Calendar, ChevronLeft, ChevronRight, User, Pencil, Check, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import MuscleMap from "@/components/fitness/MuscleMap";
@@ -9,9 +9,9 @@ import { toast } from "sonner";
 
 function StatPill({ label, value, color }) {
   return (
-    <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+    <div className="bg-card border border-border rounded-2xl p-4 text-center">
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      <p className="text-xs text-white/40 mt-1">{label}</p>
+      <p className="text-xs text-muted-foreground mt-1">{label}</p>
     </div>
   );
 }
@@ -62,7 +62,6 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
   const selectedDateStr = selectedDay ? format(selectedDay, "yyyy-MM-dd") : null;
   const selectedWorkouts = selectedDateStr ? workouts.filter(w => w.date === selectedDateStr) : [];
 
-  // BMI calculation
   const bmi = user?.height_cm && user?.weight_kg
     ? (user.weight_kg / ((user.height_cm / 100) ** 2)).toFixed(1)
     : null;
@@ -71,28 +70,28 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
     <div className="space-y-4">
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
-        <StatPill label="Workouts" value={workouts.length} color="text-blue-400" />
-        <StatPill label="Sets Done" value={totalSets} color="text-blue-300" />
-        <StatPill label="Avg min" value={avgDuration} color="text-blue-200" />
+        <StatPill label="Workouts" value={workouts.length} color="text-primary" />
+        <StatPill label="Sets Done" value={totalSets} color="text-blue-500" />
+        <StatPill label="Avg min" value={avgDuration} color="text-accent" />
       </div>
 
       {/* Weekly Calendar */}
-      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
+      <div className="bg-card border border-border rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-blue-400" />
-            <p className="text-sm font-semibold text-white">
+            <Calendar className="w-4 h-4 text-primary" />
+            <p className="text-sm font-semibold text-foreground">
               {format(monday, "MMM d")} – {format(addDays(monday, 6), "MMM d")}
             </p>
           </div>
           <div className="flex items-center gap-1">
-            <button onClick={() => setWeekOffset(wo => wo - 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+            <button onClick={() => setWeekOffset(wo => wo - 1)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             {weekOffset !== 0 && (
-              <button onClick={() => setWeekOffset(0)} className="text-xs text-blue-400 px-2 hover:underline">Today</button>
+              <button onClick={() => setWeekOffset(0)} className="text-xs text-primary px-2 hover:underline">Today</button>
             )}
-            <button onClick={() => setWeekOffset(wo => wo + 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+            <button onClick={() => setWeekOffset(wo => wo + 1)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -108,16 +107,15 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
               <button
                 key={i}
                 onClick={() => setSelectedDay(isSelected ? null : date)}
-                className="flex flex-col items-center gap-1 group"
+                className="flex flex-col items-center gap-1"
               >
-                <span className="text-xs text-white/30">{d}</span>
+                <span className="text-xs text-muted-foreground">{d}</span>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  isSelected ? "ring-2 ring-white/50 scale-110"
-                  : "hover:scale-105"
+                  isSelected ? "ring-2 ring-primary/50 scale-110" : "hover:scale-105"
                 } ${
-                  hasWorkout ? "bg-blue-500 text-white shadow-md shadow-blue-500/30"
-                  : today ? "border-2 border-blue-500 text-blue-400"
-                  : "bg-white/5 text-white/40 hover:bg-white/10"
+                  hasWorkout ? "bg-primary text-primary-foreground shadow-sm"
+                  : today ? "border-2 border-primary text-primary"
+                  : "bg-secondary text-muted-foreground hover:bg-secondary/80"
                 }`}>
                   {hasWorkout ? "✓" : format(date, "d")}
                 </div>
@@ -126,22 +124,21 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
           })}
         </div>
 
-        {/* Selected day detail */}
         {selectedDay && (
-          <div className="mt-3 pt-3 border-t border-white/8">
-            <p className="text-xs font-semibold text-white/50 mb-2">{format(selectedDay, "EEEE, MMM d")}</p>
+          <div className="mt-3 pt-3 border-t border-border">
+            <p className="text-xs font-semibold text-muted-foreground mb-2">{format(selectedDay, "EEEE, MMM d")}</p>
             {selectedWorkouts.length === 0 ? (
-              <p className="text-xs text-white/25 italic">No workout logged this day</p>
+              <p className="text-xs text-muted-foreground italic">No workout logged this day</p>
             ) : selectedWorkouts.map((w, i) => (
               <div key={i} className="space-y-1">
                 {w.exercises?.slice(0, 3).map((ex, j) => (
                   <div key={j} className="flex items-center justify-between">
-                    <span className="text-xs text-white/70">{ex.exercise_name}</span>
-                    <span className="text-xs text-blue-400">{ex.sets?.filter(s => s.completed).length || 0} sets</span>
+                    <span className="text-xs text-foreground">{ex.exercise_name}</span>
+                    <span className="text-xs text-primary font-medium">{ex.sets?.filter(s => s.completed).length || 0} sets</span>
                   </div>
                 ))}
                 {(w.exercises?.length || 0) > 3 && (
-                  <p className="text-xs text-white/30">+{w.exercises.length - 3} more exercises</p>
+                  <p className="text-xs text-muted-foreground">+{w.exercises.length - 3} more exercises</p>
                 )}
               </div>
             ))}
@@ -151,15 +148,15 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
 
       {/* Duration Chart */}
       {chartData.length > 1 && (
-        <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
-          <p className="text-sm font-semibold text-white mb-3">Workout Duration</p>
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <p className="text-sm font-semibold text-foreground mb-3">Workout Duration</p>
           <ResponsiveContainer width="100%" height={130}>
             <BarChart data={chartData} barSize={18}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.35)" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.35)" }} axisLine={false} tickLine={false} unit="m" width={28} />
-              <Tooltip formatter={(v) => [`${v} min`]} contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 10, fontSize: 11 }} />
-              <Bar dataKey="min" fill="#3b82f6" radius={[5, 5, 0, 0]} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(214,32%,91%)" />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(215,16%,47%)" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: "hsl(215,16%,47%)" }} axisLine={false} tickLine={false} unit="m" width={28} />
+              <Tooltip formatter={(v) => [`${v} min`]} contentStyle={{ background: "#fff", border: "1px solid hsl(214,32%,91%)", borderRadius: 10, fontSize: 11 }} />
+              <Bar dataKey="min" fill="hsl(221,83%,53%)" radius={[5, 5, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -169,80 +166,79 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       <MuscleMap workouts={workouts} />
 
       {/* Personal Measures */}
-      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
+      <div className="bg-card border border-border rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-3">
-          <User className="w-4 h-4 text-blue-400" />
-          <p className="text-sm font-semibold text-white">Personal Measures</p>
+          <User className="w-4 h-4 text-primary" />
+          <p className="text-sm font-semibold text-foreground">Personal Measures</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {/* Static fields */}
           {[
-            { label: "Age", value: user?.age ? `${user.age} yrs` : "—", color: "text-blue-300" },
-            { label: "Height", value: user?.height_cm ? `${user.height_cm} cm` : "—", color: "text-blue-300" },
-            { label: "BMI", value: bmi || "—", color: "text-yellow-400" },
-            { label: "Activity Level", value: user?.activity_level ? user.activity_level.replace(/_/g, " ") : "—", color: "text-purple-400" },
+            { label: "Age", value: user?.age ? `${user.age} yrs` : "—", color: "text-primary" },
+            { label: "Height", value: user?.height_cm ? `${user.height_cm} cm` : "—", color: "text-blue-500" },
+            { label: "BMI", value: bmi || "—", color: "text-amber-500" },
+            { label: "Activity Level", value: user?.activity_level ? user.activity_level.replace(/_/g, " ") : "—", color: "text-purple-500" },
           ].map((m) => (
-            <div key={m.label} className="bg-white/5 rounded-xl px-3 py-2.5">
-              <p className="text-xs text-white/40">{m.label}</p>
+            <div key={m.label} className="bg-secondary rounded-xl px-3 py-2.5">
+              <p className="text-xs text-muted-foreground">{m.label}</p>
               <p className={`text-sm font-semibold mt-0.5 capitalize ${m.color}`}>{m.value}</p>
             </div>
           ))}
 
           {/* Editable: Weight */}
-          <div className="bg-white/5 rounded-xl px-3 py-2.5">
+          <div className="bg-secondary rounded-xl px-3 py-2.5">
             <div className="flex items-center justify-between mb-0.5">
-              <p className="text-xs text-white/40">Weight</p>
+              <p className="text-xs text-muted-foreground">Weight</p>
               {!editingWeight ? (
-                <button onClick={() => { setWeightVal(user?.weight_kg || ""); setEditingWeight(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
-                  <Pencil className="w-3 h-3 text-white/30" />
+                <button onClick={() => { setWeightVal(user?.weight_kg || ""); setEditingWeight(true); }} className="p-0.5 rounded hover:bg-border transition-colors">
+                  <Pencil className="w-3 h-3 text-muted-foreground" />
                 </button>
               ) : (
                 <div className="flex gap-1">
-                  <button onClick={saveWeight} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
-                  <button onClick={() => setEditingWeight(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
+                  <button onClick={saveWeight} className="p-0.5 rounded hover:bg-green-100 transition-colors"><Check className="w-3 h-3 text-green-600" /></button>
+                  <button onClick={() => setEditingWeight(false)} className="p-0.5 rounded hover:bg-red-100 transition-colors"><X className="w-3 h-3 text-red-500" /></button>
                 </div>
               )}
             </div>
             {editingWeight ? (
               <input type="number" value={weightVal} onChange={(e) => setWeightVal(e.target.value)}
-                className="w-full bg-white/10 border border-green-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
+                className="w-full bg-card border border-border rounded-lg px-2 py-1 text-sm text-foreground outline-none focus:border-primary"
                 autoFocus onKeyDown={(e) => e.key === "Enter" && saveWeight()} />
             ) : (
-              <p className="text-sm font-semibold text-green-400">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
+              <p className="text-sm font-semibold text-green-600">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
             )}
           </div>
 
           {/* Editable: Goal Weight */}
-          <div className="bg-white/5 rounded-xl px-3 py-2.5">
+          <div className="bg-secondary rounded-xl px-3 py-2.5">
             <div className="flex items-center justify-between mb-0.5">
-              <p className="text-xs text-white/40">Goal Weight</p>
+              <p className="text-xs text-muted-foreground">Goal Weight</p>
               {!editingGoalWeight ? (
-                <button onClick={() => { setGoalWeightVal(user?.goal_weight_kg || ""); setEditingGoalWeight(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
-                  <Pencil className="w-3 h-3 text-white/30" />
+                <button onClick={() => { setGoalWeightVal(user?.goal_weight_kg || ""); setEditingGoalWeight(true); }} className="p-0.5 rounded hover:bg-border transition-colors">
+                  <Pencil className="w-3 h-3 text-muted-foreground" />
                 </button>
               ) : (
                 <div className="flex gap-1">
-                  <button onClick={saveGoalWeight} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
-                  <button onClick={() => setEditingGoalWeight(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
+                  <button onClick={saveGoalWeight} className="p-0.5 rounded hover:bg-green-100 transition-colors"><Check className="w-3 h-3 text-green-600" /></button>
+                  <button onClick={() => setEditingGoalWeight(false)} className="p-0.5 rounded hover:bg-red-100 transition-colors"><X className="w-3 h-3 text-red-500" /></button>
                 </div>
               )}
             </div>
             {editingGoalWeight ? (
               <input type="number" value={goalWeightVal} onChange={(e) => setGoalWeightVal(e.target.value)}
-                className="w-full bg-white/10 border border-orange-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
+                className="w-full bg-card border border-border rounded-lg px-2 py-1 text-sm text-foreground outline-none focus:border-primary"
                 autoFocus onKeyDown={(e) => e.key === "Enter" && saveGoalWeight()} />
             ) : (
-              <p className="text-sm font-semibold text-orange-400">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
+              <p className="text-sm font-semibold text-orange-500">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
             )}
           </div>
         </div>
 
         {user?.fitness_goals?.length > 0 && (
           <div className="mt-3">
-            <p className="text-xs text-white/40 mb-2">Fitness Goals</p>
+            <p className="text-xs text-muted-foreground mb-2">Fitness Goals</p>
             <div className="flex flex-wrap gap-1.5">
               {user.fitness_goals.map((g) => (
-                <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full">
+                <span key={g} className="text-xs bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full">
                   {GOAL_LABELS[g] || g.replace(/_/g, " ")}
                 </span>
               ))}

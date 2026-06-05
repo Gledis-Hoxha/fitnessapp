@@ -1,54 +1,69 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutGrid, Calendar, BarChart2, Settings } from "lucide-react";
+import { Home, Dumbbell, Apple, Bot, User, Bell, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
-import { format } from "date-fns";
 import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 import SettingsModal from "@/components/shared/SettingsModal";
 import NotificationsModal from "@/components/shared/NotificationsModal";
 
-// Map our routes to the 4 nav icons from the Figma design
 const navItems = [
-  { path: "/fitness", label: "Home", icon: LayoutGrid },
-  { path: "/nutrition", label: "Schedule", icon: Calendar },
-  { path: "/profile", label: "Stats", icon: BarChart2 },
-  { path: "/coach", label: "Settings", icon: Settings },
+  { path: "/fitness", label: "Fitness", icon: Dumbbell },
+  { path: "/nutrition", label: "Nutrition", icon: Apple },
+  { path: "/profile", label: "Profile", icon: User },
+  { path: "/coach", label: "Coach", icon: Bot },
 ];
-
-const today = format(new Date(), "yyyy-MM-dd");
 
 export default function AppLayout() {
   const location = useLocation();
   const [showReminders, setShowReminders] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showNutritionSearch, setShowNutritionSearch] = useState(false);
-
-  const { data: workouts = [] } = useQuery({
-    queryKey: ["workouts"],
-    queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 20),
-  });
-  const { data: meals = [] } = useQuery({
-    queryKey: ["nutrition"],
-    queryFn: () => base44.entities.NutritionEntry.list("-date", 200),
-  });
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "hsl(248,24%,10%)" }}>
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Top Header */}
+      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3">
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
+              <Dumbbell className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-display font-bold text-lg text-foreground">Protein</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowNotifications(true)}
+              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Bell className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setShowReminders(true)}
+              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Dumbbell className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setShowSettings(true)}
+              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Main Content */}
-      <main className="flex-1 pb-28">
-        <div className="max-w-2xl mx-auto px-4 pt-4">
-          <Outlet context={{ showNutritionSearch, setShowNutritionSearch }} />
+      <main className="flex-1 pb-24">
+        <div className="max-w-2xl mx-auto px-4 pt-6">
+          <Outlet />
         </div>
       </main>
 
-      {/* Pill Bottom Navigation — Figma style */}
-      <nav className="fixed bottom-6 left-0 right-0 z-30 flex justify-center pointer-events-none">
-        <div className="pointer-events-auto flex items-center gap-1 px-3 py-2.5 rounded-full shadow-2xl border border-white/10"
-          style={{ background: "hsl(248,20%,14%)" }}>
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background/95 backdrop-blur-md border-t border-border">
+        <div className="max-w-2xl mx-auto flex items-center justify-around px-4 py-2">
           {navItems.map(({ path, label, icon: Icon }) => {
             const active = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
             return (
@@ -56,13 +71,16 @@ export default function AppLayout() {
                 key={path}
                 to={path}
                 className={cn(
-                  "flex items-center justify-center w-12 h-12 rounded-full transition-all duration-200",
+                  "flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200",
                   active
-                    ? "bg-white shadow-lg"
-                    : "text-white/40 hover:text-white/70"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Icon className={cn("w-5 h-5", active ? "text-[hsl(248,24%,10%)]" : "")} />
+                <Icon className={cn("w-5 h-5", active && "scale-110 transition-transform")} />
+                <span className={cn("text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
+                  {label}
+                </span>
               </Link>
             );
           })}

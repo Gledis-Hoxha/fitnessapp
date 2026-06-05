@@ -2,15 +2,30 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
-import { User, Dumbbell, Apple, Pencil } from "lucide-react";
+import { Dumbbell, Apple, Pencil, Share2, Inbox } from "lucide-react";
 import ProfileFitnessTab from "@/components/profile/ProfileFitnessTab";
 import ProfileNutritionTab from "@/components/profile/ProfileNutritionTab";
 import EditProfileModal from "@/components/profile/EditProfileModal";
+import ShareProfileModal from "@/components/profile/ShareProfileModal";
+import InboxPanel from "@/components/profile/InboxPanel";
+
+const GOAL_LABELS = {
+  lose_weight: "Lose Weight 🔥",
+  build_muscle: "Build Muscle 💪",
+  improve_endurance: "Endurance 🏃",
+  stay_healthy: "Stay Healthy ❤️",
+  increase_flexibility: "Flexibility 🧘",
+  sport_performance: "Sport 🏆",
+  stress_relief: "Stress Relief 😌",
+  body_recomposition: "Recomposition ⚡",
+};
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState("fitness");
   const [showEdit, setShowEdit] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [showInbox, setShowInbox] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -33,35 +48,55 @@ export default function Profile() {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Profile Header */}
-      <div className="border border-white/10 rounded-3xl p-5" style={{ background: "hsl(248,20%,15%)" }}>
-        <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      {/* Profile Header Card */}
+      <div className="bg-card rounded-2xl border border-border p-5">
+        <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center text-2xl font-bold text-primary">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
               {user?.full_name?.[0]?.toUpperCase() || "?"}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">{user?.full_name || "Your Profile"}</h2>
-              <p className="text-sm text-white/40">{user?.email || ""}</p>
-              {user?.fitness_goals?.length > 0 && (
-                <p className="text-xs text-primary mt-1">
-                  {user.fitness_goals.length} goal{user.fitness_goals.length > 1 ? "s" : ""} set
-                </p>
-              )}
+              <h2 className="text-xl font-bold text-foreground">{user?.full_name || "Your Profile"}</h2>
+              <p className="text-sm text-muted-foreground">{user?.email || ""}</p>
             </div>
           </div>
-          <button
-            onClick={() => setShowEdit(true)}
-            className="p-2.5 rounded-xl hover:bg-white/10 transition-colors"
-          >
-            <Pencil className="w-4 h-4 text-white/40" />
-          </button>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setShowInbox(true)}
+              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Inbox className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setShowShare(true)}
+              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setShowEdit(true)}
+              className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+          </div>
         </div>
+
+        {/* Goals */}
+        {user?.fitness_goals?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {user.fitness_goals.map((g) => (
+              <span key={g} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">
+                {GOAL_LABELS[g] || g.replace(/_/g, " ")}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-2xl" style={{ background: "hsl(248,20%,15%)" }}>
+      <div className="flex gap-1 p-1 rounded-xl bg-secondary">
         {[
           { id: "fitness", label: "Fitness", icon: Dumbbell },
           { id: "nutrition", label: "Nutrition", icon: Apple },
@@ -69,10 +104,10 @@ export default function Profile() {
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${
               tab === id
-                ? "bg-primary text-primary-foreground shadow"
-                : "text-white/40 hover:text-white/70"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -92,6 +127,8 @@ export default function Profile() {
             onSave={handleProfileSaved}
           />
         )}
+        {showShare && <ShareProfileModal user={user} workouts={workouts} onClose={() => setShowShare(false)} />}
+        {showInbox && <InboxPanel onClose={() => setShowInbox(false)} />}
       </AnimatePresence>
     </div>
   );

@@ -3,11 +3,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { format } from "date-fns";
 import { AnimatePresence } from "framer-motion";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Apple } from "lucide-react";
 import MealSection from "@/components/nutrition/MealSection";
 import MacroProgressChart from "@/components/nutrition/MacroProgressChart";
 import HydrationTracker from "@/components/nutrition/HydrationTracker";
 import FoodSearchModal from "@/components/nutrition/FoodSearchModal";
+import NutritionSummary from "@/components/nutrition/NutritionSummary";
+import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
+import MealRecommender from "@/components/nutrition/MealRecommender";
 
 export default function Nutrition() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -15,12 +18,13 @@ export default function Nutrition() {
   const [addingMealType, setAddingMealType] = useState(null);
   const queryClient = useQueryClient();
 
-  const { data: meals = [], isLoading } = useQuery({
+  const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
     queryFn: () => base44.entities.NutritionEntry.list("-date", 200),
   });
 
   const dayMeals = meals.filter((m) => m.date === selectedDate);
+  const isToday = selectedDate === format(new Date(), "yyyy-MM-dd");
 
   const changeDate = (offset) => {
     const d = new Date(selectedDate);
@@ -29,7 +33,7 @@ export default function Nutrition() {
   };
 
   const handleAddFood = (mealType) => {
-    setAddingMealType(mealType);
+    setAddingMealType(mealType || "snack");
     setShowFoodSearch(true);
   };
 
@@ -49,42 +53,43 @@ export default function Nutrition() {
     queryClient.invalidateQueries({ queryKey: ["nutrition"] });
   };
 
-  const isToday = selectedDate === format(new Date(), "yyyy-MM-dd");
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Nutrition</h1>
-          <p className="text-sm text-white/40 mt-0.5">Track your meals</p>
+          <h1 className="text-2xl font-bold text-foreground">Nutrition</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Track your daily meals</p>
         </div>
         <button
-          onClick={() => handleAddFood("snack")}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg hover:opacity-90 transition-opacity"
+          onClick={() => handleAddFood(null)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-accent-foreground font-semibold text-sm shadow-md hover:opacity-90 transition-opacity"
         >
           <Plus className="w-4 h-4" />
-          Add
+          Add Food
         </button>
       </div>
 
+      {/* Weekly Streak */}
+      <WeeklyStreak meals={meals} />
+
       {/* Date Navigator */}
-      <div className="flex items-center justify-between px-1">
-        <button onClick={() => changeDate(-1)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
-          <ChevronLeft className="w-5 h-5 text-white/50" />
+      <div className="bg-card rounded-2xl border border-border p-4 flex items-center justify-between">
+        <button onClick={() => changeDate(-1)} className="p-2 rounded-xl hover:bg-secondary transition-colors">
+          <ChevronLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <div className="text-center">
-          <p className="text-sm font-semibold text-white">
+          <p className="font-semibold text-foreground">
             {isToday ? "Today" : format(new Date(selectedDate), "EEEE")}
           </p>
-          <p className="text-xs text-white/40">{format(new Date(selectedDate), "MMMM d, yyyy")}</p>
+          <p className="text-sm text-muted-foreground">{format(new Date(selectedDate), "MMMM d, yyyy")}</p>
         </div>
         <button
           onClick={() => changeDate(1)}
           disabled={isToday}
-          className="p-2 rounded-xl hover:bg-white/10 transition-colors disabled:opacity-30"
+          className="p-2 rounded-xl hover:bg-secondary transition-colors disabled:opacity-30"
         >
-          <ChevronRight className="w-5 h-5 text-white/50" />
+          <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </button>
       </div>
 
@@ -94,13 +99,19 @@ export default function Nutrition() {
       {/* Hydration */}
       <HydrationTracker date={selectedDate} />
 
+      {/* Nutrition Summary */}
+      <NutritionSummary meals={dayMeals} />
+
+      {/* Meal Recommender */}
+      <MealRecommender meals={dayMeals} />
+
       {/* Meal Sections */}
       {["breakfast", "lunch", "dinner", "snack"].map((mealType) => (
         <MealSection
           key={mealType}
           mealType={mealType}
-          meals={dayMeals.filter((m) => m.meal_type === mealType)}
-          onAddFood={() => handleAddFood(mealType)}
+          entries={dayMeals.filter((m) => m.meal_type === mealType)}
+          onAdd={handleAddFood}
           onDelete={handleDeleteMeal}
         />
       ))}

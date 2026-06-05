@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
 import { AnimatePresence } from "framer-motion";
-import { Plus, Dumbbell, History } from "lucide-react";
+import { Plus, Dumbbell, History, BookOpen, Compass } from "lucide-react";
+import { Link } from "react-router-dom";
 import WorkoutHistory from "@/components/fitness/WorkoutHistory";
 import WorkoutStartModal from "@/components/fitness/WorkoutStartModal";
 
@@ -11,35 +10,52 @@ export default function Fitness() {
   const [tab, setTab] = useState("history");
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Fitness</h1>
-          <p className="text-sm text-white/40 mt-0.5">Track your workouts</p>
+          <h1 className="text-2xl font-bold text-foreground">Fitness</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Track & crush your workouts</p>
         </div>
         <button
           onClick={() => setShowStartModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-md hover:opacity-90 transition-opacity"
         >
           <Plus className="w-4 h-4" />
-          Start
+          Start Workout
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-2xl" style={{ background: "hsl(248,20%,15%)" }}>
+      {/* Quick Links */}
+      <div className="grid grid-cols-3 gap-3">
         {[
-          { id: "history", label: "History", icon: History },
-          { id: "exercises", label: "Exercises", icon: Dumbbell },
+          { to: "/fitness/start-workout", icon: Dumbbell, label: "New Workout", color: "bg-blue-50 text-blue-600 border-blue-100" },
+          { to: "/fitness/routines", icon: BookOpen, label: "Routines", color: "bg-green-50 text-green-600 border-green-100" },
+          { to: "/fitness/explore", icon: Compass, label: "Explore", color: "bg-purple-50 text-purple-600 border-purple-100" },
+        ].map(({ to, icon: Icon, label, color }) => (
+          <Link
+            key={to}
+            to={to}
+            className={`flex flex-col items-center gap-2 p-4 rounded-2xl border ${color} hover:opacity-80 transition-opacity`}
+          >
+            <Icon className="w-5 h-5" />
+            <span className="text-xs font-semibold">{label}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 p-1 rounded-xl bg-secondary">
+        {[
+          { id: "history", label: "Workout History", icon: History },
         ].map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${
               tab === id
-                ? "bg-primary text-primary-foreground shadow"
-                : "text-white/40 hover:text-white/70"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -48,14 +64,7 @@ export default function Fitness() {
         ))}
       </div>
 
-      {/* Content */}
       {tab === "history" && <WorkoutHistory />}
-      {tab === "exercises" && (
-        <div className="text-center py-12 text-white/30">
-          <Dumbbell className="w-10 h-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">Browse exercises from the Start Workout screen</p>
-        </div>
-      )}
 
       <AnimatePresence>
         {showStartModal && <WorkoutStartModal onClose={() => setShowStartModal(false)} />}
