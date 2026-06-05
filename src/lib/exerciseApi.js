@@ -1,25 +1,16 @@
-// FitGIF API — 1,300+ exercises with animated GIFs
-const BASE_URL = "https://fitgif.vercel.app";
-const API_KEY = "fg-AXTQoBBZu907WpP7K0S9AH45";
+// FitGIF API — 1,300+ exercises with animated GIFs (proxied via backend to avoid CORS)
+import { base44 } from "@/api/base44Client";
 
 export async function searchExercises(query, options = {}) {
-  const body = {
-    key: API_KEY,
-    includeData: true,
+  const payload = {
     ...(query?.trim() ? { search: query.trim() } : {}),
     ...(options.equipment ? { equipment: options.equipment } : {}),
     ...(options.bodyPart ? { bodyPart: options.bodyPart } : {}),
     ...(options.target ? { target: options.target } : {}),
   };
 
-  const res = await fetch(`${BASE_URL}/api/search`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error("Failed to fetch exercises");
-  const data = await res.json();
-  return data.results || [];
+  const res = await base44.functions.invoke("searchExercises", payload);
+  return res.data?.results || [];
 }
 
 export function mapExercise(ex) {
