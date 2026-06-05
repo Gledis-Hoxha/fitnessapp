@@ -40,34 +40,28 @@ export default function HydrationTracker({ date }) {
         </span>
       </div>
 
-      {/* Progress bar */}
-      <div className="relative h-2 bg-white/8 rounded-full mb-4 overflow-hidden">
-        <div
-          className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
-          style={{
-            width: `${pct}%`,
-            background: done ? "#22c55e" : "#3b82f6",
-          }}
-        />
-      </div>
-
-      {/* Glass icons */}
-      <div className="flex gap-1.5 flex-wrap mb-4">
-        {Array.from({ length: GOAL }).map((_, i) => (
-          <button
-            key={i}
-            onClick={() => update(i < glasses ? i : i + 1)}
-            className="transition-transform active:scale-90"
-            title={i < glasses ? "Remove" : "Add"}
+      {/* Vertical filling bottle */}
+      <div className="flex justify-center mb-4">
+        <div className="relative w-20 h-44 rounded-[2rem] border-2 border-white/15 bg-white/5 overflow-hidden">
+          {/* Water fill */}
+          <div
+            className="absolute inset-x-0 bottom-0 transition-all duration-500 ease-out"
+            style={{
+              height: `${pct}%`,
+              background: done
+                ? "linear-gradient(to top, #16a34a, #22c55e)"
+                : "linear-gradient(to top, #2563eb, #3b82f6)",
+            }}
           >
-            <Droplets
-              className={`w-5 h-5 transition-colors ${
-                i < glasses ? "text-blue-400" : "text-white/15"
-              }`}
-              fill={i < glasses ? "currentColor" : "none"}
-            />
-          </button>
-        ))}
+            {/* Surface shimmer */}
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-white/25" />
+          </div>
+          {/* Center label */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+            <span className="text-xl font-bold text-white drop-shadow">{Math.round(pct)}%</span>
+            <span className="text-[10px] text-white/70 drop-shadow">{glasses}/{GOAL}</span>
+          </div>
+        </div>
       </div>
 
       {/* +/- controls */}
