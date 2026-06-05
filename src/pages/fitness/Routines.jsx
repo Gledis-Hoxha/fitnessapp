@@ -32,7 +32,7 @@ export default function Routines() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-display font-bold">Routines</h1>
+          <h1 className="text-2xl font-bold">Routines</h1>
           <p className="text-sm text-muted-foreground">Your saved workout routines</p>
         </div>
       </div>
