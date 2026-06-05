@@ -51,8 +51,12 @@ export default function Coach() {
     <div className="flex flex-col" style={{ height: "calc(100vh - 10rem)" }}>
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-white/8 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
-          <Bot className="w-5 h-5 text-blue-400" />
+        <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
+          <img
+            src="https://media.base44.com/images/public/69f4cab318774ed99e230d09/016964245_Untitleddesign1.png"
+            alt="AI Fitness Coach logo"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div>
           <h1 className="text-lg font-bold text-white">AI Fitness Coach</h1>
@@ -70,8 +74,12 @@ export default function Coach() {
       <div className="flex-1 overflow-y-auto space-y-4 pb-4">
         {messages.length === 0 && !loading && (
           <div className="pt-6 text-center space-y-5">
-            <div className="w-20 h-20 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto">
-              <Sparkles className="w-10 h-10 text-blue-400" />
+            <div className="w-20 h-20 rounded-3xl overflow-hidden flex items-center justify-center mx-auto">
+              <img
+                src="https://media.base44.com/images/public/69f4cab318774ed99e230d09/016964245_Untitleddesign1.png"
+                alt="AI Fitness Coach logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <p className="text-lg font-bold text-white">Your AI Fitness Coach</p>
