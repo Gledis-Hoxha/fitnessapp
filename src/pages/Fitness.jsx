@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Plus, History, Activity } from "lucide-react";
-import WorkoutHistory from "@/components/fitness/WorkoutHistory";
+import { Plus, CalendarDays, Activity } from "lucide-react";
+import WorkoutCalendar from "@/components/fitness/WorkoutCalendar";
 import WorkoutStartModal from "@/components/fitness/WorkoutStartModal";
 import StepTracker from "@/components/fitness/StepTracker";
 import SleepTracker from "@/components/fitness/SleepTracker";
@@ -35,11 +35,11 @@ export default function Fitness() {
 
       {/* Section label */}
       <div className="flex items-center gap-2">
-        <History className="w-4 h-4 text-white/30" />
-        <p className="text-xs font-semibold text-white/30 uppercase tracking-widest">Workout History</p>
+        <CalendarDays className="w-4 h-4 text-white/30" />
+        <p className="text-xs font-semibold text-white/30 uppercase tracking-widest">Workout Calendar</p>
       </div>
 
-      <WorkoutHistory />
+      <WorkoutCalendar />
 
       <AnimatePresence>
         {showStartModal && <WorkoutStartModal onClose={() => setShowStartModal(false)} />}
