@@ -15,13 +15,13 @@ export default function Fitness() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Fitness</h1>
-          <p className="text-sm text-white/40 mt-0.5">Track & crush your workouts</p>
+          <h1 className="text-2xl font-bold text-white hidden">Fitness</h1>
+          <p className="text-sm text-white/40 mt-0.5 hidden">Track & crush your workouts</p>
         </div>
         <button
           onClick={() => setShowStartModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 font-semibold text-sm hover:bg-blue-500/30 transition-colors"
-        >
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 font-semibold text-sm hover:bg-blue-500/30 transition-colors">
+          
           <Plus className="w-4 h-4" />
           Start Workout
         </button>
@@ -48,6 +48,6 @@ export default function Fitness() {
       <AnimatePresence>
         {showStartModal && <WorkoutStartModal onClose={() => setShowStartModal(false)} />}
       </AnimatePresence>
-    </div>
-  );
+    </div>);
+
 }
