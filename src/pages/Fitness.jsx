@@ -13,11 +13,7 @@ export default function Fitness() {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          
-          
-        </div>
+      <div className="flex items-center justify-center">
         <button
           onClick={() => setShowStartModal(true)}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 font-semibold text-sm hover:bg-blue-500/30 transition-colors">
