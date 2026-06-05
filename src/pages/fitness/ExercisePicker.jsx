@@ -55,18 +55,9 @@ export default function ExercisePicker() {
     try {
       const opts = bodyPart !== "all" ? { bodyPart } : {};
       const results = await searchExercises(q || "", opts);
-      if (!results.length && q) {
-        // retry with simplified query
-        const simplified = q.split(" ")[0];
-        if (simplified !== q) {
-          const retry = await searchExercises(simplified, opts);
-          setExercises(retry.map(mapExercise));
-          return;
-        }
-      }
       setExercises(results.map(mapExercise));
     } catch {
-      setError("Could not load exercises. Please try again.");
+      setError("Search is busy right now. Please try again in a moment.");
     } finally {
       setLoading(false);
     }
