@@ -81,9 +81,9 @@ Keep each item practical, quick to prepare, and tasty. Vary between meals (e.g. 
         onClick={handleOpen}
         className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
         
-        <div className="p-2 rounded-xl bg-purple-500/15 hidden">
-          <Sparkles className="w-4 h-4 text-purple-400 hidden" />
-        </div>
+        
+
+        
         <div className="flex-1">
           <p className="text-sm font-semibold text-white">Meal Recommendations</p>
           <p className="text-xs text-white/35">

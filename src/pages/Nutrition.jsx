@@ -75,8 +75,8 @@ export default function Nutrition() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white hidden">Nutrition</h1>
-          <p className="text-sm text-white/40 mt-0.5 hidden">Track your daily meals</p>
+          
+          
         </div>
         <button
           onClick={() => handleAddFood(null)}
@@ -95,24 +95,24 @@ export default function Nutrition() {
       
 
       {/* Date Navigator */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4 flex items-center justify-between hidden">
-        <button onClick={() => changeDate(-1)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
-          <ChevronLeft className="w-5 h-5 text-white/50" />
-        </button>
-        <div className="text-center">
-          <p className="font-semibold text-white">
-            {isToday ? "Today" : format(new Date(selectedDate), "EEEE")}
-          </p>
-          <p className="text-sm text-white/40">{format(new Date(selectedDate), "MMMM d, yyyy")}</p>
-        </div>
-        <button
-          onClick={() => changeDate(1)}
-          disabled={isToday}
-          className="p-2 rounded-xl hover:bg-white/10 transition-colors disabled:opacity-30">
-          
-          <ChevronRight className="w-5 h-5 text-white/50" />
-        </button>
-      </div>
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
 
       {/* Macro Progress */}
       <MacroProgressChart

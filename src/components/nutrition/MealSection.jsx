@@ -22,7 +22,7 @@ export default function MealSection({ mealType, entries = [], onAdd, onDelete })
         onClick={() => setOpen(!open)}
         className={`w-full flex items-center gap-3 px-4 py-3.5 bg-gradient-to-r ${cfg.color} text-left`}>
         
-        <span className="text-xl hidden">{cfg.emoji}</span>
+        
         <div className="flex-1">
           <p className="font-semibold text-white text-sm">{cfg.label}</p>
           <p className="text-xs text-white/50">{entries.length} items · {Math.round(totalCal)} kcal</p>
