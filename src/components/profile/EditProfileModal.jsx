@@ -69,7 +69,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
                 <label className="text-xs text-white/50 mb-1 block">{label}</label>
                 <input value={form[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
                   placeholder={placeholder}
-                  className="w-full bg-white/8 border border-white/15 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-green-500/50" />
+                  className="w-full bg-white/8 border border-white/15 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-blue-500/50" />
               </div>
             ))}
           </div>
@@ -89,7 +89,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
                   <div className="relative">
                     <input type="number" value={form[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
                       placeholder="—"
-                      className="w-full bg-white/8 border border-white/15 rounded-xl px-3 py-2.5 pr-10 text-sm text-white placeholder:text-white/25 outline-none focus:border-green-500/50" />
+                      className="w-full bg-white/8 border border-white/15 rounded-xl px-3 py-2.5 pr-10 text-sm text-white placeholder:text-white/25 outline-none focus:border-blue-500/50" />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30">{unit}</span>
                   </div>
                 </div>
@@ -103,7 +103,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
             <div className="grid grid-cols-1 gap-1.5">
               {ACTIVITY_LEVELS.map((lvl) => (
                 <button key={lvl} onClick={() => setForm({ ...form, activity_level: lvl })}
-                  className={`text-left px-4 py-2.5 rounded-xl border text-sm transition-all ${form.activity_level === lvl ? "bg-green-500/20 border-green-500/50 text-white" : "bg-white/5 border-white/10 text-white/50 hover:bg-white/8"}`}>
+                  className={`text-left px-4 py-2.5 rounded-xl border text-sm transition-all ${form.activity_level === lvl ? "bg-blue-500/20 border-blue-500/50 text-white" : "bg-white/5 border-white/10 text-white/50 hover:bg-white/8"}`}>
                   {lvl.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
                 </button>
               ))}
@@ -129,7 +129,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
             <div className="flex flex-wrap gap-2">
               {FOOD_PREFS.map((f) => (
                 <button key={f} onClick={() => toggle("preferred_foods", f)}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${form.preferred_foods.includes(f) ? "bg-green-500/20 border-green-500/50 text-green-300" : "bg-white/5 border-white/10 text-white/40 hover:bg-white/8"}`}>
+                  className={`px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${form.preferred_foods.includes(f) ? "bg-blue-500/20 border-blue-500/50 text-blue-300" : "bg-white/5 border-white/10 text-white/40 hover:bg-white/8"}`}>
                   {f.replace(/_/g, " ")}
                 </button>
               ))}
@@ -139,7 +139,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
 
         <div className="px-5 py-4 border-t border-white/10">
           <button onClick={save} disabled={saving}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 hover:bg-green-400 text-white font-bold text-sm transition-all disabled:opacity-50">
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-bold text-sm transition-all disabled:opacity-50">
             <Save className="w-4 h-4" /> {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
