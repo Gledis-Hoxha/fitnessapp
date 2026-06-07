@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { format, startOfWeek, addDays, isToday, addWeeks } from "date-fns";
-import { Calendar, ChevronLeft, ChevronRight, User, Pencil, Check, X } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, User, Pencil, Check, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { AnimatePresence } from "framer-motion";
 import MuscleMap from "@/components/fitness/MuscleMap";
 import FitnessAchievements from "@/components/fitness/FitnessAchievements";
+import WorkoutCalendarModal from "@/components/profile/WorkoutCalendarModal";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
@@ -26,6 +28,7 @@ const GOAL_LABELS = {
 export default function ProfileFitnessTab({ workouts = [], user }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [editingWeight, setEditingWeight] = useState(false);
   const [editingGoalWeight, setEditingGoalWeight] = useState(false);
   const [weightVal, setWeightVal] = useState(user?.weight_kg || "");
@@ -78,16 +81,13 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       {/* Weekly Calendar */}
       <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-blue-400" />
-            <p className="text-sm font-semibold text-white">
-              {format(monday, "MMM d")} – {format(addDays(monday, 6), "MMM d")}
-            </p>
-          </div>
           <div className="flex items-center gap-1">
             <button onClick={() => setWeekOffset(wo => wo - 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
+            <p className="text-sm font-semibold text-white">
+              {format(monday, "MMM d")} – {format(addDays(monday, 6), "MMM d")}
+            </p>
             {weekOffset !== 0 && (
               <button onClick={() => setWeekOffset(0)} className="text-xs text-blue-400 px-2 hover:underline">Today</button>
             )}
@@ -95,6 +95,9 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
+          <button onClick={() => setShowCalendar(true)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+            <CalendarDays className="w-4 h-4 text-blue-400" />
+          </button>
         </div>
         <div className="grid grid-cols-7 gap-1.5">
           {["M","T","W","T","F","S","S"].map((d, i) => {
@@ -250,6 +253,17 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
 
       {/* Achievements */}
       <FitnessAchievements workouts={workouts} />
+
+      <AnimatePresence>
+        {showCalendar && (
+          <WorkoutCalendarModal
+            workoutDates={workoutDates}
+            selectedDay={selectedDay}
+            onSelectDate={setSelectedDay}
+            onClose={() => setShowCalendar(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
