@@ -17,7 +17,7 @@ const GOAL_LABELS = {
   increase_flexibility: "Flexibility 🧘",
   sport_performance: "Sport 🏆",
   stress_relief: "Stress Relief 😌",
-  body_recomposition: "Recomposition ⚡",
+  body_recomposition: "Recomposition ⚡"
 };
 
 export default function Profile() {
@@ -33,12 +33,12 @@ export default function Profile() {
 
   const { data: workouts = [] } = useQuery({
     queryKey: ["workouts"],
-    queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 50),
+    queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 50)
   });
 
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
-    queryFn: () => base44.entities.NutritionEntry.list("-date", 200),
+    queryFn: () => base44.entities.NutritionEntry.list("-date", 200)
   });
 
   const handleProfileSaved = async () => {
@@ -53,7 +53,7 @@ export default function Profile() {
       <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
         <div className="flex items-start justify-between gap-2 mb-4">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0">
+            <div className="w-16 h-16 bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0 rounded-md">
               {user?.full_name?.[0]?.toUpperCase() || "?"}
             </div>
             <div className="min-w-0">
@@ -64,72 +64,72 @@ export default function Profile() {
           <div className="flex gap-1 flex-shrink-0">
             <button
               onClick={() => setShowInbox(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
+              
               <Inbox className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowShare(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
+              
               <Share2 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowEdit(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
+              
               <Pencil className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Goals */}
-        {user?.fitness_goals?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {user.fitness_goals.map((g) => (
-              <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full font-medium">
+        {user?.fitness_goals?.length > 0 &&
+        <div className="flex flex-wrap gap-1.5">
+            {user.fitness_goals.map((g) =>
+          <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full font-medium">
                 {GOAL_LABELS[g] || g.replace(/_/g, " ")}
               </span>
-            ))}
+          )}
           </div>
-        )}
+        }
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/8">
         {[
-          { id: "fitness", label: "Fitness", icon: Dumbbell },
-          { id: "nutrition", label: "Nutrition", icon: Apple },
-        ].map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setTab(id)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${
-              tab === id
-                ? "bg-white/10 text-white"
-                : "text-white/40 hover:text-white"
-            }`}
-          >
+        { id: "fitness", label: "Fitness", icon: Dumbbell },
+        { id: "nutrition", label: "Nutrition", icon: Apple }].
+        map(({ id, label, icon: Icon }) =>
+        <button
+          key={id}
+          onClick={() => setTab(id)}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${
+          tab === id ?
+          "bg-white/10 text-white" :
+          "text-white/40 hover:text-white"}`
+          }>
+          
             <Icon className="w-4 h-4" />
             {label}
           </button>
-        ))}
+        )}
       </div>
 
       {tab === "fitness" && <ProfileFitnessTab workouts={workouts} user={user} />}
       {tab === "nutrition" && <ProfileNutritionTab meals={meals} user={user} />}
 
       <AnimatePresence>
-        {showEdit && (
-          <EditProfileModal
-            user={user}
-            onClose={() => setShowEdit(false)}
-            onSave={handleProfileSaved}
-          />
-        )}
+        {showEdit &&
+        <EditProfileModal
+          user={user}
+          onClose={() => setShowEdit(false)}
+          onSave={handleProfileSaved} />
+
+        }
         {showShare && <ShareProfileModal user={user} workouts={workouts} onClose={() => setShowShare(false)} />}
         {showInbox && <InboxPanel onClose={() => setShowInbox(false)} />}
       </AnimatePresence>
-    </div>
-  );
+    </div>);
+
 }
