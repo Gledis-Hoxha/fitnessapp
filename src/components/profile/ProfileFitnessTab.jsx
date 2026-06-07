@@ -175,7 +175,7 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       }
 
       {/* Muscle Map */}
-      <MuscleMap workouts={workouts} />
+      <MuscleMap workouts={workouts} user={user} />
 
       {/* Personal Measures */}
       <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
