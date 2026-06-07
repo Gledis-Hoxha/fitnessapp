@@ -124,14 +124,6 @@ export default function Nutrition() {
           fat={todayFat} />
       </div>
 
-      {/* Nutrition Summary */}
-      <NutritionSummary
-        calories={todayCalories}
-        protein={todayProtein}
-        carbs={todayCarbs}
-        fat={todayFat} />
-      
-
       {/* Meal Recommender */}
       <MealRecommender
         todayCalories={todayCalories}
@@ -150,6 +142,13 @@ export default function Nutrition() {
         onDelete={handleDeleteMeal} />
 
       )}
+
+      {/* Nutrition Summary */}
+      <NutritionSummary
+        calories={todayCalories}
+        protein={todayProtein}
+        carbs={todayCarbs}
+        fat={todayFat} />
 
       <AnimatePresence>
         {showFoodSearch &&
