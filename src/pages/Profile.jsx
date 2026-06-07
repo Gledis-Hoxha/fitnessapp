@@ -57,8 +57,16 @@ export default function Profile() {
               {user?.full_name?.[0]?.toUpperCase() || "?"}
             </div>
             <div className="min-w-0">
-              <h2 className="text-xl font-bold text-white truncate">{user?.full_name || "Your Profile"}</h2>
+              <h2 className="text-xl font-bold text-white break-words">{user?.full_name || "Your Profile"}</h2>
               <p className="text-sm text-white/40 truncate">{user?.email || ""}</p>
+              <div className="flex gap-3 mt-1.5">
+                <span className="text-xs text-white/50">
+                  <span className="text-white/30">Height</span> {user?.height_cm ? `${user.height_cm} cm` : "—"}
+                </span>
+                <span className="text-xs text-white/50">
+                  <span className="text-white/30">Weight</span> {user?.weight_kg ? `${user.weight_kg} kg` : "—"}
+                </span>
+              </div>
             </div>
           </div>
           <div className="flex gap-1 flex-shrink-0">
