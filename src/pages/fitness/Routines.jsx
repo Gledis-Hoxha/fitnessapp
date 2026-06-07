@@ -12,12 +12,12 @@ export default function Routines() {
 
   const { data: routines = [], isLoading } = useQuery({
     queryKey: ["routines"],
-    queryFn: () => base44.entities.Routine.list("-created_date", 50),
+    queryFn: () => base44.entities.Routine.list("-created_date", 50)
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Routine.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["routines"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["routines"] })
   });
 
   const handleStart = (routine) => {
@@ -27,7 +27,7 @@ export default function Routines() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 hidden">
         <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-secondary transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -39,28 +39,28 @@ export default function Routines() {
 
       <WeeklyPlanner routines={routines} />
 
-      {isLoading ? (
-        <div className="flex justify-center py-10">
+      {isLoading ?
+      <div className="flex justify-center py-10">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : routines.length === 0 ? (
-        <div className="bg-card border border-border rounded-2xl p-10 text-center">
+        </div> :
+      routines.length === 0 ?
+      <div className="bg-card border border-border rounded-2xl p-10 text-center">
           <BookOpen className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
           <p className="font-medium text-foreground">No routines yet</p>
           <p className="text-sm text-muted-foreground mt-1">
             Start a workout and tap <strong>"Save as Routine"</strong> to create one.
           </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {routines.map((routine, i) => (
-            <motion.div
-              key={routine.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className="bg-card border border-border rounded-2xl p-4"
-            >
+        </div> :
+
+      <div className="space-y-3">
+          {routines.map((routine, i) =>
+        <motion.div
+          key={routine.id}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.06 }}
+          className="bg-card border border-border rounded-2xl p-4">
+          
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground">{routine.name}</p>
@@ -74,9 +74,9 @@ export default function Routines() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => deleteMutation.mutate(routine.id)}
-                    className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors text-muted-foreground"
-                  >
+                onClick={() => deleteMutation.mutate(routine.id)}
+                className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors text-muted-foreground">
+                
                     <Trash2 className="w-4 h-4" />
                   </button>
                   <Button size="sm" onClick={() => handleStart(routine)} className="gap-1.5">
@@ -86,9 +86,9 @@ export default function Routines() {
                 </div>
               </div>
             </motion.div>
-          ))}
+        )}
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
