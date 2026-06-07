@@ -53,7 +53,7 @@ export default function Profile() {
       <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
         <div className="flex items-start justify-between gap-2 mb-4">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-16 h-16 bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0 rounded-[48px]">
+            <div className="w-16 h-16 bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0 rounded-2xl">
               {user?.full_name?.[0]?.toUpperCase() || "?"}
             </div>
             <div className="min-w-0">
