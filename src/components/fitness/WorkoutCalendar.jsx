@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  format, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
-  addDays, addMonths, isSameMonth, isToday, isSameDay, isBefore, startOfDay
+  format, startOfWeek, addDays, isToday, isSameDay, isBefore, startOfDay
 } from "date-fns";
-import { ChevronLeft, ChevronRight, Dumbbell, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { Dumbbell, CalendarDays, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function fmtDuration(sec) {
   if (!sec) return "—";
@@ -14,8 +15,71 @@ function fmtDuration(sec) {
   return `${m} min`;
 }
 
+function CalendarModal({ workoutsByDate, selectedDay, onSelectDate, onClose }) {
+  const today = new Date();
+  const weeks = [];
+  for (let w = -4; w <= 1; w++) {
+    const monday = startOfWeek(new Date(today.getFullYear(), today.getMonth(), today.getDate() + w * 7), { weekStartsOn: 1 });
+    weeks.push(monday);
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#111] border border-white/10 rounded-3xl p-5 w-full max-w-sm"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-bold text-white">Workout Calendar</p>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10"><X className="w-4 h-4 text-white/50" /></button>
+        </div>
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {DAYS.map((d) => <p key={d} className="text-[10px] text-white/25 text-center font-medium">{d[0]}</p>)}
+        </div>
+        <div className="space-y-1">
+          {weeks.map((monday, wi) => (
+            <div key={wi} className="grid grid-cols-7 gap-1">
+              {DAYS.map((_, di) => {
+                const date = addDays(monday, di);
+                const dateStr = format(date, "yyyy-MM-dd");
+                const hasWorkout = !!workoutsByDate[dateStr];
+                const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
+                const isCurrentDay = isToday(date);
+                const isSelected = isSameDay(date, selectedDay);
+                return (
+                  <button
+                    key={di}
+                    onClick={() => { onSelectDate(date); onClose(); }}
+                    className={`w-full aspect-square rounded-full flex items-center justify-center text-[11px] font-semibold transition-all ${
+                      isSelected ? "bg-blue-400 text-black scale-110" :
+                      hasWorkout ? "bg-blue-500/80 text-white" :
+                      isCurrentDay ? "border border-blue-500/60 text-blue-400" :
+                      isPast ? "text-white/15" : "text-white/30 hover:bg-white/10"
+                    }`}
+                  >
+                    {hasWorkout ? "✓" : format(date, "d")}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/8">
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-[10px] text-white/40">Workout</span></div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full border border-blue-500/60" /><span className="text-[10px] text-white/40">Today</span></div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function WorkoutCalendar() {
-  const [monthDate, setMonthDate] = useState(new Date());
+  const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDay, setSelectedDay] = useState(new Date());
 
   const { data: workouts = [] } = useQuery({
@@ -38,13 +102,8 @@ export default function WorkoutCalendar() {
     return map;
   }, [workouts]);
 
-  // Days grid
-  const monthStart = startOfMonth(monthDate);
-  const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const gridEnd = endOfWeek(endOfMonth(monthDate), { weekStartsOn: 1 });
-  const days = [];
-  let d = gridStart;
-  while (d <= gridEnd) { days.push(d); d = addDays(d, 1); }
+  const monday = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const weekCount = DAYS.filter((_, i) => workoutsByDate[format(addDays(monday, i), "yyyy-MM-dd")]).length;
 
   const selectedStr = format(selectedDay, "yyyy-MM-dd");
   const dayWorkouts = workoutsByDate[selectedStr] || [];
@@ -56,56 +115,38 @@ export default function WorkoutCalendar() {
 
   return (
     <div className="space-y-3">
-      {/* Calendar card */}
-      <div className="bg-[#0d0d0d] border border-white/8 rounded-2xl p-4">
-        {/* Month header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4 text-blue-400" />
-            <p className="text-sm font-bold text-white">{format(monthDate, "MMMM yyyy")}</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <button onClick={() => setMonthDate((m) => addMonths(m, -1))}
-              className="p-1.5 rounded-lg hover:bg-white/8 text-white/40 hover:text-white transition-colors">
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button onClick={() => { setMonthDate(new Date()); setSelectedDay(new Date()); }}
-              className="text-xs text-blue-400 px-2 hover:underline">Today</button>
-            <button onClick={() => setMonthDate((m) => addMonths(m, 1))}
-              className="p-1.5 rounded-lg hover:bg-white/8 text-white/40 hover:text-white transition-colors">
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+      {/* Weekly strip */}
+      <div className="bg-[#111] border border-white/8 rounded-2xl px-4 py-2.5">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest">This Week <span className="text-blue-400">{weekCount}/7</span></p>
+          <button onClick={() => setShowCalendar(true)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+            <CalendarDays className="w-3.5 h-3.5 text-white/40" />
+          </button>
         </div>
-
-        {/* Weekday labels */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
-          {["M", "T", "W", "T", "F", "S", "S"].map((w, i) => (
-            <span key={i} className="text-[10px] text-white/25 text-center font-medium">{w}</span>
-          ))}
-        </div>
-
-        {/* Days grid */}
         <div className="grid grid-cols-7 gap-1">
-          {days.map((day, i) => {
-            const dateStr = format(day, "yyyy-MM-dd");
+          {DAYS.map((day, i) => {
+            const date = addDays(monday, i);
+            const dateStr = format(date, "yyyy-MM-dd");
             const hasWorkout = !!workoutsByDate[dateStr];
-            const inMonth = isSameMonth(day, monthDate);
-            const selected = isSameDay(day, selectedDay);
-            const today = isToday(day);
+            const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
+            const isCurrentDay = isToday(date);
+            const isSelected = isSameDay(date, selectedDay);
             return (
               <button
-                key={i}
-                onClick={() => setSelectedDay(day)}
-                className="aspect-square flex items-center justify-center relative">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
-                  selected ? "ring-2 ring-blue-400 scale-105" : "hover:bg-white/8"
-                } ${
-                  hasWorkout ? "bg-blue-500 text-white shadow-md shadow-blue-500/30"
-                  : today ? "border-2 border-blue-500 text-blue-400"
-                  : inMonth ? "text-white/70" : "text-white/20"
+                key={day}
+                onClick={() => setSelectedDay(date)}
+                className="flex flex-col items-center gap-1 group"
+              >
+                <span className="text-[9px] text-white/25 font-medium">{day[0]}</span>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
+                  isSelected && hasWorkout ? "bg-blue-400 text-black scale-110" :
+                  isSelected ? "ring-2 ring-white/50 bg-white/10 text-white scale-110" :
+                  hasWorkout ? "bg-blue-500 text-white" :
+                  isCurrentDay ? "border border-blue-500/60 text-blue-400" :
+                  isPast ? "bg-white/4 text-white/10" :
+                  "bg-white/4 text-white/20 group-hover:bg-white/10"
                 }`}>
-                  {format(day, "d")}
+                  {hasWorkout ? "✓" : format(date, "d")}
                 </div>
               </button>
             );
@@ -158,6 +199,17 @@ export default function WorkoutCalendar() {
             </div>
           ))}
         </motion.div>
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCalendar && (
+          <CalendarModal
+            workoutsByDate={workoutsByDate}
+            selectedDay={selectedDay}
+            onSelectDate={setSelectedDay}
+            onClose={() => setShowCalendar(false)}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
