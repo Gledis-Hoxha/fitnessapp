@@ -100,7 +100,7 @@ export default function ExercisePicker() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search exercises (e.g. squat, bench...)"
-            className="pl-9 border-white/20 text-black placeholder:text-black/40 h-11 bg-gray-700"
+            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/25 h-11 focus:border-blue-500/40"
             autoFocus />
         </div>
       </div>
