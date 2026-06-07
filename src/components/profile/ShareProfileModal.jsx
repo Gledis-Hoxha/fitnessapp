@@ -34,7 +34,7 @@ export default function ShareProfileModal({ user, workoutCount, onClose }) {
               {user?.full_name?.[0]?.toUpperCase() || "U"}
             </div>
             <p className="font-bold text-white">{user?.username || user?.full_name}</p>
-            <p className="text-xs text-white/50 mt-0.5 hidden">🌿 VitalFlow Member · {workoutCount} workouts</p>
+            
             {user?.fitness_goals?.length > 0 &&
             <div className="flex flex-wrap gap-1 justify-center mt-2">
                 {user.fitness_goals.slice(0, 2).map((g) =>
