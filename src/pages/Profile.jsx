@@ -50,57 +50,56 @@ export default function Profile() {
   return (
     <div className="space-y-5">
       {/* Profile Header Card */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
-        <div className="flex items-start justify-between gap-2 mb-4">
+      <div className="bg-[#111] border border-white/10 rounded-3xl p-5">
+        <div className="flex items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-16 h-16 bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0 rounded-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0">
               {user?.full_name?.[0]?.toUpperCase() || "?"}
             </div>
             <div className="min-w-0">
-              <h2 className="text-xl font-bold text-white break-words">{user?.full_name || "Your Profile"}</h2>
-              <p className="text-sm text-white/40 truncate">{user?.email || ""}</p>
-              <div className="flex gap-3 mt-1.5">
-                <span className="text-xs text-white/50">
-                  <span className="text-white/30">Height</span> {user?.height_cm ? `${user.height_cm} cm` : "—"}
-                </span>
-                <span className="text-xs text-white/50">
-                  <span className="text-white/30">Weight</span> {user?.weight_kg ? `${user.weight_kg} kg` : "—"}
-                </span>
-              </div>
+              <h2 className="text-xl font-bold text-white break-words leading-tight">{user?.full_name || "Your Profile"}</h2>
+              <p className="text-sm text-white/40 mt-0.5">
+                {user?.fitness_goals?.length > 0
+                  ? (GOAL_LABELS[user.fitness_goals[0]] || user.fitness_goals[0].replace(/_/g, " "))
+                  : "Set your goal"}
+              </p>
             </div>
           </div>
-          <div className="flex gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
               onClick={() => setShowInbox(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
-              
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
+            >
               <Inbox className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowShare(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
-              
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
+            >
               <Share2 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowEdit(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
-              
-              <Pencil className="w-4 h-4" />
+              className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/20"
+            >
+              Edit
             </button>
           </div>
         </div>
 
-        {/* Goals */}
-        {user?.fitness_goals?.length > 0 &&
-        <div className="flex flex-wrap gap-1.5">
-            {user.fitness_goals.map((g) => null
-
-
-
-          )}
-          </div>
-        }
+        {/* Stat cards */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { value: user?.height_cm ? `${user.height_cm}cm` : "—", label: "Height" },
+            { value: user?.weight_kg ? `${user.weight_kg}kg` : "—", label: "Weight" },
+            { value: user?.age ? `${user.age}yo` : "—", label: "Age" },
+          ].map((s) => (
+            <div key={s.label} className="bg-white/5 border border-white/8 rounded-2xl py-4 text-center">
+              <p className="text-xl font-bold text-blue-400">{s.value}</p>
+              <p className="text-xs text-white/40 mt-1">{s.label}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Tabs */}
