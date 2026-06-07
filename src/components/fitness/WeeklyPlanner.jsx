@@ -5,6 +5,7 @@ import { CalendarDays, Plus, X, Bell, BellOff } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { usePlanNotifications, requestNotificationPermission } from "@/lib/usePlanNotifications";
+import ReminderTimeInput from "@/components/fitness/ReminderTimeInput";
 
 const DAYS = [
   { idx: 1, label: "Mon" },
@@ -94,11 +95,9 @@ export default function WeeklyPlanner({ routines = [] }) {
                     ) : (
                       <BellOff className="w-3.5 h-3.5 text-muted-foreground" />
                     )}
-                    <input
-                      type="time"
-                      value={plan.reminder_time || ""}
-                      onChange={(e) => timeMutation.mutate({ id: plan.id, reminder_time: e.target.value })}
-                      className="bg-secondary/60 border border-border rounded-lg px-1.5 py-1 text-xs text-foreground outline-none focus:border-primary/50 w-[88px]"
+                    <ReminderTimeInput
+                      value={plan.reminder_time}
+                      onCommit={(reminder_time) => timeMutation.mutate({ id: plan.id, reminder_time })}
                     />
                     <button
                       onClick={() => clearMutation.mutate(plan.id)}
