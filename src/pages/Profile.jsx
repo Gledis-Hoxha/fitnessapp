@@ -50,49 +50,65 @@ export default function Profile() {
   return (
     <div className="space-y-5">
       {/* Profile Header Card */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
-        <div className="flex items-start justify-between gap-2 mb-4">
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0">
-              {user?.full_name?.[0]?.toUpperCase() || "?"}
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-xl font-bold text-white truncate">{user?.full_name || "Your Profile"}</h2>
-              <p className="text-sm text-white/40 truncate">{user?.email || ""}</p>
-            </div>
-          </div>
-          <div className="flex gap-1 flex-shrink-0">
-            <button
-              onClick={() => setShowInbox(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
-              <Inbox className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setShowShare(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
-              <Share2 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setShowEdit(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
+      <div className="relative bg-[#111] border border-white/10 rounded-3xl overflow-hidden">
+        {/* Gradient banner */}
+        <div className="h-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-500 relative">
+          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.4),transparent_50%)]" />
+          {/* Actions over banner */}
+          <div className="absolute top-3 right-3 flex gap-1.5">
+            {[
+              { icon: Inbox, onClick: () => setShowInbox(true) },
+              { icon: Share2, onClick: () => setShowShare(true) },
+              { icon: Pencil, onClick: () => setShowEdit(true) },
+            ].map(({ icon: Icon, onClick }, i) => (
+              <button
+                key={i}
+                onClick={onClick}
+                className="p-2 rounded-xl bg-black/20 backdrop-blur-sm hover:bg-black/40 transition-colors text-white/80 hover:text-white"
+              >
+                <Icon className="w-4 h-4" />
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Goals */}
-        {user?.fitness_goals?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {user.fitness_goals.map((g) => (
-              <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full font-medium">
-                {GOAL_LABELS[g] || g.replace(/_/g, " ")}
-              </span>
+        <div className="px-5 pb-5">
+          {/* Avatar overlapping banner */}
+          <div className="flex items-end gap-4 -mt-9 mb-4">
+            <div className="w-[72px] h-[72px] rounded-2xl bg-blue-500/20 border-4 border-[#111] ring-1 ring-blue-500/30 flex items-center justify-center text-3xl font-bold text-blue-300 flex-shrink-0 shadow-lg">
+              {user?.full_name?.[0]?.toUpperCase() || "?"}
+            </div>
+            <div className="min-w-0 pb-1">
+              <h2 className="text-xl font-bold text-white truncate leading-tight">{user?.full_name || "Your Profile"}</h2>
+              <p className="text-sm text-white/40 truncate">{user?.email || ""}</p>
+            </div>
+          </div>
+
+          {/* Quick stats */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {[
+              { label: "Workouts", value: workouts.length },
+              { label: "Days Logged", value: new Set(meals.map((m) => m.date)).size },
+              { label: "Goals", value: user?.fitness_goals?.length || 0 },
+            ].map((s) => (
+              <div key={s.label} className="bg-white/5 border border-white/8 rounded-2xl py-2.5 text-center">
+                <p className="text-lg font-bold text-white">{s.value}</p>
+                <p className="text-[11px] text-white/40 mt-0.5">{s.label}</p>
+              </div>
             ))}
           </div>
-        )}
+
+          {/* Goals */}
+          {user?.fitness_goals?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {user.fitness_goals.map((g) => (
+                <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full font-medium">
+                  {GOAL_LABELS[g] || g.replace(/_/g, " ")}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
