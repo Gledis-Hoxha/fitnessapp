@@ -59,9 +59,9 @@ export default function HydrationTracker({ date }) {
           <Droplets className="w-4 h-4 text-blue-400" />
           <p className="text-sm font-semibold text-white">Hydration</p>
         </div>
-        <span className={`text-xs font-semibold hidden ${done ? "text-blue-400" : "text-white/40"}`}>
-          {glasses}/{GOAL} glasses {done ? "✓" : ""}
-        </span>
+        
+
+        
       </div>
 
       {/* Vertical filling bottle — drag up/down to fill/empty */}
