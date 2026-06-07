@@ -58,7 +58,7 @@ export default function Profile() {
             </div>
             <div className="min-w-0">
               <h2 className="text-xl font-bold text-white break-words leading-tight">{user?.full_name || "Your Profile"}</h2>
-              <p className="text-sm text-white/40 mt-0.5">
+              <p className="text-sm text-white/40 mt-0.5 hidden">
                 {user?.fitness_goals?.length > 0 ?
                 GOAL_LABELS[user.fitness_goals[0]] || user.fitness_goals[0].replace(/_/g, " ") :
                 "Set your goal"}
