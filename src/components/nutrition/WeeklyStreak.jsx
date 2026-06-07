@@ -116,7 +116,7 @@ export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectD
             className="flex flex-col items-center justify-end gap-1 group">
             <span className="text-[9px] text-white/25 font-medium">&nbsp;</span>
             <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/4 text-white/40 group-hover:bg-white/10 transition-all">
-              <CalendarDays className="w-3.5 h-3.5" />
+              <CalendarDays className="w-4 h-4" />
             </div>
           </button>
         </div>
