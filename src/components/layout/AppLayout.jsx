@@ -39,25 +39,24 @@ export default function AppLayout() {
   const [showSettings, setShowSettings] = useState(false);
 
   const pageTitle = getPageTitle(location.pathname);
+  const isMainPage = navItems.some((n) => n.path === location.pathname) || location.pathname === "/";
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
       {/* Top Header */}
       <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-            className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/50 hover:text-white">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+          {!isMainPage ? (
+            <button
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+              className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/50 hover:text-white">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          ) : (
+            <div className="w-10 h-10" />
+          )}
 
-
-
-
-
-
-          
 
           <span className="font-inter font-bold text-lg text-white absolute left-1/2 -translate-x-1/2">
             {pageTitle}
@@ -65,7 +64,7 @@ export default function AppLayout() {
 
           <button
             onClick={() => setShowSettings(true)}
-            className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white">
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/40 hover:text-white">
             <Settings className="w-5 h-5" />
           </button>
         </div>
