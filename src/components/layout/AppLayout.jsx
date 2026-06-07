@@ -76,7 +76,7 @@ export default function AppLayout() {
                 to={path}
                 aria-label={label}
                 className={cn(
-                  "flex-1 flex items-center justify-center aspect-square rounded-full transition-all duration-200",
+                  "flex-1 flex items-center justify-center h-10 rounded-full transition-all duration-200",
                   active ?
                   "bg-white text-[#2e2b3a] shadow-lg" :
                   "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
