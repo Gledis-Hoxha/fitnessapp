@@ -8,6 +8,7 @@ import ProfileNutritionTab from "@/components/profile/ProfileNutritionTab";
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import ShareProfileModal from "@/components/profile/ShareProfileModal";
 import InboxPanel from "@/components/profile/InboxPanel";
+import ProfileAvatar from "@/components/profile/ProfileAvatar";
 
 const GOAL_LABELS = {
   lose_weight: "Lose Weight 🔥",
@@ -53,9 +54,7 @@ export default function Profile() {
       <div className="bg-[#111] border border-white/10 rounded-3xl p-5">
         <div className="flex items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0">
-              {user?.full_name?.[0]?.toUpperCase() || "?"}
-            </div>
+            <ProfileAvatar user={user} onUpdated={handleProfileSaved} />
             <div className="min-w-0">
               <h2 className="text-xl font-bold text-white break-words leading-tight">{user?.full_name || "Your Profile"}</h2>
               

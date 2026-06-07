@@ -14,6 +14,10 @@
       "type": "string",
       "description": "Chosen username"
     },
+    "avatar_url": {
+      "type": "string",
+      "description": "URL of the user's profile picture"
+    },
     "age": {
       "type": "number",
       "description": "User age in years"
