@@ -58,11 +58,11 @@ export default function Profile() {
             </div>
             <div className="min-w-0">
               <h2 className="text-xl font-bold text-white break-words leading-tight">{user?.full_name || "Your Profile"}</h2>
-              <p className="text-sm text-white/40 mt-0.5 hidden">
-                {user?.fitness_goals?.length > 0 ?
-                GOAL_LABELS[user.fitness_goals[0]] || user.fitness_goals[0].replace(/_/g, " ") :
-                "Set your goal"}
-              </p>
+              
+
+
+
+              
             </div>
           </div>
           <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -70,13 +70,13 @@ export default function Profile() {
               onClick={() => setShowInbox(true)}
               className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
               
-              <Inbox className="w-4 h-4 hidden" />
+              
             </button>
             <button
               onClick={() => setShowShare(true)}
               className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
               
-              <Share2 className="w-4 h-4 hidden" />
+              
             </button>
             <button
               onClick={() => setShowEdit(true)}
