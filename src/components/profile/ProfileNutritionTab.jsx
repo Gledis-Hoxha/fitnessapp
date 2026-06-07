@@ -11,10 +11,26 @@ const DEFAULT_REMINDERS = [
   { id: "dinner", time: "7:00 PM", label: "Log Dinner", active: false },
 ];
 
+const MEAL_REMINDERS_KEY = "meal_reminders";
+
+function getStoredReminders() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(MEAL_REMINDERS_KEY));
+    if (!Array.isArray(stored)) return DEFAULT_REMINDERS;
+    // Merge stored active states onto defaults so labels/times stay current
+    return DEFAULT_REMINDERS.map((r) => {
+      const match = stored.find((s) => s.id === r.id);
+      return match ? { ...r, active: match.active } : r;
+    });
+  } catch {
+    return DEFAULT_REMINDERS;
+  }
+}
+
 export default function ProfileNutritionTab({ meals = [], user }) {
   const [note, setNote] = useState("");
   const [notes, setNotes] = useState([]);
-  const [reminders, setReminders] = useState(DEFAULT_REMINDERS);
+  const [reminders, setReminders] = useState(getStoredReminders);
   const [progressPhotos, setProgressPhotos] = useState([]);
   const [uploading, setUploading] = useState(false);
   const photoInputRef = useRef(null);
@@ -47,7 +63,11 @@ export default function ProfileNutritionTab({ meals = [], user }) {
   const recommendedCal = calcRecommendedCal();
 
   const toggleReminder = (id) =>
-    setReminders((prev) => prev.map((r) => r.id === id ? { ...r, active: !r.active } : r));
+    setReminders((prev) => {
+      const next = prev.map((r) => r.id === id ? { ...r, active: !r.active } : r);
+      localStorage.setItem(MEAL_REMINDERS_KEY, JSON.stringify(next.map(({ id, active }) => ({ id, active }))));
+      return next;
+    });
 
   const addNote = () => {
     if (!note.trim()) return;
