@@ -84,7 +84,7 @@ export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectD
     <>
       <div className="bg-[#111] border border-white/8 rounded-2xl px-4 py-2.5">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest hidden">This Week <span className="text-green-400">{weekLogged}/7</span></p>
+          
           <button onClick={() => setShowCalendar(true)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
             <CalendarDays className="w-3.5 h-3.5 text-white/40" />
           </button>
