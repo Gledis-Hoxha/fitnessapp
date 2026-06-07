@@ -14,15 +14,15 @@ function StatPill({ label, value, color }) {
     <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-white/40 mt-1">{label}</p>
-    </div>
-  );
+    </div>);
+
 }
 
 const GOAL_LABELS = {
   lose_weight: "Lose Weight 🔥", build_muscle: "Build Muscle 💪",
   improve_endurance: "Endurance 🏃", stay_healthy: "Stay Healthy ❤️",
   increase_flexibility: "Flexibility 🧘", sport_performance: "Sport 🏆",
-  stress_relief: "Stress Relief 😌", body_recomposition: "Recomposition ⚡",
+  stress_relief: "Stress Relief 😌", body_recomposition: "Recomposition ⚡"
 };
 
 export default function ProfileFitnessTab({ workouts = [], user }) {
@@ -55,27 +55,27 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
   };
 
   const totalSets = workouts.reduce(
-    (a, w) => a + (w.exercises?.reduce((b, ex) => b + (ex.sets?.filter(s => s.completed).length || 0), 0) || 0), 0
+    (a, w) => a + (w.exercises?.reduce((b, ex) => b + (ex.sets?.filter((s) => s.completed).length || 0), 0) || 0), 0
   );
-  const avgDuration = workouts.length
-    ? Math.round(workouts.reduce((a, w) => a + (w.duration_seconds || 0), 0) / workouts.length / 60)
-    : 0;
+  const avgDuration = workouts.length ?
+  Math.round(workouts.reduce((a, w) => a + (w.duration_seconds || 0), 0) / workouts.length / 60) :
+  0;
 
   const monday = startOfWeek(addWeeks(new Date(), weekOffset), { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
-  const workoutDates = new Set(workouts.map(w => w.date));
+  const workoutDates = new Set(workouts.map((w) => w.date));
 
   const chartData = workouts.slice(0, 6).reverse().map((w, i) => ({
     name: w.date ? format(new Date(w.date), "MMM d") : `W${i + 1}`,
-    min: Math.round((w.duration_seconds || 0) / 60),
+    min: Math.round((w.duration_seconds || 0) / 60)
   }));
 
   const selectedDateStr = selectedDay ? format(selectedDay, "yyyy-MM-dd") : null;
-  const selectedWorkouts = selectedDateStr ? workouts.filter(w => w.date === selectedDateStr) : [];
+  const selectedWorkouts = selectedDateStr ? workouts.filter((w) => w.date === selectedDateStr) : [];
 
-  const bmi = user?.height_cm && user?.weight_kg
-    ? (user.weight_kg / ((user.height_cm / 100) ** 2)).toFixed(1)
-    : null;
+  const bmi = user?.height_cm && user?.weight_kg ?
+  (user.weight_kg / (user.height_cm / 100) ** 2).toFixed(1) :
+  null;
 
   return (
     <div className="space-y-4">
@@ -90,16 +90,16 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1">
-            <button onClick={() => setWeekOffset(wo => wo - 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+            <button onClick={() => setWeekOffset((wo) => wo - 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             <p className="text-sm font-semibold text-white">
               {format(monday, "MMM d")} – {format(addDays(monday, 6), "MMM d")}
             </p>
-            {weekOffset !== 0 && (
-              <button onClick={() => setWeekOffset(0)} className="text-xs text-blue-400 px-2 hover:underline">Today</button>
-            )}
-            <button onClick={() => setWeekOffset(wo => wo + 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+            {weekOffset !== 0 &&
+            <button onClick={() => setWeekOffset(0)} className="text-xs text-blue-400 px-2 hover:underline">Today</button>
+            }
+            <button onClick={() => setWeekOffset((wo) => wo + 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -108,7 +108,7 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
           </button>
         </div>
         <div className="grid grid-cols-7 gap-1.5">
-          {["M","T","W","T","F","S","S"].map((d, i) => {
+          {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => {
             const date = weekDays[i];
             const dateStr = format(date, "yyyy-MM-dd");
             const hasWorkout = workoutDates.has(dateStr);
@@ -118,49 +118,49 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
               <button
                 key={i}
                 onClick={() => setSelectedDay(isSelected ? null : date)}
-                className="flex flex-col items-center gap-1 group"
-              >
+                className="flex flex-col items-center gap-1 group">
+                
                 <span className="text-xs text-white/30">{d}</span>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  isSelected ? "ring-2 ring-white/50 scale-110"
-                  : "hover:scale-105"
-                } ${
-                  hasWorkout ? "bg-blue-500 text-white shadow-md shadow-blue-500/30"
-                  : today ? "border-2 border-blue-500 text-blue-400"
-                  : "bg-white/5 text-white/40 hover:bg-white/10"
-                }`}>
+                isSelected ? "ring-2 ring-white/50 scale-110" :
+                "hover:scale-105"} ${
+
+                hasWorkout ? "bg-blue-500 text-white shadow-md shadow-blue-500/30" :
+                today ? "border-2 border-blue-500 text-blue-400" :
+                "bg-white/5 text-white/40 hover:bg-white/10"}`
+                }>
                   {hasWorkout ? "✓" : format(date, "d")}
                 </div>
-              </button>
-            );
+              </button>);
+
           })}
         </div>
 
-        {selectedDay && (
-          <div className="mt-3 pt-3 border-t border-white/8">
+        {selectedDay &&
+        <div className="mt-3 pt-3 border-t border-white/8">
             <p className="text-xs font-semibold text-white/50 mb-2">{format(selectedDay, "EEEE, MMM d")}</p>
-            {selectedWorkouts.length === 0 ? (
-              <p className="text-xs text-white/25 italic">No workout logged this day</p>
-            ) : selectedWorkouts.map((w, i) => (
-              <div key={i} className="space-y-1">
-                {w.exercises?.slice(0, 3).map((ex, j) => (
-                  <div key={j} className="flex items-center justify-between">
+            {selectedWorkouts.length === 0 ?
+          <p className="text-xs text-white/25 italic">No workout logged this day</p> :
+          selectedWorkouts.map((w, i) =>
+          <div key={i} className="space-y-1">
+                {w.exercises?.slice(0, 3).map((ex, j) =>
+            <div key={j} className="flex items-center justify-between">
                     <span className="text-xs text-white/70">{ex.exercise_name}</span>
-                    <span className="text-xs text-blue-400">{ex.sets?.filter(s => s.completed).length || 0} sets</span>
+                    <span className="text-xs text-blue-400">{ex.sets?.filter((s) => s.completed).length || 0} sets</span>
                   </div>
-                ))}
-                {(w.exercises?.length || 0) > 3 && (
-                  <p className="text-xs text-white/30">+{w.exercises.length - 3} more exercises</p>
-                )}
+            )}
+                {(w.exercises?.length || 0) > 3 &&
+            <p className="text-xs text-white/30">+{w.exercises.length - 3} more exercises</p>
+            }
               </div>
-            ))}
+          )}
           </div>
-        )}
+        }
       </div>
 
       {/* Duration Chart */}
-      {chartData.length > 1 && (
-        <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
+      {chartData.length > 1 &&
+      <div className="border border-white/10 rounded-2xl p-4 hidden" style={{ background: "hsl(248,20%,15%)" }}>
           <p className="text-sm font-semibold text-white mb-3">Workout Duration</p>
           <ResponsiveContainer width="100%" height={130}>
             <BarChart data={chartData} barSize={18}>
@@ -172,7 +172,7 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      )}
+      }
 
       {/* Muscle Map */}
       <MuscleMap workouts={workouts} />
@@ -185,108 +185,108 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
         </div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: "Age", value: user?.age ? `${user.age} yrs` : "—", color: "text-blue-300" },
-            { label: "Height", value: user?.height_cm ? `${user.height_cm} cm` : "—", color: "text-blue-300" },
-            { label: "BMI", value: bmi || "—", color: "text-yellow-400" },
-            { label: "Activity Level", value: user?.activity_level ? user.activity_level.replace(/_/g, " ") : "—", color: "text-purple-400" },
-          ].map((m) => (
-            <div key={m.label} className="bg-white/5 rounded-xl px-3 py-2.5">
+          { label: "Age", value: user?.age ? `${user.age} yrs` : "—", color: "text-blue-300" },
+          { label: "Height", value: user?.height_cm ? `${user.height_cm} cm` : "—", color: "text-blue-300" },
+          { label: "BMI", value: bmi || "—", color: "text-yellow-400" },
+          { label: "Activity Level", value: user?.activity_level ? user.activity_level.replace(/_/g, " ") : "—", color: "text-purple-400" }].
+          map((m) =>
+          <div key={m.label} className="bg-white/5 rounded-xl px-3 py-2.5">
               <p className="text-xs text-white/40">{m.label}</p>
               <p className={`text-sm font-semibold mt-0.5 capitalize ${m.color}`}>{m.value}</p>
             </div>
-          ))}
+          )}
 
           {/* Editable: Weight */}
           <div className="bg-white/5 rounded-xl px-3 py-2.5">
             <div className="flex items-center justify-between mb-0.5">
               <p className="text-xs text-white/40">Weight</p>
-              {!editingWeight ? (
-                <button onClick={() => { setWeightVal(user?.weight_kg || ""); setEditingWeight(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
+              {!editingWeight ?
+              <button onClick={() => {setWeightVal(user?.weight_kg || "");setEditingWeight(true);}} className="p-0.5 rounded hover:bg-white/10 transition-colors">
                   <Pencil className="w-3 h-3 text-white/30" />
-                </button>
-              ) : (
-                <div className="flex gap-1">
+                </button> :
+
+              <div className="flex gap-1">
                   <button onClick={saveWeight} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
                   <button onClick={() => setEditingWeight(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
                 </div>
-              )}
+              }
             </div>
-            {editingWeight ? (
-              <input type="number" value={weightVal} onChange={(e) => setWeightVal(e.target.value)}
-                className="w-full bg-white/10 border border-green-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
-                autoFocus onKeyDown={(e) => e.key === "Enter" && saveWeight()} />
-            ) : (
-              <p className="text-sm font-semibold text-green-400">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
-            )}
+            {editingWeight ?
+            <input type="number" value={weightVal} onChange={(e) => setWeightVal(e.target.value)}
+            className="w-full bg-white/10 border border-green-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
+            autoFocus onKeyDown={(e) => e.key === "Enter" && saveWeight()} /> :
+
+            <p className="text-sm font-semibold text-green-400">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
+            }
           </div>
 
           {/* Editable: Goal Weight */}
           <div className="bg-white/5 rounded-xl px-3 py-2.5">
             <div className="flex items-center justify-between mb-0.5">
               <p className="text-xs text-white/40">Goal Weight</p>
-              {!editingGoalWeight ? (
-                <button onClick={() => { setGoalWeightVal(user?.goal_weight_kg || ""); setEditingGoalWeight(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
+              {!editingGoalWeight ?
+              <button onClick={() => {setGoalWeightVal(user?.goal_weight_kg || "");setEditingGoalWeight(true);}} className="p-0.5 rounded hover:bg-white/10 transition-colors">
                   <Pencil className="w-3 h-3 text-white/30" />
-                </button>
-              ) : (
-                <div className="flex gap-1">
+                </button> :
+
+              <div className="flex gap-1">
                   <button onClick={saveGoalWeight} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
                   <button onClick={() => setEditingGoalWeight(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
                 </div>
-              )}
+              }
             </div>
-            {editingGoalWeight ? (
-              <input type="number" value={goalWeightVal} onChange={(e) => setGoalWeightVal(e.target.value)}
-                className="w-full bg-white/10 border border-orange-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
-                autoFocus onKeyDown={(e) => e.key === "Enter" && saveGoalWeight()} />
-            ) : (
-              <p className="text-sm font-semibold text-orange-400">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
-            )}
+            {editingGoalWeight ?
+            <input type="number" value={goalWeightVal} onChange={(e) => setGoalWeightVal(e.target.value)}
+            className="w-full bg-white/10 border border-orange-500/40 rounded-lg px-2 py-1 text-sm text-white outline-none"
+            autoFocus onKeyDown={(e) => e.key === "Enter" && saveGoalWeight()} /> :
+
+            <p className="text-sm font-semibold text-orange-400">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
+            }
           </div>
         </div>
 
         <div className="mt-3">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs text-white/40">Fitness Goals</p>
-            {!editingGoals ? (
-              <button onClick={() => { setGoalsVal(user?.fitness_goals || []); setEditingGoals(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
+            {!editingGoals ?
+            <button onClick={() => {setGoalsVal(user?.fitness_goals || []);setEditingGoals(true);}} className="p-0.5 rounded hover:bg-white/10 transition-colors">
                 <Pencil className="w-3 h-3 text-white/30" />
-              </button>
-            ) : (
-              <div className="flex gap-1">
+              </button> :
+
+            <div className="flex gap-1">
                 <button onClick={saveGoals} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
                 <button onClick={() => setEditingGoals(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
               </div>
-            )}
+            }
           </div>
-          {editingGoals ? (
-            <div className="flex flex-wrap gap-1.5">
+          {editingGoals ?
+          <div className="flex flex-wrap gap-1.5">
               {Object.entries(GOAL_LABELS).map(([key, label]) => {
-                const active = goalsVal.includes(key);
-                return (
-                  <button
-                    key={key}
-                    onClick={() => setGoalsVal(active ? goalsVal.filter(g => g !== key) : [...goalsVal, key])}
-                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                      active ? "bg-blue-500/15 text-blue-300 border-blue-500/20" : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"
-                    }`}
-                  >
+              const active = goalsVal.includes(key);
+              return (
+                <button
+                  key={key}
+                  onClick={() => setGoalsVal(active ? goalsVal.filter((g) => g !== key) : [...goalsVal, key])}
+                  className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                  active ? "bg-blue-500/15 text-blue-300 border-blue-500/20" : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"}`
+                  }>
+                  
                     {label}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (user?.fitness_goals?.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {user.fitness_goals.map((g) => (
-                <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full">
+                  </button>);
+
+            })}
+            </div> :
+          user?.fitness_goals?.length > 0 ?
+          <div className="flex flex-wrap gap-1.5">
+              {user.fitness_goals.map((g) =>
+            <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full">
                   {GOAL_LABELS[g] || g.replace(/_/g, " ")}
                 </span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-white/25 italic">No goals set</p>
-          ))}
+            )}
+            </div> :
+
+          <p className="text-xs text-white/25 italic">No goals set</p>
+          }
         </div>
       </div>
 
@@ -294,15 +294,15 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
       <FitnessAchievements workouts={workouts} />
 
       <AnimatePresence>
-        {showCalendar && (
-          <WorkoutCalendarModal
-            workoutDates={workoutDates}
-            selectedDay={selectedDay}
-            onSelectDate={setSelectedDay}
-            onClose={() => setShowCalendar(false)}
-          />
-        )}
+        {showCalendar &&
+        <WorkoutCalendarModal
+          workoutDates={workoutDates}
+          selectedDay={selectedDay}
+          onSelectDate={setSelectedDay}
+          onClose={() => setShowCalendar(false)} />
+
+        }
       </AnimatePresence>
-    </div>
-  );
+    </div>);
+
 }
