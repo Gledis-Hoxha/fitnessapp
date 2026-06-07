@@ -21,15 +21,15 @@ function CalendarModal({ loggedDates, selectedDate, onSelectDate, onClose }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
-      onClick={onClose}
-    >
+      onClick={onClose}>
+      
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 40, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#111] border border-white/10 rounded-3xl p-5 w-full max-w-sm"
-      >
+        className="bg-[#111] border border-white/10 rounded-3xl p-5 w-full max-w-sm">
+        
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm font-bold text-white">Nutrition Calendar</p>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10"><X className="w-4 h-4 text-white/50" /></button>
@@ -38,40 +38,40 @@ function CalendarModal({ loggedDates, selectedDate, onSelectDate, onClose }) {
           {DAYS.map((d) => <p key={d} className="text-[10px] text-white/25 text-center font-medium">{d[0]}</p>)}
         </div>
         <div className="space-y-1">
-          {weeks.map((monday, wi) => (
-            <div key={wi} className="grid grid-cols-7 gap-1">
+          {weeks.map((monday, wi) =>
+          <div key={wi} className="grid grid-cols-7 gap-1">
               {DAYS.map((_, di) => {
-                const date = addDays(monday, di);
-                const dateStr = format(date, "yyyy-MM-dd");
-                const logged = loggedSet.has(dateStr);
-                const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
-                const isCurrentDay = isToday(date);
-                const isSelected = selectedDate === dateStr;
-                return (
-                  <button
-                    key={di}
-                    onClick={() => { onSelectDate?.(isSelected ? null : dateStr); onClose(); }}
-                    className={`w-full aspect-square rounded-full flex items-center justify-center text-[11px] font-semibold transition-all ${
-                      isSelected ? "bg-green-400 text-black scale-110" :
-                      logged ? "bg-green-500/80 text-white" :
-                      isCurrentDay ? "border border-green-500/60 text-green-400" :
-                      isPast ? "text-white/15" : "text-white/30 hover:bg-white/10"
-                    }`}
-                  >
+              const date = addDays(monday, di);
+              const dateStr = format(date, "yyyy-MM-dd");
+              const logged = loggedSet.has(dateStr);
+              const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
+              const isCurrentDay = isToday(date);
+              const isSelected = selectedDate === dateStr;
+              return (
+                <button
+                  key={di}
+                  onClick={() => {onSelectDate?.(isSelected ? null : dateStr);onClose();}}
+                  className={`w-full aspect-square rounded-full flex items-center justify-center text-[11px] font-semibold transition-all ${
+                  isSelected ? "bg-green-400 text-black scale-110" :
+                  logged ? "bg-green-500/80 text-white" :
+                  isCurrentDay ? "border border-green-500/60 text-green-400" :
+                  isPast ? "text-white/15" : "text-white/30 hover:bg-white/10"}`
+                  }>
+                  
                     {logged ? "✓" : format(date, "d")}
-                  </button>
-                );
-              })}
+                  </button>);
+
+            })}
             </div>
-          ))}
+          )}
         </div>
         <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/8">
           <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-[10px] text-white/40">Logged</span></div>
           <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full border border-green-500/60" /><span className="text-[10px] text-white/40">Today</span></div>
         </div>
       </motion.div>
-    </motion.div>
-  );
+    </motion.div>);
+
 }
 
 export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectDate }) {
@@ -84,7 +84,7 @@ export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectD
     <>
       <div className="bg-[#111] border border-white/8 rounded-2xl px-4 py-2.5">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest">This Week <span className="text-green-400">{weekLogged}/7</span></p>
+          <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest hidden">This Week <span className="text-green-400">{weekLogged}/7</span></p>
           <button onClick={() => setShowCalendar(true)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
             <CalendarDays className="w-3.5 h-3.5 text-white/40" />
           </button>
@@ -101,35 +101,35 @@ export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectD
               <button
                 key={day}
                 onClick={() => onSelectDate?.(isSelected ? null : dateStr)}
-                className="flex flex-col items-center gap-1 group"
-              >
+                className="flex flex-col items-center gap-1 group">
+                
                 <span className="text-[9px] text-white/25 font-medium">{day[0]}</span>
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
-                  isSelected && logged ? "bg-green-400 text-black scale-110" :
-                  isSelected ? "ring-2 ring-white/50 bg-white/10 text-white scale-110" :
-                  logged ? "bg-green-500 text-white" :
-                  isCurrentDay ? "border border-green-500/60 text-green-400" :
-                  isPast ? "bg-white/4 text-white/10" :
-                  "bg-white/4 text-white/20 group-hover:bg-white/10"
-                }`}>
+                isSelected && logged ? "bg-green-400 text-black scale-110" :
+                isSelected ? "ring-2 ring-white/50 bg-white/10 text-white scale-110" :
+                logged ? "bg-green-500 text-white" :
+                isCurrentDay ? "border border-green-500/60 text-green-400" :
+                isPast ? "bg-white/4 text-white/10" :
+                "bg-white/4 text-white/20 group-hover:bg-white/10"}`
+                }>
                   {logged ? "✓" : format(date, "d")}
                 </div>
-              </button>
-            );
+              </button>);
+
           })}
         </div>
       </div>
 
       <AnimatePresence>
-        {showCalendar && (
-          <CalendarModal
-            loggedDates={loggedDates}
-            selectedDate={selectedDate}
-            onSelectDate={onSelectDate}
-            onClose={() => setShowCalendar(false)}
-          />
-        )}
+        {showCalendar &&
+        <CalendarModal
+          loggedDates={loggedDates}
+          selectedDate={selectedDate}
+          onSelectDate={onSelectDate}
+          onClose={() => setShowCalendar(false)} />
+
+        }
       </AnimatePresence>
-    </>
-  );
+    </>);
+
 }
