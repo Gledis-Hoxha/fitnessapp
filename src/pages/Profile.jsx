@@ -86,10 +86,10 @@ export default function Profile() {
         {/* Goals */}
         {user?.fitness_goals?.length > 0 &&
         <div className="flex flex-wrap gap-1.5">
-            {user.fitness_goals.map((g) =>
-          <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full font-medium hidden">
-                {GOAL_LABELS[g] || g.replace(/_/g, " ")}
-              </span>
+            {user.fitness_goals.map((g) => null
+
+
+
           )}
           </div>
         }
