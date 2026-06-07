@@ -1,25 +1,33 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Plus, CalendarDays, Activity } from "lucide-react";
+import { Plus, CalendarDays, Activity, Bell } from "lucide-react";
 import WorkoutCalendar from "@/components/fitness/WorkoutCalendar";
 import WorkoutStartModal from "@/components/fitness/WorkoutStartModal";
+import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 import StepTracker from "@/components/fitness/StepTracker";
 import SleepTracker from "@/components/fitness/SleepTracker";
 import HeartRateTracker from "@/components/fitness/HeartRateTracker";
 
 export default function Fitness() {
   const [showStartModal, setShowStartModal] = useState(false);
+  const [showReminders, setShowReminders] = useState(false);
 
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center relative">
         <button
           onClick={() => setShowStartModal(true)}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 font-semibold text-sm hover:bg-blue-500/30 transition-colors">
           
           <Plus className="w-4 h-4" />
           Start Workout
+        </button>
+        <button
+          onClick={() => setShowReminders(true)}
+          aria-label="Workout reminders"
+          className="absolute right-0 p-2 rounded-xl bg-blue-500/15 border border-blue-500/20 text-blue-400 hover:bg-blue-500/25 transition-colors">
+          <Bell className="w-5 h-5" />
         </button>
       </div>
 
@@ -43,6 +51,7 @@ export default function Fitness() {
 
       <AnimatePresence>
         {showStartModal && <WorkoutStartModal onClose={() => setShowStartModal(false)} />}
+        {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
       </AnimatePresence>
     </div>);
 

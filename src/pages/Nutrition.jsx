@@ -3,7 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { format } from "date-fns";
 import { AnimatePresence } from "framer-motion";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Bell } from "lucide-react";
+import NotificationsModal from "@/components/shared/NotificationsModal";
 import MealSection from "@/components/nutrition/MealSection";
 import MacroProgressChart from "@/components/nutrition/MacroProgressChart";
 import HydrationTracker from "@/components/nutrition/HydrationTracker";
@@ -15,6 +16,7 @@ import MealRecommender from "@/components/nutrition/MealRecommender";
 export default function Nutrition() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [showFoodSearch, setShowFoodSearch] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [addingMealType, setAddingMealType] = useState(null);
   const queryClient = useQueryClient();
 
@@ -73,17 +75,19 @@ export default function Nutrition() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          
-          
-        </div>
+      <div className="flex items-center justify-center relative">
         <button
           onClick={() => handleAddFood(null)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 font-semibold text-sm hover:bg-green-500/30 transition-colors mx-24">
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 font-semibold text-sm hover:bg-green-500/30 transition-colors">
           
           <Plus className="w-4 h-4" />
           Add Food
+        </button>
+        <button
+          onClick={() => setShowNotifications(true)}
+          aria-label="Notifications"
+          className="absolute right-0 p-2 rounded-xl bg-green-500/15 border border-green-500/20 text-green-400 hover:bg-green-500/25 transition-colors">
+          <Bell className="w-5 h-5" />
         </button>
       </div>
 
@@ -158,6 +162,7 @@ export default function Nutrition() {
           mealType={addingMealType} />
 
         }
+        {showNotifications && <NotificationsModal onClose={() => setShowNotifications(false)} />}
       </AnimatePresence>
     </div>);
 

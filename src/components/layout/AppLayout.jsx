@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
-import { Dumbbell, Apple, Bot, User, Bell, Settings } from "lucide-react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { Dumbbell, Apple, Bot, User, Settings, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
-import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 import SettingsModal from "@/components/shared/SettingsModal";
-import NotificationsModal from "@/components/shared/NotificationsModal";
 
 const navItems = [
 { path: "/fitness", label: "Fitness", icon: Dumbbell },
@@ -14,47 +12,55 @@ const navItems = [
 { path: "/coach", label: "Coach", icon: Bot }];
 
 
+const PAGE_TITLES = {
+  "/": "Profile",
+  "/profile": "Profile",
+  "/fitness": "Fitness",
+  "/fitness/start-workout": "Start Workout",
+  "/fitness/exercise-picker": "Exercises",
+  "/fitness/routines": "Routines",
+  "/fitness/explore": "Explore",
+  "/fitness/daily-review": "Daily Review",
+  "/nutrition": "Nutrition",
+  "/coach": "Coach"
+};
+
+function getPageTitle(pathname) {
+  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
+  const match = Object.keys(PAGE_TITLES)
+    .filter((p) => p !== "/" && pathname.startsWith(p))
+    .sort((a, b) => b.length - a.length)[0];
+  return match ? PAGE_TITLES[match] : "StrengthStack";
+}
+
 export default function AppLayout() {
   const location = useLocation();
-  const [showReminders, setShowReminders] = useState(false);
+  const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
+
+  const pageTitle = getPageTitle(location.pathname);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
       {/* Top Header */}
       <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center">
-              <img
-                src="https://media.base44.com/images/public/69f4cab318774ed99e230d09/917a67682_Untitleddesign.png"
-                alt="StrengthStack logo"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <span className="font-inter font-bold text-lg text-white normal-case text-left">StrengthStack</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setShowNotifications(true)}
-              className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white">
-              
-              <Bell className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setShowReminders(true)}
-              className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white">
-              
-              <Dumbbell className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setShowSettings(true)}
-              className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white">
-              
-              <Settings className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+            className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/50 hover:text-white">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+
+          <span className="font-inter font-bold text-lg text-white absolute left-1/2 -translate-x-1/2">
+            {pageTitle}
+          </span>
+
+          <button
+            onClick={() => setShowSettings(true)}
+            className="p-2 rounded-xl hover:bg-white/8 transition-colors text-white/40 hover:text-white">
+            <Settings className="w-5 h-5" />
+          </button>
         </div>
       </header>
 
@@ -90,8 +96,6 @@ export default function AppLayout() {
       </nav>
 
       <AnimatePresence>
-        {showNotifications && <NotificationsModal onClose={() => setShowNotifications(false)} />}
-        {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
         {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
       </AnimatePresence>
     </div>);
