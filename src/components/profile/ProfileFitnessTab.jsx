@@ -31,8 +31,10 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
   const [showCalendar, setShowCalendar] = useState(false);
   const [editingWeight, setEditingWeight] = useState(false);
   const [editingGoalWeight, setEditingGoalWeight] = useState(false);
+  const [editingGoals, setEditingGoals] = useState(false);
   const [weightVal, setWeightVal] = useState(user?.weight_kg || "");
   const [goalWeightVal, setGoalWeightVal] = useState(user?.goal_weight_kg || "");
+  const [goalsVal, setGoalsVal] = useState(user?.fitness_goals || []);
 
   const saveWeight = async () => {
     await base44.auth.updateMe({ weight_kg: Number(weightVal) || undefined });
@@ -44,6 +46,12 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
     await base44.auth.updateMe({ goal_weight_kg: Number(goalWeightVal) || undefined });
     toast.success("Goal weight updated!");
     setEditingGoalWeight(false);
+  };
+
+  const saveGoals = async () => {
+    await base44.auth.updateMe({ fitness_goals: goalsVal });
+    toast.success("Goals updated!");
+    setEditingGoals(false);
   };
 
   const totalSets = workouts.reduce(
@@ -237,9 +245,38 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
           </div>
         </div>
 
-        {user?.fitness_goals?.length > 0 && (
-          <div className="mt-3">
-            <p className="text-xs text-white/40 mb-2">Fitness Goals</p>
+        <div className="mt-3">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-white/40">Fitness Goals</p>
+            {!editingGoals ? (
+              <button onClick={() => { setGoalsVal(user?.fitness_goals || []); setEditingGoals(true); }} className="p-0.5 rounded hover:bg-white/10 transition-colors">
+                <Pencil className="w-3 h-3 text-white/30" />
+              </button>
+            ) : (
+              <div className="flex gap-1">
+                <button onClick={saveGoals} className="p-0.5 rounded hover:bg-green-500/20 transition-colors"><Check className="w-3 h-3 text-green-400" /></button>
+                <button onClick={() => setEditingGoals(false)} className="p-0.5 rounded hover:bg-red-500/20 transition-colors"><X className="w-3 h-3 text-red-400" /></button>
+              </div>
+            )}
+          </div>
+          {editingGoals ? (
+            <div className="flex flex-wrap gap-1.5">
+              {Object.entries(GOAL_LABELS).map(([key, label]) => {
+                const active = goalsVal.includes(key);
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setGoalsVal(active ? goalsVal.filter(g => g !== key) : [...goalsVal, key])}
+                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                      active ? "bg-blue-500/15 text-blue-300 border-blue-500/20" : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (user?.fitness_goals?.length > 0 ? (
             <div className="flex flex-wrap gap-1.5">
               {user.fitness_goals.map((g) => (
                 <span key={g} className="text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2.5 py-1 rounded-full">
@@ -247,8 +284,10 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
                 </span>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="text-xs text-white/25 italic">No goals set</p>
+          ))}
+        </div>
       </div>
 
       {/* Achievements */}
