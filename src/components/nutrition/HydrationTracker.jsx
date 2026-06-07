@@ -6,7 +6,7 @@ const STORAGE_KEY = "hydration_log";
 const GOAL = 8;
 
 function getLog() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+  try {return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};} catch {return {};}
 }
 
 function saveLog(log) {
@@ -25,7 +25,7 @@ export default function HydrationTracker({ date }) {
     saveLog(newLog);
   };
 
-  const pct = Math.min(100, (glasses / GOAL) * 100);
+  const pct = Math.min(100, glasses / GOAL * 100);
   const done = glasses >= GOAL;
 
   const bottleRef = useRef(null);
@@ -50,7 +50,7 @@ export default function HydrationTracker({ date }) {
     setFromClientY(e.touches ? e.touches[0].clientY : e.clientY);
   };
 
-  const handleUp = () => { dragging.current = false; };
+  const handleUp = () => {dragging.current = false;};
 
   return (
     <div className="bg-[#111] border border-white/8 rounded-2xl p-4 h-full flex flex-col">
@@ -59,7 +59,7 @@ export default function HydrationTracker({ date }) {
           <Droplets className="w-4 h-4 text-blue-400" />
           <p className="text-sm font-semibold text-white">Hydration</p>
         </div>
-        <span className={`text-xs font-semibold ${done ? "text-blue-400" : "text-white/40"}`}>
+        <span className={`text-xs font-semibold hidden ${done ? "text-blue-400" : "text-white/40"}`}>
           {glasses}/{GOAL} glasses {done ? "✓" : ""}
         </span>
       </div>
@@ -81,11 +81,11 @@ export default function HydrationTracker({ date }) {
             className="absolute inset-x-0 bottom-0 transition-all duration-500 ease-out"
             style={{
               height: `${pct}%`,
-              background: done
-                ? "linear-gradient(to top, #16a34a, #22c55e)"
-                : "linear-gradient(to top, #2563eb, #3b82f6)",
-            }}
-          >
+              background: done ?
+              "linear-gradient(to top, #16a34a, #22c55e)" :
+              "linear-gradient(to top, #2563eb, #3b82f6)"
+            }}>
+            
             {/* Surface shimmer */}
             <div className="absolute top-0 inset-x-0 h-1.5 bg-white/25" />
           </div>
@@ -102,18 +102,18 @@ export default function HydrationTracker({ date }) {
         <button
           onClick={() => update(glasses - 1)}
           disabled={glasses === 0}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/6 border border-white/8 text-white/60 hover:bg-white/10 disabled:opacity-30 transition-colors text-xs font-semibold"
-        >
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/6 border border-white/8 text-white/60 hover:bg-white/10 disabled:opacity-30 transition-colors text-xs font-semibold">
+          
           <Minus className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={() => update(glasses + 1)}
           disabled={glasses >= 12}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 disabled:opacity-30 transition-colors text-xs font-semibold"
-        >
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 disabled:opacity-30 transition-colors text-xs font-semibold">
+          
           <Plus className="w-3.5 h-3.5" />
         </button>
       </div>
-    </div>
-  );
+    </div>);
+
 }
