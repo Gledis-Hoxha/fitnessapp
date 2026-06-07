@@ -47,7 +47,7 @@ export default function MacroProgressChart({ calories = 0, protein = 0, carbs = 
 
   return (
     <div className="bg-[#111] border border-white/10 rounded-2xl p-4 h-full flex items-center justify-center">
-      <div className="w-full grid grid-cols-4 gap-2">
+      <div className="w-full grid grid-cols-2 gap-4 place-items-center">
         <MacroStat label="Calories" value={calories} goal={goals.calories} color="#22c55e" unit=" kcal" />
         <MacroStat label="Protein" value={protein} goal={goals.protein} color="#3b82f6" />
         <MacroStat label="Carbs" value={carbs} goal={goals.carbs} color="#eab308" />
