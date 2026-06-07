@@ -90,9 +90,9 @@ export default function ExercisePicker() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-xl hover:bg-white/10 transition-colors flex-shrink-0">
+          className="p-2 rounded-xl hover:bg-white/10 transition-colors flex-shrink-0 hidden">
           
-          <ArrowLeft className="w-5 h-5 text-white" />
+          <ArrowLeft className="w-5 h-5 text-white hidden" />
         </button>
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
