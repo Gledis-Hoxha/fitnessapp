@@ -45,14 +45,14 @@ export default function AppLayout() {
       {/* Top Header */}
       <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="bg-[#2e2b3a]/95 backdrop-blur-md rounded-full p-1.5 shadow-2xl border border-white/8 hidden">
-            <button
-              onClick={() => navigate(-1)}
-              aria-label="Go back"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-all duration-200">
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-          </div>
+          
+
+
+
+
+
+
+          
 
           <span className="font-inter font-bold text-lg text-white absolute left-1/2 -translate-x-1/2">
             {pageTitle}
