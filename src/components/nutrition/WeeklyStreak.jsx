@@ -83,13 +83,7 @@ export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectD
   return (
     <>
       <div className="bg-[#111] border border-white/8 rounded-2xl px-4 py-2.5">
-        <div className="flex items-center justify-between mb-2">
-          
-          <button onClick={() => setShowCalendar(true)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-            <CalendarDays className="w-3.5 h-3.5 text-white/40" />
-          </button>
-        </div>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-8 gap-1">
           {DAYS.map((day, i) => {
             const date = addDays(monday, i);
             const dateStr = format(date, "yyyy-MM-dd");
@@ -117,6 +111,14 @@ export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectD
               </button>);
 
           })}
+          <button
+            onClick={() => setShowCalendar(true)}
+            className="flex flex-col items-center justify-end gap-1 group">
+            <span className="text-[9px] text-white/25 font-medium">&nbsp;</span>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/4 text-white/40 group-hover:bg-white/10 transition-all">
+              <CalendarDays className="w-3.5 h-3.5" />
+            </div>
+          </button>
         </div>
       </div>
 
