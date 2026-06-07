@@ -27,9 +27,9 @@ const PAGE_TITLES = {
 
 function getPageTitle(pathname) {
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
-  const match = Object.keys(PAGE_TITLES)
-    .filter((p) => p !== "/" && pathname.startsWith(p))
-    .sort((a, b) => b.length - a.length)[0];
+  const match = Object.keys(PAGE_TITLES).
+  filter((p) => p !== "/" && pathname.startsWith(p)).
+  sort((a, b) => b.length - a.length)[0];
   return match ? PAGE_TITLES[match] : "StrengthStack";
 }
 
@@ -45,7 +45,7 @@ export default function AppLayout() {
       {/* Top Header */}
       <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="bg-[#2e2b3a]/95 backdrop-blur-md rounded-full p-1.5 shadow-2xl border border-white/8">
+          <div className="bg-[#2e2b3a]/95 backdrop-blur-md rounded-full p-1.5 shadow-2xl border border-white/8 hidden">
             <button
               onClick={() => navigate(-1)}
               aria-label="Go back"
