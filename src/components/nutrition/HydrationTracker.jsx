@@ -104,14 +104,14 @@ export default function HydrationTracker({ date }) {
           disabled={glasses === 0}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/6 border border-white/8 text-white/60 hover:bg-white/10 disabled:opacity-30 transition-colors text-xs font-semibold"
         >
-          <Minus className="w-3.5 h-3.5" /> Remove
+          <Minus className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={() => update(glasses + 1)}
           disabled={glasses >= 12}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 disabled:opacity-30 transition-colors text-xs font-semibold"
         >
-          <Plus className="w-3.5 h-3.5" /> Add Glass
+          <Plus className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
