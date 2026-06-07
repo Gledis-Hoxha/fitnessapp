@@ -51,17 +51,17 @@ export default function Profile() {
     <div className="space-y-5">
       {/* Profile Header Card */}
       <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400">
+        <div className="flex items-start justify-between gap-2 mb-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-2xl font-bold text-blue-400 flex-shrink-0">
               {user?.full_name?.[0]?.toUpperCase() || "?"}
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">{user?.full_name || "Your Profile"}</h2>
-              <p className="text-sm text-white/40">{user?.email || ""}</p>
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold text-white truncate">{user?.full_name || "Your Profile"}</h2>
+              <p className="text-sm text-white/40 truncate">{user?.email || ""}</p>
             </div>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-shrink-0">
             <button
               onClick={() => setShowInbox(true)}
               className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
