@@ -59,29 +59,29 @@ export default function Profile() {
             <div className="min-w-0">
               <h2 className="text-xl font-bold text-white break-words leading-tight">{user?.full_name || "Your Profile"}</h2>
               <p className="text-sm text-white/40 mt-0.5">
-                {user?.fitness_goals?.length > 0
-                  ? (GOAL_LABELS[user.fitness_goals[0]] || user.fitness_goals[0].replace(/_/g, " "))
-                  : "Set your goal"}
+                {user?.fitness_goals?.length > 0 ?
+                GOAL_LABELS[user.fitness_goals[0]] || user.fitness_goals[0].replace(/_/g, " ") :
+                "Set your goal"}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
               onClick={() => setShowInbox(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
-              <Inbox className="w-4 h-4" />
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
+              
+              <Inbox className="w-4 h-4 hidden" />
             </button>
             <button
               onClick={() => setShowShare(true)}
-              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white"
-            >
-              <Share2 className="w-4 h-4" />
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors text-white/40 hover:text-white">
+              
+              <Share2 className="w-4 h-4 hidden" />
             </button>
             <button
               onClick={() => setShowEdit(true)}
-              className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/20"
-            >
+              className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/20">
+              
               Edit
             </button>
           </div>
@@ -90,15 +90,15 @@ export default function Profile() {
         {/* Stat cards */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { value: user?.height_cm ? `${user.height_cm}cm` : "—", label: "Height" },
-            { value: user?.weight_kg ? `${user.weight_kg}kg` : "—", label: "Weight" },
-            { value: user?.age ? `${user.age}yo` : "—", label: "Age" },
-          ].map((s) => (
-            <div key={s.label} className="bg-white/5 border border-white/8 rounded-2xl py-4 text-center">
+          { value: user?.height_cm ? `${user.height_cm}cm` : "—", label: "Height" },
+          { value: user?.weight_kg ? `${user.weight_kg}kg` : "—", label: "Weight" },
+          { value: user?.age ? `${user.age}yo` : "—", label: "Age" }].
+          map((s) =>
+          <div key={s.label} className="bg-white/5 border border-white/8 rounded-2xl py-4 text-center">
               <p className="text-xl font-bold text-blue-400">{s.value}</p>
               <p className="text-xs text-white/40 mt-1">{s.label}</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
