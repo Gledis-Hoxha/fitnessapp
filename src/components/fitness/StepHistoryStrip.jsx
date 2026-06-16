@@ -13,20 +13,20 @@ export default function StepHistoryStrip({ todaySteps = 0, selectedDate, onSelec
       date,
       dateStr,
       isToday,
-      steps: isToday ? todaySteps : getStepsForDate(date),
+      steps: isToday ? todaySteps : getStepsForDate(date)
     };
   });
 
   const maxSteps = Math.max(DAILY_STEP_GOAL, ...days.map((d) => d.steps));
 
   return (
-    <div className="pt-3 border-t border-white/8">
+    <div className="pt-3 border-t border-white/8 hidden">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest">Last 7 Days</p>
       </div>
       <div className="flex items-end justify-between gap-1.5 h-20">
         {days.map((d) => {
-          const pct = Math.max(6, Math.round((d.steps / maxSteps) * 100));
+          const pct = Math.max(6, Math.round(d.steps / maxSteps * 100));
           const goalHit = d.steps >= DAILY_STEP_GOAL;
           const isSelected = selectedDate === d.dateStr;
           return (
@@ -40,22 +40,22 @@ export default function StepHistoryStrip({ todaySteps = 0, selectedDate, onSelec
               <div className="w-full flex-1 flex items-end">
                 <div
                   className={`w-full rounded-md transition-all duration-500 ${
-                    isSelected ? "bg-green-400 ring-2 ring-white/40" :
-                    d.isToday ? "bg-green-400" :
-                    goalHit ? "bg-green-500/80" : "bg-white/15 group-hover:bg-white/25"
-                  }`}
-                  style={{ height: `${pct}%` }}
-                />
+                  isSelected ? "bg-green-400 ring-2 ring-white/40" :
+                  d.isToday ? "bg-green-400" :
+                  goalHit ? "bg-green-500/80" : "bg-white/15 group-hover:bg-white/25"}`
+                  }
+                  style={{ height: `${pct}%` }} />
+                
               </div>
               <span className={`text-[9px] font-medium ${
-                isSelected || d.isToday ? "text-green-400" : "text-white/30"
-              }`}>
+              isSelected || d.isToday ? "text-green-400" : "text-white/30"}`
+              }>
                 {format(d.date, "EEEEE")}
               </span>
-            </button>
-          );
+            </button>);
+
         })}
       </div>
-    </div>
-  );
+    </div>);
+
 }
