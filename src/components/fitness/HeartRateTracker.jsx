@@ -66,7 +66,7 @@ export default function HeartRateTracker() {
   const maxBpm = history.length ? Math.max(...history) : null;
 
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden">
+    <div className="border border-white/10 rounded-2xl overflow-hidden" style={{ background: "hsl(248,20%,15%)" }}>
       <button
         onClick={status === "connected" ? undefined : connectWatch}
         className="w-full flex items-center gap-3 px-4 py-3.5 text-left">

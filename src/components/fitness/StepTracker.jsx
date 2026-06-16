@@ -180,7 +180,7 @@ export default function StepTracker() {
   }, []);
 
   return (
-    <div className="bg-[#0d0d0d] border border-white/8 rounded-2xl p-4 space-y-4">
+    <div className="border border-white/10 rounded-2xl p-4 space-y-4" style={{ background: "hsl(248,20%,15%)" }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
