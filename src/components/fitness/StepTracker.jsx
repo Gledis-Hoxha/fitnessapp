@@ -31,11 +31,15 @@ export default function StepTracker() {
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [showCalendar, setShowCalendar] = useState(false);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => localStorage.getItem("stepTrackerOpen") === "true");
 
   const stepCountRef = useRef(0);
   const lastAccelRef = useRef(null);
   const listenerRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem("stepTrackerOpen", String(open));
+  }, [open]);
 
   const viewingToday = selectedDate === format(new Date(), "yyyy-MM-dd");
   // Live steps for today, deterministic sample data for prior days
