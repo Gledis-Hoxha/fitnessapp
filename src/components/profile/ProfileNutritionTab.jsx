@@ -100,7 +100,7 @@ export default function ProfileNutritionTab({ meals = [], user }) {
   return (
     <div className="space-y-4">
       {/* Weight & Stats */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center gap-2 mb-3">
           <Scale className="w-4 h-4 text-green-400" />
           <p className="text-sm font-semibold text-white">Weight & Stats</p>
@@ -128,7 +128,7 @@ export default function ProfileNutritionTab({ meals = [], user }) {
       </div>
 
       {/* Calorie Trend */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-green-400" />
@@ -180,7 +180,7 @@ export default function ProfileNutritionTab({ meals = [], user }) {
       </div>
 
       {/* Meal Reminders */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center gap-2 mb-3">
           <Bell className="w-4 h-4 text-green-400" />
           <p className="text-sm font-semibold text-white">Meal Reminders</p>
@@ -204,7 +204,7 @@ export default function ProfileNutritionTab({ meals = [], user }) {
       </div>
 
       {/* Progress Photos */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Image className="w-4 h-4 text-green-400" />
@@ -254,7 +254,7 @@ export default function ProfileNutritionTab({ meals = [], user }) {
       </div>
 
       {/* Notes */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
         <div className="flex items-center gap-2 mb-3">
           <StickyNote className="w-4 h-4 text-green-400" />
           <p className="text-sm font-semibold text-white">Notes</p>
