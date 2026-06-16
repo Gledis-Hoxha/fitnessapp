@@ -137,15 +137,17 @@ export default function Nutrition() {
       
 
       {/* Meal Sections */}
-      {["breakfast", "lunch", "dinner", "snack"].map((mealType) =>
-      <MealSection
-        key={mealType}
-        mealType={mealType}
-        entries={dayMeals.filter((m) => m.meal_type === mealType)}
-        onAdd={handleAddFood}
-        onDelete={handleDeleteMeal} />
+      <div className="space-y-2">
+        {["breakfast", "lunch", "dinner", "snack"].map((mealType) =>
+        <MealSection
+          key={mealType}
+          mealType={mealType}
+          entries={dayMeals.filter((m) => m.meal_type === mealType)}
+          onAdd={handleAddFood}
+          onDelete={handleDeleteMeal} />
 
-      )}
+        )}
+      </div>
 
       {/* Nutrition Summary */}
       <NutritionSummary
