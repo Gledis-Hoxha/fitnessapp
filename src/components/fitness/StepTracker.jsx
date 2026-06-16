@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Footprints, Flame, MapPin, Target, RefreshCw, CheckCircle, AlertCircle, Lock, ClipboardList } from "lucide-react";
-import { motion } from "framer-motion";
+import { Footprints, Flame, MapPin, Target, RefreshCw, CheckCircle, AlertCircle, Lock, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { format, subDays, addDays, isToday, isAfter, startOfDay } from "date-fns";
 import StepHistoryStrip from "@/components/fitness/StepHistoryStrip";
-
-const DAILY_STEP_GOAL = 10000;
-const STEP_LENGTH_M = 0.762; // avg step length in meters
-const CALORIES_PER_STEP = 0.04; // approx kcal per step
+import StepCalendarModal from "@/components/fitness/StepCalendarModal";
+import { DAILY_STEP_GOAL, STEP_LENGTH_M, CALORIES_PER_STEP, getStepsForDate } from "@/components/fitness/stepData";
 
 function StatBox({ icon: Icon, label, value, unit, color, progress }) {
   return (
@@ -39,14 +38,25 @@ export default function StepTracker() {
   const [steps, setSteps] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const stepCountRef = useRef(0);
   const lastAccelRef = useRef(null);
   const listenerRef = useRef(null);
 
-  const calories = Math.round(steps * CALORIES_PER_STEP);
-  const distanceKm = (steps * STEP_LENGTH_M / 1000).toFixed(2);
-  const progress = Math.min(100, Math.round(steps / DAILY_STEP_GOAL * 100));
+  const viewingToday = selectedDate === format(new Date(), "yyyy-MM-dd");
+  // Live steps for today, deterministic sample data for prior days
+  const displaySteps = viewingToday ? steps : getStepsForDate(new Date(selectedDate));
+  const calories = Math.round(displaySteps * CALORIES_PER_STEP);
+  const distanceKm = (displaySteps * STEP_LENGTH_M / 1000).toFixed(2);
+  const progress = Math.min(100, Math.round(displaySteps / DAILY_STEP_GOAL * 100));
+
+  const changeDate = (offset) => {
+    const next = addDays(new Date(selectedDate), offset);
+    if (isAfter(startOfDay(next), startOfDay(new Date()))) return;
+    setSelectedDate(format(next, "yyyy-MM-dd"));
+  };
 
   // Try to read from Health Connect / Apple Health via the Capacitor Health plugin if available
   const tryNativeHealth = async () => {
@@ -165,12 +175,21 @@ export default function StepTracker() {
           </div>
           <div>
             <p className="text-sm font-semibold text-white">Step Tracker</p>
-            <p className="text-[10px] text-white/30">Today's activity</p>
+            <p className="text-[10px] text-white/30">{viewingToday ? "Today's activity" : format(new Date(selectedDate), "EEE, MMM d")}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           {status === "granted" &&
+          <button
+            onClick={() => setShowCalendar(true)}
+            className="p-1.5 rounded-lg hover:bg-white/8 text-white/30 hover:text-white/60 transition-colors"
+            title="View calendar">
+            
+              <CalendarDays className="w-3.5 h-3.5" />
+            </button>
+          }
+          {status === "granted" && viewingToday &&
           <button
             onClick={handleReset}
             className="p-1.5 rounded-lg hover:bg-white/8 text-white/30 hover:text-white/60 transition-colors"
@@ -179,7 +198,7 @@ export default function StepTracker() {
               <RefreshCw className="w-3.5 h-3.5" />
             </button>
           }
-          {isTracking &&
+          {isTracking && viewingToday &&
           <span className="flex items-center gap-1 text-[10px] text-green-400 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               Live
@@ -243,10 +262,28 @@ export default function StepTracker() {
 
       {status === "granted" &&
       <>
+          {/* Date navigator */}
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => changeDate(-1)}
+              className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-colors">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-sm font-semibold text-white">
+              {viewingToday ? "Today" : format(new Date(selectedDate), "EEEE, MMM d")}
+            </span>
+            <button
+              onClick={() => changeDate(1)}
+              disabled={viewingToday}
+              className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:hover:bg-white/5">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* Big step count */}
           <div className="text-center py-2">
-            <p className="text-5xl font-black text-white tabular-nums">{steps.toLocaleString()}</p>
-            <p className="text-xs text-white/30 mt-1 font-medium">steps today</p>
+            <p className="text-5xl font-black text-white tabular-nums">{displaySteps.toLocaleString()}</p>
+            <p className="text-xs text-white/30 mt-1 font-medium">{viewingToday ? "steps today" : "steps"}</p>
           </div>
 
           {/* Goal progress bar */}
@@ -295,8 +332,8 @@ export default function StepTracker() {
           
           </div>
 
-          {/* Track / Stop button (for motion sensor mode) */}
-          {!isTracking ?
+          {/* Track / Stop button (for motion sensor mode) — only for today */}
+          {viewingToday && (!isTracking ?
         <button
           onClick={startMotionTracking}
           className="w-full py-2.5 rounded-xl bg-green-600/20 border border-green-500/30 text-green-400 text-xs font-semibold hover:bg-green-600/30 transition-colors">
@@ -309,13 +346,23 @@ export default function StepTracker() {
           className="w-full py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs font-semibold hover:bg-white/8 transition-colors">
           
               Pause Tracking
-            </button>
+            </button>)
         }
 
           {/* 7-day history */}
-          <StepHistoryStrip todaySteps={steps} />
+          <StepHistoryStrip todaySteps={steps} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
         </>
       }
+
+      <AnimatePresence>
+        {showCalendar &&
+        <StepCalendarModal
+          selectedDate={selectedDate}
+          todaySteps={steps}
+          onSelectDate={setSelectedDate}
+          onClose={() => setShowCalendar(false)} />
+        }
+      </AnimatePresence>
 
       {/* Daily Review */}
       
