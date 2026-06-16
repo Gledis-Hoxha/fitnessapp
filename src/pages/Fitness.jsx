@@ -38,8 +38,8 @@ export default function Fitness() {
       </div>
 
       <StepTracker />
-      <HeartRateTracker />
       <SleepTracker />
+      <HeartRateTracker />
 
       {/* Section label */}
       <div className="flex items-center gap-2">
