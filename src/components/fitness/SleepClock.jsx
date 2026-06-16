@@ -8,14 +8,28 @@ function timeToAngle(timeStr) {
   return (hour12 * 60 + m) / 720 * 360; // 720 min = 12h = full circle
 }
 
-// Converts an angle back into an "HH:MM" time. Since the face is 12h, we keep
-// the existing AM/PM half from the previous value so dragging stays in the same period.
+// Converts an angle back into an "HH:MM" time. The clock face is 12h, so we track
+// whether the marker sweeps across the 12 o'clock (top) position and flip AM/PM
+// accordingly: crossing 12 clockwise (PM-ward) or counter-clockwise (AM-ward).
 function angleToTime(angle, prevTimeStr, snapMinutes = 5) {
   const [prevH] = prevTimeStr.split(":").map(Number);
+  const prevAngle = timeToAngle(prevTimeStr);
+  let isPM = prevH >= 12;
+
+  // Smallest signed delta between previous and new angle (-180..180).
+  let delta = angle - prevAngle;
+  if (delta > 180) delta -= 360;
+  if (delta < -180) delta += 360;
+
+  // Did we cross the top (12 o'clock / 0°) during this move?
+  const crossedForward = delta > 0 && (prevAngle + delta >= 360 || (prevAngle > angle));
+  const crossedBackward = delta < 0 && (prevAngle + delta < 0 || (prevAngle < angle));
+  if (crossedForward) isPM = !isPM;       // moved clockwise past 12
+  else if (crossedBackward) isPM = !isPM; // moved counter-clockwise past 12
+
   let totalMin = Math.round((angle / 360) * 720); // minutes within a 12h cycle
   totalMin = Math.round(totalMin / snapMinutes) * snapMinutes;
   totalMin = ((totalMin % 720) + 720) % 720;
-  const isPM = prevH >= 12;
   let hour12 = Math.floor(totalMin / 60); // 0..11
   const min = totalMin % 60;
   let hour24 = hour12 + (isPM ? 12 : 0);
