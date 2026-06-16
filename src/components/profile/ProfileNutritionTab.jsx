@@ -1,9 +1,9 @@
 import { format, subDays } from "date-fns";
-import { Scale, Bell, StickyNote, Image, Trash2, Plus, TrendingUp } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { Scale, Bell, StickyNote, Image, Trash2, Plus } from "lucide-react";
 import { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import NutritionRadarChart from "@/components/profile/NutritionRadarChart";
 
 const DEFAULT_REMINDERS = [
   { id: "breakfast", time: "8:00 AM", label: "Log Breakfast", active: true },
@@ -40,16 +40,33 @@ export default function ProfileNutritionTab({ meals = [], user }) {
     const dayMeals = meals.filter((m) => m.date === date);
     return {
       name: format(subDays(new Date(), 6 - i), "EEE"),
+      date,
       cal: dayMeals.reduce((s, m) => s + (m.calories || 0), 0),
+      protein: dayMeals.reduce((s, m) => s + (m.protein_g || 0), 0),
+      carbs: dayMeals.reduce((s, m) => s + (m.carbs_g || 0), 0),
+      fats: dayMeals.reduce((s, m) => s + (m.fat_g || 0), 0),
     };
   });
 
-  const weekCals = chartData.map((d) => d.cal);
-  const weekHasData = weekCals.some((c) => c > 0);
-  const loggedCals = weekCals.filter((c) => c > 0);
-  const weekAvg = loggedCals.length ? Math.round(loggedCals.reduce((s, c) => s + c, 0) / loggedCals.length) : 0;
-  const weekHigh = weekHasData ? Math.max(...weekCals) : 0;
-  const weekLow = loggedCals.length ? Math.min(...loggedCals) : 0;
+  // Hydration from localStorage
+  const getHydration = () => {
+    try {
+      const log = JSON.parse(localStorage.getItem("hydration_log") || "{}");
+      const weekDates = chartData.map((d) => d.date);
+      const vals = weekDates.map((d) => log[d] || 0).filter((v) => v > 0);
+      return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+    } catch { return 0; }
+  };
+
+  // Actual weekly averages for radar
+  const loggedDays = chartData.filter((d) => d.cal > 0);
+  const radarActual = {
+    calories: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.cal, 0) / loggedDays.length) : 0,
+    protein: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.protein, 0) / loggedDays.length) : 0,
+    carbs: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.carbs, 0) / loggedDays.length) : 0,
+    fats: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.fats, 0) / loggedDays.length) : 0,
+    hydration: getHydration(),
+  };
 
   const uniqueDays = new Set(meals.map((m) => m.date)).size;
   const totalCalories = meals.reduce((s, m) => s + (m.calories || 0), 0);
@@ -127,57 +144,8 @@ export default function ProfileNutritionTab({ meals = [], user }) {
         )}
       </div>
 
-      {/* Calorie Trend */}
-      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-green-400" />
-            <p className="text-sm font-semibold text-white">7-Day Calorie Trend</p>
-          </div>
-          {weekHasData && (
-            <span className="text-xs text-white/40">avg <span className="text-green-400 font-semibold">{weekAvg}</span> kcal</span>
-          )}
-        </div>
-
-        {weekHasData ? (
-          <>
-            <ResponsiveContainer width="100%" height={140}>
-              <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="calGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.35)" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.35)" }} axisLine={false} tickLine={false} unit=" kcal" width={50} />
-                <Tooltip formatter={(v) => [`${v} kcal`, "Calories"]} contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 10, fontSize: 11 }} cursor={{ stroke: "rgba(34,197,94,0.3)", strokeWidth: 1 }} />
-                <Area type="monotone" dataKey="cal" stroke="#22c55e" strokeWidth={2.5} fill="url(#calGradient)" dot={{ fill: "#22c55e", r: 3 }} activeDot={{ r: 5 }} />
-              </AreaChart>
-            </ResponsiveContainer>
-            <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-white/8">
-              <div className="text-center">
-                <p className="text-sm font-bold text-green-400">{weekHigh}</p>
-                <p className="text-[10px] text-white/35 mt-0.5">Highest</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-bold text-white">{weekAvg}</p>
-                <p className="text-[10px] text-white/35 mt-0.5">Average</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-bold text-white/60">{weekLow}</p>
-                <p className="text-[10px] text-white/35 mt-0.5">Lowest</p>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center gap-2 py-8">
-            <TrendingUp className="w-8 h-8 text-white/15" />
-            <p className="text-xs text-white/25">Log meals to see your weekly trend</p>
-          </div>
-        )}
-      </div>
+      {/* Nutrition Radar Chart */}
+      <NutritionRadarChart actual={radarActual} user={user} />
 
       {/* Meal Reminders */}
       <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
