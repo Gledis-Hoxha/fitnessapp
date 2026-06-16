@@ -118,6 +118,8 @@ export default function SleepTracker() {
                 bedtime={form.bedtime}
                 wakeTime={form.wake_time}
                 durationLabel={`${Math.floor(calcDuration(form.bedtime, form.wake_time) / 60)}h ${calcDuration(form.bedtime, form.wake_time) % 60}m`}
+                onChangeBedtime={(t) => setForm((f) => ({ ...f, bedtime: t }))}
+                onChangeWakeTime={(t) => setForm((f) => ({ ...f, wake_time: t }))}
               />
             </div>
 

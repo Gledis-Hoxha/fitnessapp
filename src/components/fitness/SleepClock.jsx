@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from "react";
 import { Moon, AlarmClock } from "lucide-react";
 
 // Converts an "HH:MM" time into an angle on a 12-hour clock face (degrees, 0 = top/12 o'clock, clockwise).
@@ -5,6 +6,21 @@ function timeToAngle(timeStr) {
   const [h, m] = timeStr.split(":").map(Number);
   const hour12 = h % 12;
   return (hour12 * 60 + m) / 720 * 360; // 720 min = 12h = full circle
+}
+
+// Converts an angle back into an "HH:MM" time. Since the face is 12h, we keep
+// the existing AM/PM half from the previous value so dragging stays in the same period.
+function angleToTime(angle, prevTimeStr, snapMinutes = 5) {
+  const [prevH] = prevTimeStr.split(":").map(Number);
+  let totalMin = Math.round((angle / 360) * 720); // minutes within a 12h cycle
+  totalMin = Math.round(totalMin / snapMinutes) * snapMinutes;
+  totalMin = ((totalMin % 720) + 720) % 720;
+  const isPM = prevH >= 12;
+  let hour12 = Math.floor(totalMin / 60); // 0..11
+  const min = totalMin % 60;
+  let hour24 = hour12 + (isPM ? 12 : 0);
+  if (hour24 === 24) hour24 = 12;
+  return `${String(hour24).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
 }
 
 function polar(cx, cy, r, angleDeg) {
@@ -22,17 +38,19 @@ function arcPath(cx, cy, r, startAngle, endAngle) {
   return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 1 ${end.x} ${end.y}`;
 }
 
-export default function SleepClock({ bedtime, wakeTime, durationLabel }) {
+export default function SleepClock({ bedtime, wakeTime, durationLabel, onChangeBedtime, onChangeWakeTime }) {
   const SIZE = 240;
   const C = SIZE / 2;
   const R = 96; // arc radius
+
+  const svgRef = useRef(null);
+  const [dragging, setDragging] = useState(null); // "bed" | "wake" | null
 
   const bedAngle = timeToAngle(bedtime);
   const wakeAngle = timeToAngle(wakeTime);
   const bedPos = polar(C, C, R, bedAngle);
   const wakePos = polar(C, C, R, wakeAngle);
 
-  // 12 hour tick labels (12, 3, 6, 9) + minor ticks
   const majorLabels = [
     { n: 12, angle: 0 },
     { n: 3, angle: 90 },
@@ -41,9 +59,45 @@ export default function SleepClock({ bedtime, wakeTime, durationLabel }) {
   ];
   const ticks = Array.from({ length: 60 }, (_, i) => i * 6);
 
+  // Maps a pointer event to an angle (0 = top, clockwise) relative to the SVG center.
+  const pointerToAngle = (e) => {
+    const rect = svgRef.current.getBoundingClientRect();
+    const scaleX = SIZE / rect.width;
+    const scaleY = SIZE / rect.height;
+    const px = (e.clientX - rect.left) * scaleX;
+    const py = (e.clientY - rect.top) * scaleY;
+    let angle = Math.atan2(py - C, px - C) * (180 / Math.PI) + 90;
+    return ((angle % 360) + 360) % 360;
+  };
+
+  useEffect(() => {
+    if (!dragging) return;
+    const handleMove = (e) => {
+      const point = e.touches ? e.touches[0] : e;
+      const angle = pointerToAngle(point);
+      if (dragging === "bed") {
+        onChangeBedtime?.(angleToTime(angle, bedtime));
+      } else {
+        onChangeWakeTime?.(angleToTime(angle, wakeTime));
+      }
+    };
+    const handleUp = () => setDragging(null);
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+    window.addEventListener("touchmove", handleMove, { passive: false });
+    window.addEventListener("touchend", handleUp);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("touchend", handleUp);
+    };
+  }, [dragging, bedtime, wakeTime, onChangeBedtime, onChangeWakeTime]);
+
   return (
-    <div className="relative mx-auto" style={{ width: SIZE, height: SIZE }}>
-      <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
+    <div className="relative mx-auto select-none" style={{ width: SIZE, height: SIZE }}>
+      <svg ref={svgRef} width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="touch-none">
         <defs>
           <linearGradient id="sleepArc" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#6366f1" />
@@ -101,18 +155,22 @@ export default function SleepClock({ bedtime, wakeTime, durationLabel }) {
         <p className="text-xs text-white/40 mt-2">sleep duration</p>
       </div>
 
-      {/* Bedtime moon marker */}
+      {/* Bedtime moon marker (draggable) */}
       <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/40 ring-4 ring-[#111]"
+        onPointerDown={(e) => { e.preventDefault(); setDragging("bed"); }}
+        onTouchStart={() => setDragging("bed")}
+        className={`absolute -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/40 ring-4 ring-[#111] cursor-grab touch-none transition-transform ${dragging === "bed" ? "cursor-grabbing scale-110" : "hover:scale-105"}`}
         style={{ left: bedPos.x, top: bedPos.y }}>
-        <Moon className="w-4 h-4 text-white" />
+        <Moon className="w-4 h-4 text-white pointer-events-none" />
       </div>
 
-      {/* Wake alarm marker */}
+      {/* Wake alarm marker (draggable) */}
       <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/40 ring-4 ring-[#111]"
+        onPointerDown={(e) => { e.preventDefault(); setDragging("wake"); }}
+        onTouchStart={() => setDragging("wake")}
+        className={`absolute -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/40 ring-4 ring-[#111] cursor-grab touch-none transition-transform ${dragging === "wake" ? "cursor-grabbing scale-110" : "hover:scale-105"}`}
         style={{ left: wakePos.x, top: wakePos.y }}>
-        <AlarmClock className="w-4 h-4 text-white" />
+        <AlarmClock className="w-4 h-4 text-white pointer-events-none" />
       </div>
     </div>
   );
