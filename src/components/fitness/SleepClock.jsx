@@ -8,33 +8,35 @@ function timeToAngle(timeStr) {
   return (hour12 * 60 + m) / 720 * 360; // 720 min = 12h = full circle
 }
 
-// Converts an angle back into an "HH:MM" time. The clock face is 12h, so we track
-// whether the marker sweeps across the 12 o'clock (top) position and flip AM/PM
-// accordingly: crossing 12 clockwise (PM-ward) or counter-clockwise (AM-ward).
-function angleToTime(angle, prevTimeStr, snapMinutes = 5) {
-  const [prevH] = prevTimeStr.split(":").map(Number);
-  const prevAngle = timeToAngle(prevTimeStr);
-  let isPM = prevH >= 12;
+function timeToMinutes(timeStr) {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
 
-  // Smallest signed delta between previous and new angle (-180..180).
-  let delta = angle - prevAngle;
-  if (delta > 180) delta -= 360;
-  if (delta < -180) delta += 360;
+function minutesToTime(totalMin) {
+  totalMin = ((Math.round(totalMin) % 1440) + 1440) % 1440;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
 
-  // Did we cross the top (12 o'clock / 0°) during this move?
-  const crossedForward = delta > 0 && (prevAngle + delta >= 360 || (prevAngle > angle));
-  const crossedBackward = delta < 0 && (prevAngle + delta < 0 || (prevAngle < angle));
-  if (crossedForward) isPM = !isPM;       // moved clockwise past 12
-  else if (crossedBackward) isPM = !isPM; // moved counter-clockwise past 12
+// Given a drag angle and the marker's previous time-of-day (in minutes on a 24h
+// timeline), resolve to the new time. The 12h face maps to two possible minute
+// values (this half + the opposite half); we choose whichever is closest to the
+// previous position, so sweeping past 12 in either direction flips AM<->PM.
+function angleToTime(angle, prevMinutes, snapMinutes = 5) {
+  let half = Math.round((angle / 360) * 720); // 0..719 within a 12h cycle
+  half = ((Math.round(half / snapMinutes) * snapMinutes) % 720 + 720) % 720;
 
-  let totalMin = Math.round((angle / 360) * 720); // minutes within a 12h cycle
-  totalMin = Math.round(totalMin / snapMinutes) * snapMinutes;
-  totalMin = ((totalMin % 720) + 720) % 720;
-  let hour12 = Math.floor(totalMin / 60); // 0..11
-  const min = totalMin % 60;
-  let hour24 = hour12 + (isPM ? 12 : 0);
-  if (hour24 === 24) hour24 = 12;
-  return `${String(hour24).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
+  // Two candidate absolute times that land on this clock-face position.
+  const candidates = [half, half + 720];
+  // Compare against prev using shortest circular distance over 24h (1440 min).
+  const circDist = (a, b) => {
+    let d = Math.abs(((a - b) % 1440 + 1440) % 1440);
+    return Math.min(d, 1440 - d);
+  };
+  candidates.sort((a, b) => circDist(a, prevMinutes) - circDist(b, prevMinutes));
+  return minutesToTime(candidates[0]);
 }
 
 function polar(cx, cy, r, angleDeg) {
@@ -90,9 +92,9 @@ export default function SleepClock({ bedtime, wakeTime, durationLabel, onChangeB
       const point = e.touches ? e.touches[0] : e;
       const angle = pointerToAngle(point);
       if (dragging === "bed") {
-        onChangeBedtime?.(angleToTime(angle, bedtime));
+        onChangeBedtime?.(angleToTime(angle, timeToMinutes(bedtime)));
       } else {
-        onChangeWakeTime?.(angleToTime(angle, wakeTime));
+        onChangeWakeTime?.(angleToTime(angle, timeToMinutes(wakeTime)));
       }
     };
     const handleUp = () => setDragging(null);
