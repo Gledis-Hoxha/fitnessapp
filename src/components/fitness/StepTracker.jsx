@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Footprints, Flame, MapPin, Clock, RefreshCw, CheckCircle, AlertCircle, Lock, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { Footprints, Flame, MapPin, Clock, RefreshCw, CheckCircle, AlertCircle, Lock, ChevronLeft, ChevronRight, CalendarDays, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, subDays, addDays, isToday, isAfter, startOfDay } from "date-fns";
 import StepActivityRings from "@/components/fitness/StepActivityRings";
@@ -31,6 +31,7 @@ export default function StepTracker() {
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [showCalendar, setShowCalendar] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const stepCountRef = useRef(0);
   const lastAccelRef = useRef(null);
@@ -171,7 +172,9 @@ export default function StepTracker() {
     <div className="bg-[#0d0d0d] border border-white/8 rounded-2xl p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex items-center gap-2 text-left flex-1">
           <div className="p-2 rounded-xl bg-green-500/15">
             <Footprints className="w-4 h-4 text-green-400" />
           </div>
@@ -179,7 +182,7 @@ export default function StepTracker() {
             <p className="text-sm font-semibold text-white">Step Tracker</p>
             <p className="text-[10px] text-white/30">{viewingToday ? "Today's activity" : format(new Date(selectedDate), "EEE, MMM d")}</p>
           </div>
-        </div>
+        </button>
 
         <div className="flex items-center gap-2">
           {status === "granted" &&
@@ -206,8 +209,22 @@ export default function StepTracker() {
               Live
             </span>
           }
+          <button
+            onClick={() => setOpen(!open)}
+            className="p-1.5 rounded-lg hover:bg-white/8 text-white/30 hover:text-white/60 transition-colors">
+            <ChevronDown className={`w-4 h-4 transition-transform ${open ? "" : "-rotate-90"}`} />
+          </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {open &&
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="space-y-4 overflow-hidden">
 
       {/* Permission States */}
       {status === "idle" &&
@@ -330,6 +347,9 @@ export default function StepTracker() {
           <StepHistoryStrip todaySteps={steps} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
         </>
       }
+        </motion.div>
+        }
+      </AnimatePresence>
 
       <AnimatePresence>
         {showCalendar &&
