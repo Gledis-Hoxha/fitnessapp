@@ -64,7 +64,7 @@ export default function MuscleMap({ workouts = [] }) {
   const trained = muscles.filter((m) => m.count > 0);
 
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl p-4">
+    <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-blue-400" />
