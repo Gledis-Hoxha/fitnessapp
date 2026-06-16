@@ -78,9 +78,9 @@ export default function StepTracker() {
 
   // Pedometer using DeviceMotion API (web fallback — works in browser on mobile)
   const startMotionTracking = async () => {
+    // No motion sensor (e.g. desktop browser): stay in the granted view, just
+    // don't start live counting.
     if (!window.DeviceMotionEvent) {
-      setStatus("unsupported");
-      setError("Your device/browser does not support motion tracking.");
       return;
     }
 
@@ -140,8 +140,11 @@ export default function StepTracker() {
   };
 
   const handleRequestPermission = async () => {
-    setStatus("requesting");
     setError(null);
+    // Persist consent immediately so we never prompt this user again, even on
+    // desktop browsers without a motion sensor.
+    localStorage.setItem("stepTrackingEnabled", "true");
+    setStatus("granted");
 
     const nativeOk = await tryNativeHealth();
     if (!nativeOk) {
