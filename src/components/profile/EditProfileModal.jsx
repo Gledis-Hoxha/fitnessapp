@@ -69,7 +69,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
                 <label className="text-xs text-white/50 mb-1 block">{label}</label>
                 <input value={form[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
               placeholder={placeholder}
-              className="w-full bg-white/8 border border-white/15 rounded-xl px-3 py-2.5 text-sm placeholder:text-white/25 outline-none focus:border-blue-500/50 text-gray-950" />
+              className="w-full border border-white/15 rounded-xl px-3 py-2.5 text-sm placeholder:text-white/25 outline-none focus:border-blue-500/50 text-gray-200 bg-gray-500/[0.08]" />
               </div>
             )}
           </div>
