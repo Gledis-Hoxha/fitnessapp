@@ -22,7 +22,10 @@ function StatTile({ icon: Icon, value, unit, iconBg }) {
 
 export default function StepTracker() {
   const navigate = useNavigate();
-  const [status, setStatus] = useState("idle"); // idle | requesting | granted | denied | unsupported
+  // Once a user has enabled tracking, remember it so we never prompt again
+  const [status, setStatus] = useState(() =>
+    localStorage.getItem("stepTrackingEnabled") === "true" ? "granted" : "idle"
+  ); // idle | requesting | granted | denied | unsupported
   const [steps, setSteps] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
@@ -64,6 +67,7 @@ export default function StepTracker() {
         const totalSteps = result?.data?.[0]?.value || 0;
         setSteps(Math.round(totalSteps));
         setStatus("granted");
+        localStorage.setItem("stepTrackingEnabled", "true");
         return true;
       } catch {
         return false;
@@ -98,6 +102,7 @@ export default function StepTracker() {
 
     setStatus("granted");
     setIsTracking(true);
+    localStorage.setItem("stepTrackingEnabled", "true");
 
     // Simple step detection via accelerometer magnitude peaks
     const THRESHOLD = 1.2;
@@ -150,6 +155,12 @@ export default function StepTracker() {
   };
 
   useEffect(() => {
+    // Returning users already enabled tracking — resume automatically without prompting
+    if (localStorage.getItem("stepTrackingEnabled") === "true") {
+      tryNativeHealth().then((nativeOk) => {
+        if (!nativeOk) startMotionTracking();
+      });
+    }
     return () => stopTracking();
   }, []);
 
