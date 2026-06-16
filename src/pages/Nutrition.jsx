@@ -137,7 +137,7 @@ export default function Nutrition() {
       
 
       {/* Meal Sections */}
-      <div className="space-y-2">
+      <div className="space-y-0">
         {["breakfast", "lunch", "dinner", "snack"].map((mealType) =>
         <MealSection
           key={mealType}
