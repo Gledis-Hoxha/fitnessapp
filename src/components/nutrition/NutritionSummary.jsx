@@ -18,7 +18,7 @@ export default function NutritionSummary({ protein = 0, carbs = 0, fat = 0, calo
   const hasData = protein > 0 || carbs > 0 || fat > 0;
 
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl px-4 py-3 space-y-3">
+    <div className="border border-white/10 rounded-2xl px-4 py-3 space-y-3" style={{ background: "hsl(248,20%,15%)" }}>
       <p className="text-[10px] font-semibold text-white/40 uppercase tracking-wider">This Week</p>
 
       {!hasData ? (

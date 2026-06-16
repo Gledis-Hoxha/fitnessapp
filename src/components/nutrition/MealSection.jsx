@@ -16,7 +16,7 @@ export default function MealSection({ mealType, entries = [], onAdd, onDelete })
   const totalCal = entries.reduce((s, e) => s + (e.calories || 0), 0);
 
   return (
-    <div className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden">
+    <div className="border border-white/10 rounded-2xl overflow-hidden" style={{ background: "hsl(248,20%,15%)" }}>
       {/* Header */}
       <button
         onClick={() => setOpen(!open)}
