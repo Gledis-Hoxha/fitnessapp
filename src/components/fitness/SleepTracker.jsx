@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Moon, Bluetooth, Plus, X, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SleepClock from "@/components/fitness/SleepClock";
+import TimeSummaryCard from "@/components/fitness/TimeSummaryCard";
+import TimePickerModal from "@/components/fitness/TimePickerModal";
 import { base44 } from "@/api/base44Client";
 import { format } from "date-fns";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,6 +31,7 @@ function SleepQualityStars({ value, onChange }) {
 export default function SleepTracker() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [picker, setPicker] = useState(null); // "bedtime" | "alarm" | null
   const [form, setForm] = useState({ bedtime: "22:30", wake_time: "06:30", quality: 3, notes: "" });
   const today = format(new Date(), "yyyy-MM-dd");
 
@@ -129,16 +132,8 @@ export default function SleepTracker() {
             {/* Log form */}
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-white/[0.04] border border-white/8 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Bedtime</p>
-                  <input type="time" value={form.bedtime} onChange={(e) => setForm({ ...form, bedtime: e.target.value })}
-                className="w-full bg-transparent text-lg font-bold text-white outline-none [color-scheme:dark]" />
-                </div>
-                <div className="rounded-xl bg-white/[0.04] border border-white/8 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Wake Time</p>
-                  <input type="time" value={form.wake_time} onChange={(e) => setForm({ ...form, wake_time: e.target.value })}
-                className="w-full bg-transparent text-lg font-bold text-white outline-none [color-scheme:dark]" />
-                </div>
+                <TimeSummaryCard type="bedtime" value={form.bedtime} onEdit={() => setPicker("bedtime")} />
+                <TimeSummaryCard type="alarm" value={form.wake_time} onEdit={() => setPicker("alarm")} />
               </div>
               <div className="rounded-xl bg-white/[0.04] border border-white/8 p-3 flex items-center justify-between">
                 <p className="text-xs text-white/40">Sleep Quality</p>
@@ -176,6 +171,25 @@ export default function SleepTracker() {
               </div>
           }
           </motion.div>
+        }
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {picker === "bedtime" &&
+        <TimePickerModal
+          title="Bedtime"
+          accent="indigo"
+          value={form.bedtime}
+          onConfirm={(t) => setForm((f) => ({ ...f, bedtime: t }))}
+          onClose={() => setPicker(null)} />
+        }
+        {picker === "alarm" &&
+        <TimePickerModal
+          title="Alarm"
+          accent="amber"
+          value={form.wake_time}
+          onConfirm={(t) => setForm((f) => ({ ...f, wake_time: t }))}
+          onClose={() => setPicker(null)} />
         }
       </AnimatePresence>
     </div>);
