@@ -3,7 +3,7 @@ import { format, startOfWeek, addDays, isToday, addWeeks } from "date-fns";
 import { CalendarDays, ChevronLeft, ChevronRight, User, Pencil, Check, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { AnimatePresence } from "framer-motion";
-import MuscleMap from "@/components/fitness/MuscleMap";
+import MuscleMap from "@/components/fitness/MuscleMap.jsx";
 import FitnessAchievements from "@/components/fitness/FitnessAchievements";
 import WorkoutCalendarModal from "@/components/profile/WorkoutCalendarModal";
 import { base44 } from "@/api/base44Client";
