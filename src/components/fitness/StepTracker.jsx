@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Footprints, Flame, MapPin, Target, RefreshCw, CheckCircle, AlertCircle, Lock, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
+import StepHistoryStrip from "@/components/fitness/StepHistoryStrip";
 
 const DAILY_STEP_GOAL = 10000;
 const STEP_LENGTH_M = 0.762; // avg step length in meters
@@ -310,6 +311,9 @@ export default function StepTracker() {
               Pause Tracking
             </button>
         }
+
+          {/* 7-day history */}
+          <StepHistoryStrip todaySteps={steps} />
         </>
       }
 
