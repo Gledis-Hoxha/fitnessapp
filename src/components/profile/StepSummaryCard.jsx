@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { format, subDays } from "date-fns";
 import { Footprints, Flame, MapPin, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,8 +64,9 @@ export default function StepSummaryCard() {
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todaySteps = getTodaySteps();
 
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const date = subDays(new Date(), 6 - i);
+  const HISTORY_DAYS = 30;
+  const days = Array.from({ length: HISTORY_DAYS }, (_, i) => {
+    const date = subDays(new Date(), HISTORY_DAYS - 1 - i);
     const dateStr = format(date, "yyyy-MM-dd");
     const isToday = dateStr === todayStr;
     const steps = isToday ? todaySteps : getStepsForDate(date);
@@ -79,7 +80,13 @@ export default function StepSummaryCard() {
     };
   });
 
-  const [selected, setSelected] = useState(6); // default to today
+  const [selected, setSelected] = useState(HISTORY_DAYS - 1); // default to today
+  const stripRef = useRef(null);
+
+  // Start scrolled to the most recent day (far right)
+  useEffect(() => {
+    if (stripRef.current) stripRef.current.scrollLeft = stripRef.current.scrollWidth;
+  }, []);
   const active = days[selected];
 
   const maxSteps = Math.max(DAILY_STEP_GOAL, ...days.map((d) => d.steps));
@@ -95,7 +102,7 @@ export default function StepSummaryCard() {
           </div>
           <p className="text-sm font-semibold text-white">Steps</p>
         </div>
-        <span className="text-xs text-white/35">7-day avg {weekAvg.toLocaleString()}</span>
+        <span className="text-xs text-white/35">{HISTORY_DAYS}-day avg {weekAvg.toLocaleString()}</span>
       </div>
 
       {/* Selected day overview */}
@@ -134,34 +141,36 @@ export default function StepSummaryCard() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Interactive 7-day bars */}
-      <div className="flex items-end justify-between gap-1.5 h-20">
-        {days.map((d, i) => {
-          const h = Math.max(6, Math.round((d.steps / maxSteps) * 100));
-          const hitGoal = d.steps >= DAILY_STEP_GOAL;
-          const isActive = i === selected;
-          return (
-            <button
-              key={i}
-              onClick={() => setSelected(i)}
-              className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: `${h}%` }}
-                transition={{ duration: 0.5, delay: i * 0.04, ease: "easeOut" }}
-                className={`w-full rounded-md transition-colors ${
-                  isActive
-                    ? "bg-green-400 ring-2 ring-green-400/40"
-                    : hitGoal
-                    ? "bg-green-500/60 group-hover:bg-green-500/80"
-                    : "bg-white/15 group-hover:bg-white/25"
-                }`} />
-              <span className={`text-[10px] ${isActive ? "text-green-400 font-semibold" : "text-white/30"}`}>
-                {format(d.date, "EEEEE")}
-              </span>
-            </button>
-          );
-        })}
+      {/* Interactive swipeable history bars — swipe left/right to see further back */}
+      <div ref={stripRef} className="overflow-x-auto no-scrollbar -mx-1 px-1">
+        <div className="flex items-end gap-2 h-20" style={{ minWidth: "100%" }}>
+          {days.map((d, i) => {
+            const h = Math.max(6, Math.round((d.steps / maxSteps) * 100));
+            const hitGoal = d.steps >= DAILY_STEP_GOAL;
+            const isActive = i === selected;
+            return (
+              <button
+                key={i}
+                onClick={() => setSelected(i)}
+                className="flex flex-col items-center gap-1.5 h-full justify-end group shrink-0 w-7">
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: `${h}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className={`w-full rounded-md transition-colors ${
+                    isActive
+                      ? "bg-green-400 ring-2 ring-green-400/40"
+                      : hitGoal
+                      ? "bg-green-500/60 group-hover:bg-green-500/80"
+                      : "bg-white/15 group-hover:bg-white/25"
+                  }`} />
+                <span className={`text-[10px] whitespace-nowrap ${isActive ? "text-green-400 font-semibold" : "text-white/30"}`}>
+                  {d.isToday ? "Today" : format(d.date, "d")}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
