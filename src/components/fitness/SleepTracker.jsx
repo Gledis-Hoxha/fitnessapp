@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Moon, Bluetooth, Plus, X, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import SleepClock from "@/components/fitness/SleepClock";
 import { base44 } from "@/api/base44Client";
 import { format } from "date-fns";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -111,20 +112,13 @@ export default function SleepTracker() {
           transition={{ duration: 0.2 }}
           className="border-t border-white/8 px-4 pb-4 pt-4 space-y-4 bg-gradient-to-b from-indigo-500/[0.06] to-transparent">
           
-            {/* Duration hero */}
-            <div className="flex items-center gap-4 rounded-2xl bg-white/[0.04] border border-white/8 p-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-indigo-500/30 blur-xl rounded-full" />
-                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                  <Moon className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <p className="text-2xl font-black text-white tabular-nums leading-none">
-                  {Math.floor(calcDuration(form.bedtime, form.wake_time) / 60)}h {calcDuration(form.bedtime, form.wake_time) % 60}m
-                </p>
-                <p className="text-xs text-white/40 mt-1.5">Tonight's sleep duration</p>
-              </div>
+            {/* Sleep clock dial */}
+            <div className="rounded-2xl bg-white/[0.04] border border-white/8 p-4">
+              <SleepClock
+                bedtime={form.bedtime}
+                wakeTime={form.wake_time}
+                durationLabel={`${Math.floor(calcDuration(form.bedtime, form.wake_time) / 60)}h ${calcDuration(form.bedtime, form.wake_time) % 60}m`}
+              />
             </div>
 
 
