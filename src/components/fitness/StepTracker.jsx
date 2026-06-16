@@ -1,33 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Footprints, Flame, MapPin, Target, RefreshCw, CheckCircle, AlertCircle, Lock, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { Footprints, Flame, MapPin, Clock, RefreshCw, CheckCircle, AlertCircle, Lock, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, subDays, addDays, isToday, isAfter, startOfDay } from "date-fns";
+import StepActivityRings from "@/components/fitness/StepActivityRings";
 import StepHistoryStrip from "@/components/fitness/StepHistoryStrip";
 import StepCalendarModal from "@/components/fitness/StepCalendarModal";
 import { DAILY_STEP_GOAL, STEP_LENGTH_M, CALORIES_PER_STEP, getStepsForDate } from "@/components/fitness/stepData";
 
-function StatBox({ icon: Icon, label, value, unit, color, progress }) {
+function StatTile({ icon: Icon, value, unit, iconBg }) {
   return (
-    <div className="bg-[#111] border border-white/8 rounded-2xl p-4 flex flex-col gap-2">
-      <div className={`p-2 rounded-xl w-fit ${color}`}>
-        <Icon className="w-4 h-4" />
+    <div className="flex flex-col items-center gap-2">
+      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${iconBg}`}>
+        <Icon className="w-5 h-5 text-white" />
       </div>
-      <div>
-        <p className="text-xl font-bold text-white leading-none">
-          {value}
-          {unit && <span className="text-sm font-medium text-white/40 ml-1">{unit}</span>}
-        </p>
-        <p className="text-xs text-white/35 mt-1">{label}</p>
-      </div>
-      {progress !== undefined &&
-      <div className="w-full h-1.5 bg-white/8 rounded-full overflow-hidden">
-          <div
-          className={`h-full rounded-full transition-all duration-700 ${color.replace("bg-", "bg-").replace("/15", "").replace("text-", "bg-")}`}
-          style={{ width: `${Math.min(100, progress)}%` }} />
-        
-        </div>
-      }
+      <p className="text-base font-bold text-white tabular-nums">{value}</p>
+      <p className="text-xs text-white/35 -mt-1.5">{unit}</p>
     </div>);
 
 }
@@ -280,56 +268,31 @@ export default function StepTracker() {
             </button>
           </div>
 
-          {/* Big step count */}
-          <div className="text-center py-2">
-            <p className="text-5xl font-black text-white tabular-nums">{displaySteps.toLocaleString()}</p>
-            <p className="text-xs text-white/30 mt-1 font-medium">{viewingToday ? "steps today" : "steps"}</p>
+          {/* Activity rings */}
+          <div className="py-2">
+            <StepActivityRings
+              stepsProgress={progress}
+              distanceProgress={Math.min(100, Math.round((distanceKm / (DAILY_STEP_GOAL * STEP_LENGTH_M / 1000)) * 100))}
+              caloriesProgress={Math.min(100, Math.round((calories / (DAILY_STEP_GOAL * CALORIES_PER_STEP)) * 100))} />
           </div>
 
-          {/* Goal progress bar */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] text-white/30 font-medium">Daily Goal</span>
-              <span className="text-[10px] font-bold text-green-400">{progress}% · {DAILY_STEP_GOAL.toLocaleString()} steps</span>
-            </div>
-            <div className="w-full h-2.5 bg-white/8 rounded-full overflow-hidden">
-              <motion.div
-              className="h-full bg-green-500 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.7, ease: "easeOut" }} />
-            
-            </div>
+          {/* Big step count */}
+          <div className="text-center">
+            <p className="text-4xl font-black text-white tabular-nums">{displaySteps.toLocaleString()}</p>
+            <p className="text-sm text-white/30 mt-1 font-medium">total steps</p>
             {progress >= 100 &&
-          <div className="flex items-center gap-1 justify-center text-green-400">
+          <div className="flex items-center gap-1 justify-center text-green-400 mt-1.5">
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span className="text-xs font-semibold">Goal reached! 🎉</span>
               </div>
           }
           </div>
 
-          {/* Stat grid */}
-          <div className="grid grid-cols-3 gap-2">
-            <StatBox
-            icon={Flame}
-            label="Calories"
-            value={calories}
-            unit="kcal"
-            color="bg-orange-500/15 text-orange-400" />
-          
-            <StatBox
-            icon={MapPin}
-            label="Distance"
-            value={distanceKm}
-            unit="km"
-            color="bg-blue-500/15 text-blue-400" />
-          
-            <StatBox
-            icon={Target}
-            label="Goal"
-            value={`${progress}%`}
-            color="bg-purple-500/15 text-purple-400" />
-          
+          {/* Stat tiles */}
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            <StatTile icon={Flame} value={calories} unit="kcal" iconBg="bg-orange-500" />
+            <StatTile icon={MapPin} value={distanceKm} unit="kilometer" iconBg="bg-zinc-500" />
+            <StatTile icon={Clock} value={Math.round(displaySteps / 100)} unit="minute" iconBg="bg-blue-500" />
           </div>
 
           {/* Track / Stop button (for motion sensor mode) — only for today */}
