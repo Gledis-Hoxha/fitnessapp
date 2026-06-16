@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { format, subDays } from "date-fns";
-import { Footprints, Flame, MapPin } from "lucide-react";
+import { Footprints, Flame, MapPin, Target } from "lucide-react";
 import {
   getStepsForDate,
   DAILY_STEP_GOAL,
@@ -25,12 +26,27 @@ export default function StepSummaryCard() {
     return { date, isToday, steps: isToday ? todaySteps : getStepsForDate(date) };
   });
 
+  // The day the user is inspecting (defaults to today = last point)
+  const [activeIdx, setActiveIdx] = useState(6);
+  const active = days[activeIdx];
+
   const maxSteps = Math.max(DAILY_STEP_GOAL, ...days.map((d) => d.steps));
-  const weekTotal = days.reduce((a, d) => a + d.steps, 0);
-  const weekAvg = Math.round(weekTotal / 7);
-  const calories = Math.round(todaySteps * CALORIES_PER_STEP);
-  const distanceKm = (todaySteps * STEP_LENGTH_M / 1000).toFixed(1);
-  const progress = Math.min(100, Math.round((todaySteps / DAILY_STEP_GOAL) * 100));
+  const weekAvg = Math.round(days.reduce((a, d) => a + d.steps, 0) / 7);
+
+  const calories = Math.round(active.steps * CALORIES_PER_STEP);
+  const distanceKm = (active.steps * STEP_LENGTH_M / 1000).toFixed(1);
+  const progress = Math.min(100, Math.round((active.steps / DAILY_STEP_GOAL) * 100));
+
+  // Geometry for the SVG area chart
+  const W = 300;
+  const H = 96;
+  const PAD_Y = 12;
+  const stepX = W / (days.length - 1);
+  const yOf = (steps) => PAD_Y + (1 - steps / maxSteps) * (H - PAD_Y * 2);
+  const pts = days.map((d, i) => ({ x: i * stepX, y: yOf(d.steps), ...d }));
+  const linePath = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ");
+  const areaPath = `${linePath} L${W},${H} L0,${H} Z`;
+  const goalY = yOf(DAILY_STEP_GOAL);
 
   return (
     <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
@@ -44,11 +60,13 @@ export default function StepSummaryCard() {
         <span className="text-xs text-white/35">7-day avg {weekAvg.toLocaleString()}</span>
       </div>
 
-      {/* Today */}
+      {/* Selected day summary */}
       <div className="flex items-end justify-between mb-3">
         <div>
-          <p className="text-3xl font-black text-white tabular-nums leading-none">{todaySteps.toLocaleString()}</p>
-          <p className="text-xs text-white/35 mt-1">steps today · {progress}% of goal</p>
+          <p className="text-3xl font-black text-white tabular-nums leading-none">{active.steps.toLocaleString()}</p>
+          <p className="text-xs text-white/35 mt-1">
+            {active.isToday ? "steps today" : `steps · ${format(active.date, "EEE, MMM d")}`} · {progress}% of goal
+          </p>
         </div>
         <div className="flex gap-4 text-right">
           <div>
@@ -68,24 +86,60 @@ export default function StepSummaryCard() {
         </div>
       </div>
 
-      {/* 7-day bars */}
-      <div className="flex items-end justify-between gap-1.5 h-20">
-        {days.map((d, i) => {
-          const h = Math.max(6, Math.round((d.steps / maxSteps) * 100));
-          const hitGoal = d.steps >= DAILY_STEP_GOAL;
+      {/* Interactive area chart */}
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }} preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="stepArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#22c55e" stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
+
+        {/* Goal reference line */}
+        <line x1="0" y1={goalY} x2={W} y2={goalY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="4 4" />
+
+        <path d={areaPath} fill="url(#stepArea)" />
+        <path d={linePath} fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+
+        {pts.map((p, i) => {
+          const isActive = i === activeIdx;
           return (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-              <div
-                className={`w-full rounded-md transition-all ${
-                  d.isToday ? "bg-green-400" : hitGoal ? "bg-green-500/70" : "bg-white/15"
-                }`}
-                style={{ height: `${h}%` }} />
-              <span className={`text-[10px] ${d.isToday ? "text-green-400 font-semibold" : "text-white/30"}`}>
-                {format(d.date, "EEEEE")}
-              </span>
-            </div>
+            <g key={i}>
+              {/* invisible wide hit target for easy tapping */}
+              <rect
+                x={p.x - stepX / 2}
+                y="0"
+                width={stepX}
+                height={H}
+                fill="transparent"
+                className="cursor-pointer"
+                onMouseEnter={() => setActiveIdx(i)}
+                onClick={() => setActiveIdx(i)} />
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={isActive ? 5 : 3}
+                fill={isActive ? "#22c55e" : "hsl(248,20%,15%)"}
+                stroke="#22c55e"
+                strokeWidth="2"
+                className="transition-all pointer-events-none" />
+            </g>
           );
         })}
+      </svg>
+
+      {/* Day labels */}
+      <div className="flex items-center justify-between mt-1.5">
+        {days.map((d, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveIdx(i)}
+            className={`flex-1 text-[10px] transition-colors ${
+              i === activeIdx ? "text-green-400 font-semibold" : "text-white/30"
+            }`}>
+            {format(d.date, "EEEEE")}
+          </button>
+        ))}
       </div>
     </div>
   );

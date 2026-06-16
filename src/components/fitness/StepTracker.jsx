@@ -6,7 +6,7 @@ import { format, subDays, addDays, isToday, isAfter, startOfDay } from "date-fns
 import StepActivityRings from "@/components/fitness/StepActivityRings";
 import StepHistoryStrip from "@/components/fitness/StepHistoryStrip";
 import StepCalendarModal from "@/components/fitness/StepCalendarModal";
-import { DAILY_STEP_GOAL, STEP_LENGTH_M, CALORIES_PER_STEP, getStepsForDate } from "@/components/fitness/stepData";
+import { DAILY_STEP_GOAL, STEP_LENGTH_M, CALORIES_PER_STEP, getStepsForDate, getMinutesForDate, getCaloriesForDate } from "@/components/fitness/stepData";
 
 function StatTile({ icon: Icon, value, unit, iconBg }) {
   return (
@@ -44,7 +44,13 @@ export default function StepTracker() {
   const viewingToday = selectedDate === format(new Date(), "yyyy-MM-dd");
   // Live steps for today, deterministic sample data for prior days
   const displaySteps = viewingToday ? steps : getStepsForDate(new Date(selectedDate));
-  const calories = Math.round(displaySteps * CALORIES_PER_STEP);
+  // Today derives calories/minutes from live steps; past days use varied samples
+  const calories = viewingToday
+    ? Math.round(displaySteps * CALORIES_PER_STEP)
+    : getCaloriesForDate(new Date(selectedDate));
+  const activeMinutes = viewingToday
+    ? Math.round(displaySteps / 100)
+    : getMinutesForDate(new Date(selectedDate));
   const distanceKm = (displaySteps * STEP_LENGTH_M / 1000).toFixed(2);
   const progress = Math.min(100, Math.round(displaySteps / DAILY_STEP_GOAL * 100));
 
@@ -328,7 +334,7 @@ export default function StepTracker() {
           <div className="grid grid-cols-3 gap-2 pt-1">
             <StatTile icon={Flame} value={calories} unit="kcal" iconBg="bg-orange-500" />
             <StatTile icon={MapPin} value={distanceKm} unit="kilometer" iconBg="bg-zinc-500" />
-            <StatTile icon={Clock} value={Math.round(displaySteps / 100)} unit="minute" iconBg="bg-blue-500" />
+            <StatTile icon={Clock} value={activeMinutes} unit="minute" iconBg="bg-blue-500" />
           </div>
 
           {/* Track / Stop button (for motion sensor mode) — only for today */}
