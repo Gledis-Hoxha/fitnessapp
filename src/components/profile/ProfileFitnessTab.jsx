@@ -4,6 +4,8 @@ import { CalendarDays, ChevronLeft, ChevronRight, User, Pencil, Check, X } from 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { AnimatePresence } from "framer-motion";
 import MuscleMap from "@/components/fitness/MuscleMap.jsx";
+import StepSummaryCard from "@/components/profile/StepSummaryCard";
+import SleepSummaryCard from "@/components/profile/SleepSummaryCard";
 import FitnessAchievements from "@/components/fitness/FitnessAchievements";
 import WorkoutCalendarModal from "@/components/profile/WorkoutCalendarModal";
 import { base44 } from "@/api/base44Client";
@@ -173,6 +175,10 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
           </ResponsiveContainer>
         </div>
       }
+
+      {/* Step & Sleep summaries */}
+      <StepSummaryCard />
+      <SleepSummaryCard />
 
       {/* Muscle Map */}
       <MuscleMap workouts={workouts} user={user} />

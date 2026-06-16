@@ -127,6 +127,7 @@ export default function StepTracker() {
           lastStepTime = now;
           stepCountRef.current += 1;
           setSteps(stepCountRef.current);
+          localStorage.setItem("stepsToday", String(stepCountRef.current));
         }
       }
       lastAccelRef.current = magnitude;
