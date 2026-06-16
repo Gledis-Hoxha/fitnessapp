@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  format, startOfWeek, addDays, isToday, isSameDay, isBefore, startOfDay
+  format, startOfWeek, addDays, addWeeks, isToday, isSameDay, isBefore, startOfDay
 } from "date-fns";
-import { Dumbbell, CalendarDays, Clock, X } from "lucide-react";
+import { Dumbbell, CalendarDays, ChevronLeft, ChevronRight, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 
@@ -81,6 +81,7 @@ function CalendarModal({ workoutsByDate, selectedDay, onSelectDate, onClose }) {
 export default function WorkoutCalendar() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDay, setSelectedDay] = useState(new Date());
+  const [weekOffset, setWeekOffset] = useState(0);
 
   const { data: workouts = [] } = useQuery({
     queryKey: ["calendarWorkouts"],
@@ -102,7 +103,7 @@ export default function WorkoutCalendar() {
     return map;
   }, [workouts]);
 
-  const monday = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const monday = startOfWeek(addWeeks(new Date(), weekOffset), { weekStartsOn: 1 });
   const weekCount = DAYS.filter((_, i) => workoutsByDate[format(addDays(monday, i), "yyyy-MM-dd")]).length;
 
   const selectedStr = format(selectedDay, "yyyy-MM-dd");
@@ -115,36 +116,46 @@ export default function WorkoutCalendar() {
 
   return (
     <div className="space-y-3">
-      {/* Weekly strip */}
-      <div className="bg-[#111] border border-white/8 rounded-2xl px-4 py-2.5">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest">This Week <span className="text-blue-400">{weekCount}/7</span></p>
+      {/* Weekly strip — matches Profile calendar style */}
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1">
+            <button onClick={() => setWeekOffset((wo) => wo - 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <p className="text-sm font-semibold text-white">
+              {format(monday, "MMM d")} – {format(addDays(monday, 6), "MMM d")}
+            </p>
+            {weekOffset !== 0 &&
+            <button onClick={() => setWeekOffset(0)} className="text-xs text-blue-400 px-2 hover:underline">Today</button>
+            }
+            <button onClick={() => setWeekOffset((wo) => wo + 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <button onClick={() => setShowCalendar(true)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-            <CalendarDays className="w-3.5 h-3.5 text-white/40" />
+            <CalendarDays className="w-4 h-4 text-blue-400" />
           </button>
         </div>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-1.5">
           {DAYS.map((day, i) => {
             const date = addDays(monday, i);
             const dateStr = format(date, "yyyy-MM-dd");
             const hasWorkout = !!workoutsByDate[dateStr];
-            const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
             const isCurrentDay = isToday(date);
             const isSelected = isSameDay(date, selectedDay);
             return (
               <button
                 key={day}
-                onClick={() => setSelectedDay(date)}
+                onClick={() => setSelectedDay(isSelected ? new Date() : date)}
                 className="flex flex-col items-center gap-1 group"
               >
-                <span className="text-[9px] text-white/25 font-medium">{day[0]}</span>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
-                  isSelected && hasWorkout ? "bg-blue-400 text-black scale-110" :
-                  isSelected ? "ring-2 ring-white/50 bg-white/10 text-white scale-110" :
-                  hasWorkout ? "bg-blue-500 text-white" :
-                  isCurrentDay ? "border border-blue-500/60 text-blue-400" :
-                  isPast ? "bg-white/4 text-white/10" :
-                  "bg-white/4 text-white/20 group-hover:bg-white/10"
+                <span className="text-xs text-white/30">{day.slice(0, 2)}</span>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  isSelected ? "ring-2 ring-white/50 scale-110" :
+                  hasWorkout ? "bg-blue-500 text-white shadow-md shadow-blue-500/30" :
+                  isCurrentDay ? "border-2 border-blue-500 text-blue-400" :
+                  "bg-white/5 text-white/40 hover:bg-white/10"
                 }`}>
                   {hasWorkout ? "✓" : format(date, "d")}
                 </div>

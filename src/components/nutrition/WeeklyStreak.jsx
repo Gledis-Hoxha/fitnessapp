@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { startOfWeek, addDays, format, isToday, isBefore, startOfDay } from "date-fns";
-import { CalendarDays, X } from "lucide-react";
+import { startOfWeek, addDays, addWeeks, format, isToday, isBefore, startOfDay } from "date-fns";
+import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -76,20 +76,33 @@ function CalendarModal({ loggedDates, selectedDate, onSelectDate, onClose }) {
 
 export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectDate }) {
   const [showCalendar, setShowCalendar] = useState(false);
-  const monday = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const [weekOffset, setWeekOffset] = useState(0);
+  const monday = startOfWeek(addWeeks(new Date(), weekOffset), { weekStartsOn: 1 });
   const loggedSet = new Set(loggedDates);
-  const weekLogged = DAYS.filter((_, i) => loggedSet.has(format(addDays(monday, i), "yyyy-MM-dd"))).length;
 
   return (
     <>
-      <div className="bg-[#111] border border-white/8 rounded-2xl px-4 py-2.5">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest">This Week <span className="text-green-400">{weekLogged}/7</span></p>
+      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1">
+            <button onClick={() => setWeekOffset((wo) => wo - 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <p className="text-sm font-semibold text-white">
+              {format(monday, "MMM d")} – {format(addDays(monday, 6), "MMM d")}
+            </p>
+            {weekOffset !== 0 &&
+            <button onClick={() => setWeekOffset(0)} className="text-xs text-green-400 px-2 hover:underline">Today</button>
+            }
+            <button onClick={() => setWeekOffset((wo) => wo + 1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <button onClick={() => setShowCalendar(true)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-            <CalendarDays className="w-3.5 h-3.5 text-white/40" />
+            <CalendarDays className="w-4 h-4 text-green-400" />
           </button>
         </div>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-1.5">
           {DAYS.map((day, i) => {
             const date = addDays(monday, i);
             const dateStr = format(date, "yyyy-MM-dd");
@@ -103,14 +116,12 @@ export default function WeeklyStreak({ loggedDates = [], selectedDate, onSelectD
                 onClick={() => onSelectDate?.(isSelected ? null : dateStr)}
                 className="flex flex-col items-center gap-1 group">
                 
-                <span className="text-[9px] text-white/25 font-medium">{day[0]}</span>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
-                isSelected && logged ? "bg-green-400 text-black scale-110" :
-                isSelected ? "ring-2 ring-white/50 bg-white/10 text-white scale-110" :
-                logged ? "bg-green-500 text-white" :
-                isCurrentDay ? "border border-green-500/60 text-green-400" :
-                isPast ? "bg-white/4 text-white/10" :
-                "bg-white/4 text-white/20 group-hover:bg-white/10"}`
+                <span className="text-xs text-white/30">{day.slice(0, 2)}</span>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                isSelected ? "ring-2 ring-white/50 scale-110" :
+                logged ? "bg-green-500 text-white shadow-md shadow-green-500/30" :
+                isCurrentDay ? "border-2 border-green-500 text-green-400" :
+                "bg-white/5 text-white/40 hover:bg-white/10"}`
                 }>
                   {logged ? "✓" : format(date, "d")}
                 </div>
