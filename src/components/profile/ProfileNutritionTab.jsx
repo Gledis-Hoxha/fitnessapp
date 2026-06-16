@@ -1,9 +1,9 @@
-import { format, subDays } from "date-fns";
-import { Scale, Bell, StickyNote, Image, Trash2, Plus } from "lucide-react";
+import { format } from "date-fns";
+import { Bell, StickyNote, Image, Trash2, Plus } from "lucide-react";
 import { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
-import NutritionRadarChart from "@/components/profile/NutritionRadarChart";
+import NutritionDailyOverview from "@/components/nutrition/NutritionDailyOverview";
 
 const DEFAULT_REMINDERS = [
   { id: "breakfast", time: "8:00 AM", label: "Log Breakfast", active: true },
@@ -35,57 +35,6 @@ export default function ProfileNutritionTab({ meals = [], user }) {
   const [uploading, setUploading] = useState(false);
   const photoInputRef = useRef(null);
 
-  const chartData = Array.from({ length: 7 }, (_, i) => {
-    const date = format(subDays(new Date(), 6 - i), "yyyy-MM-dd");
-    const dayMeals = meals.filter((m) => m.date === date);
-    return {
-      name: format(subDays(new Date(), 6 - i), "EEE"),
-      date,
-      cal: dayMeals.reduce((s, m) => s + (m.calories || 0), 0),
-      protein: dayMeals.reduce((s, m) => s + (m.protein_g || 0), 0),
-      carbs: dayMeals.reduce((s, m) => s + (m.carbs_g || 0), 0),
-      fats: dayMeals.reduce((s, m) => s + (m.fat_g || 0), 0),
-    };
-  });
-
-  // Hydration from localStorage
-  const getHydration = () => {
-    try {
-      const log = JSON.parse(localStorage.getItem("hydration_log") || "{}");
-      const weekDates = chartData.map((d) => d.date);
-      const vals = weekDates.map((d) => log[d] || 0).filter((v) => v > 0);
-      return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
-    } catch { return 0; }
-  };
-
-  // Actual weekly averages for radar
-  const loggedDays = chartData.filter((d) => d.cal > 0);
-  const radarActual = {
-    calories: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.cal, 0) / loggedDays.length) : 0,
-    protein: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.protein, 0) / loggedDays.length) : 0,
-    carbs: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.carbs, 0) / loggedDays.length) : 0,
-    fats: loggedDays.length ? Math.round(loggedDays.reduce((s, d) => s + d.fats, 0) / loggedDays.length) : 0,
-    hydration: getHydration(),
-  };
-
-  const uniqueDays = new Set(meals.map((m) => m.date)).size;
-  const totalCalories = meals.reduce((s, m) => s + (m.calories || 0), 0);
-  const avgCalories = uniqueDays ? Math.round(totalCalories / uniqueDays) : 0;
-
-  const calcRecommendedCal = () => {
-    if (!user?.weight_kg) return null;
-    const base = user.weight_kg * 22 * (
-      user.activity_level === "sedentary" ? 1.2 :
-      user.activity_level === "lightly_active" ? 1.375 :
-      user.activity_level === "moderately_active" ? 1.55 :
-      user.activity_level === "very_active" ? 1.725 : 1.9
-    );
-    if (user.goal_weight_kg && user.goal_weight_kg < user.weight_kg) return Math.round(base - 300);
-    if (user.goal_weight_kg && user.goal_weight_kg > user.weight_kg) return Math.round(base + 250);
-    return Math.round(base);
-  };
-  const recommendedCal = calcRecommendedCal();
-
   const toggleReminder = (id) =>
     setReminders((prev) => {
       const next = prev.map((r) => r.id === id ? { ...r, active: !r.active } : r);
@@ -116,36 +65,8 @@ export default function ProfileNutritionTab({ meals = [], user }) {
 
   return (
     <div className="space-y-4">
-      {/* Weight & Stats */}
-      <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
-        <div className="flex items-center gap-2 mb-3">
-          <Scale className="w-4 h-4 text-green-400" />
-          <p className="text-sm font-semibold text-white">Weight & Stats</p>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white/5 rounded-xl p-3 text-center">
-            <p className="text-lg font-bold text-green-400">{user?.weight_kg ? `${user.weight_kg} kg` : "—"}</p>
-            <p className="text-xs text-white/40 mt-0.5 leading-tight">Current Weight</p>
-          </div>
-          <div className="bg-white/5 rounded-xl p-3 text-center">
-            <p className="text-lg font-bold text-white/60">{user?.goal_weight_kg ? `${user.goal_weight_kg} kg` : "—"}</p>
-            <p className="text-xs text-white/40 mt-0.5 leading-tight">Goal Weight</p>
-          </div>
-          <div className="bg-white/5 rounded-xl p-3 text-center">
-            <p className="text-lg font-bold text-yellow-400">{avgCalories ? `${avgCalories}` : "—"}</p>
-            <p className="text-xs text-white/40 mt-0.5 leading-tight">Avg kcal/day</p>
-          </div>
-        </div>
-        {recommendedCal && (
-          <div className="mt-3 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-2.5 flex items-center justify-between">
-            <p className="text-xs text-green-400/70">Recommended daily calories</p>
-            <p className="text-sm font-bold text-green-400">{recommendedCal} kcal</p>
-          </div>
-        )}
-      </div>
-
-      {/* Nutrition Radar Chart */}
-      <NutritionRadarChart actual={radarActual} user={user} />
+      {/* Daily Nutrition Overview (scrollable by day) */}
+      <NutritionDailyOverview meals={meals} user={user} />
 
       {/* Meal Reminders */}
       <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>

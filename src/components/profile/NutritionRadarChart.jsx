@@ -25,7 +25,7 @@ function pointsFromArray(pts) {
   return pts.map((p) => `${p.x},${p.y}`).join(" ");
 }
 
-export default function NutritionRadarChart({ actual = {}, user }) {
+export default function NutritionRadarChart({ actual = {}, user, label }) {
   const cx = 140, cy = 140, maxR = 110;
 
   const recommended = {};
@@ -59,7 +59,9 @@ export default function NutritionRadarChart({ actual = {}, user }) {
 
   return (
     <div className="border border-white/10 rounded-2xl p-4" style={{ background: "hsl(248,20%,15%)" }}>
-      <p className="text-sm font-semibold text-white mb-3">Nutrition Overview</p>
+      <p className="text-sm font-semibold text-white mb-3">
+        Nutrition Overview{label ? ` · ${label}` : ""}
+      </p>
 
       <div className="flex justify-center">
         <svg width={280} height={280} viewBox="0 0 280 280">
