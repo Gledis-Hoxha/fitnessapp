@@ -55,7 +55,7 @@ export default function HydrationTracker({ date }) {
   const handleUp = () => {dragging.current = false;};
 
   return (
-    <div className="bg-[#111] border border-white/8 rounded-2xl p-4 h-full flex flex-col">
+    <div className="border border-white/10 rounded-2xl p-4 h-full flex flex-col" style={{ background: "hsl(248,20%,15%)" }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Droplets className="w-4 h-4 text-blue-400" />
