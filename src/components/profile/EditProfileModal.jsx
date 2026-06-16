@@ -69,7 +69,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
                 <label className="text-xs text-white/50 mb-1 block">{label}</label>
                 <input value={form[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
               placeholder={placeholder}
-              className="w-full border border-white/15 rounded-xl px-3 py-2.5 text-sm placeholder:text-white/25 outline-none focus:border-blue-500/50 text-gray-200 bg-gray-500/[0.08]" />
+              className="w-full border border-white/15 rounded-xl px-3 py-2.5 text-sm placeholder:text-white/25 outline-none focus:border-blue-500/50 bg-gray-500/[0.08] text-gray-300" />
               </div>
             )}
           </div>
@@ -89,7 +89,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
                   <div className="relative">
                     <input type="number" value={form[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
                   placeholder="—"
-                  className="w-full bg-white/8 border border-white/15 rounded-xl px-3 py-2.5 pr-10 text-sm placeholder:text-white/25 outline-none focus:border-blue-500/50 text-gray-950" />
+                  className="w-full border border-white/15 rounded-xl px-3 py-2.5 pr-10 text-sm placeholder:text-white/25 outline-none focus:border-blue-500/50 text-gray-300 bg-gray-500/[0.08]" />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30">{unit}</span>
                   </div>
                 </div>
