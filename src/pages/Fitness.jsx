@@ -13,9 +13,18 @@ export default function Fitness() {
   const [showReminders, setShowReminders] = useState(false);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 relative">
+      {/* Background logo */}
+      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.04] select-none">
+        <img
+          src="https://media.base44.com/images/public/69f4cab318774ed99e230d09/da8b99afd_stackedstrengthlogopngcopy.png"
+          alt=""
+          className="w-[600px] max-w-[90vw] object-contain"
+        />
+      </div>
+
       {/* Header */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 relative z-10">
         <button
           onClick={() => setShowStartModal(true)}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 font-semibold text-sm hover:bg-blue-500/30 transition-colors">
@@ -31,23 +40,25 @@ export default function Fitness() {
         </button>
       </div>
 
-      {/* Health Trackers */}
-      <div className="flex items-center gap-2">
-        <Activity className="w-4 h-4 text-white/30" />
-        <p className="text-xs font-semibold text-white/30 uppercase tracking-widest">Health Tracking</p>
+      <div className="relative z-10 space-y-5">
+        {/* Health Trackers */}
+        <div className="flex items-center gap-2">
+          <Activity className="w-4 h-4 text-white/30" />
+          <p className="text-xs font-semibold text-white/30 uppercase tracking-widest">Health Tracking</p>
+        </div>
+
+        <StepTracker />
+        <SleepTracker />
+        <HeartRateTracker />
+
+        {/* Section label */}
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-white/30" />
+          <p className="text-xs font-semibold text-white/30 uppercase tracking-widest">Workout Calendar</p>
+        </div>
+
+        <WorkoutCalendar />
       </div>
-
-      <StepTracker />
-      <SleepTracker />
-      <HeartRateTracker />
-
-      {/* Section label */}
-      <div className="flex items-center gap-2">
-        <CalendarDays className="w-4 h-4 text-white/30" />
-        <p className="text-xs font-semibold text-white/30 uppercase tracking-widest">Workout Calendar</p>
-      </div>
-
-      <WorkoutCalendar />
 
       <AnimatePresence>
         {showStartModal && <WorkoutStartModal onClose={() => setShowStartModal(false)} />}
