@@ -277,16 +277,16 @@ export default function SettingsModal({ onClose }) {
               <span className="text-sm text-white/70">Change Password</span>
               <ChevronRight className="w-4 h-4 text-white/25" />
             </button>
-            <button
-              onClick={() => {
-                localStorage.clear();
-                toast.success("Local preferences cleared!");
-              }}
-              className="w-full flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8 hover:bg-white/8 transition-colors hidden">
-              
-              <span className="text-sm text-white/60">Clear local preferences</span>
-              <ChevronRight className="w-4 h-4 text-white/25" />
-            </button>
+            
+
+
+
+
+
+
+
+
+            
           </div>
         </div>
       </motion.div>
