@@ -83,8 +83,8 @@ export default function SleepTracker() {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
         
-        <div className={`p-2 rounded-xl ${todayLog ? "bg-indigo-500/20" : "bg-white/8"}`}>
-          <Moon className={`w-4 h-4 ${todayLog ? "text-indigo-400" : "text-white/50"}`} />
+        <div className="p-2 rounded-xl bg-indigo-500/15">
+          <Moon className="w-4 h-4 text-indigo-400" />
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-white">Sleep Tracker</p>
