@@ -19,7 +19,7 @@ export default function CoachSuggestions({ onSelect, compact = false }) {
         className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-blue-500/15 border border-white/10 hover:border-blue-500/30 text-xs text-white/60 hover:text-white transition-all"
         style={{ background: "hsl(248,20%,15%)" }}>
         
-          <span className="hidden">{s.emoji}</span>
+          
           <span>{s.text}</span>
         </button>
       )}

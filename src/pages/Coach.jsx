@@ -59,10 +59,10 @@ export default function Coach() {
           <p className="text-xs text-white/35">Personalized fitness & nutrition guidance</p>
         </div>
         <div className="ml-auto">
-          <span className="flex items-center gap-1.5 text-xs font-medium text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full hidden">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-            Online
-          </span>
+          
+
+
+          
         </div>
       </div>
 
