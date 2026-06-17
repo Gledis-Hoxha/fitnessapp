@@ -67,7 +67,7 @@ export default function Coach() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-4 pb-4">
+      <div className="flex-1 overflow-y-auto no-scrollbar space-y-4 pb-4">
         {messages.length === 0 && !loading &&
         <div className="pt-6 text-center space-y-5">
             <div className="w-20 h-20 rounded-3xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center mx-auto">
