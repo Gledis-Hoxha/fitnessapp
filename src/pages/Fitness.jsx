@@ -14,17 +14,6 @@ export default function Fitness() {
 
   return (
     <div className="space-y-5 relative">
-      {/* Background logo — repeats vertically, scrolls with page */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-25 select-none"
-        style={{
-          backgroundImage: `url(https://media.base44.com/images/public/69f4cab318774ed99e230d09/4818d6c8f_Untitleddesign2.png)`,
-          backgroundRepeat: "repeat-y",
-          backgroundPosition: "center top",
-          backgroundSize: "100% auto",
-        }}
-      />
-
       {/* Header */}
       <div className="flex items-center gap-2 relative z-10">
         <button
