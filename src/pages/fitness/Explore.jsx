@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { searchExercises, mapExercise, BODY_PARTS, loadDefaultExercises } from "@/lib/exerciseApi";
 import ExerciseDetailModal from "@/components/fitness/ExerciseDetailModal";
+import ExerciseGif from "@/components/fitness/ExerciseGif";
 
 const BODY_PART_EMOJIS = {
   all: "⚡", back: "🔙", cardio: "🏃", chest: "🏋️",
@@ -139,13 +140,7 @@ export default function Explore() {
               onClick={() => setSelected(ex)}
               className="w-full flex items-center gap-3 p-3 bg-[#161618] border border-white/8 rounded-2xl hover:border-blue-500/40 hover:bg-[#1a1a1f] transition-all active:scale-[0.98] text-left group"
             >
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center">
-                {ex.gifUrl ? (
-                  <img src={ex.gifUrl} alt={ex.name} className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <span className="text-2xl">{ex.emoji}</span>
-                )}
-              </div>
+              <ExerciseGif exerciseId={ex.id} />
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-white text-sm capitalize leading-snug">{ex.name}</p>
                 <div className="flex flex-wrap gap-1 mt-1.5">

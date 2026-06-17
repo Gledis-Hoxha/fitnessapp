@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ExerciseGif from "@/components/fitness/ExerciseGif";
 
 export default function ExerciseDetailModal({ exercise, onAdd, onClose }) {
   return (
@@ -25,13 +26,7 @@ export default function ExerciseDetailModal({ exercise, onAdd, onClose }) {
           </button>
         </div>
 
-        {exercise.gifUrl && (
-          <img
-            src={exercise.gifUrl}
-            alt={exercise.name}
-            className="w-full h-40 object-contain rounded-xl bg-white/5 mb-4"
-          />
-        )}
+        <ExerciseGif exerciseId={exercise.id} className="w-full h-40 mb-4 rounded-xl" />
 
         <div className="flex flex-wrap gap-2 mb-4">
           {[

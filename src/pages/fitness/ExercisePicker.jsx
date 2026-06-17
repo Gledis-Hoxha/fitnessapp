@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Plus, Search, Loader2, Dumbbell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import ExerciseGif from "@/components/fitness/ExerciseGif";
 import { searchExercises, mapExercise, BODY_PARTS, loadDefaultExercises } from "@/lib/exerciseApi";
 
 export default function ExercisePicker() {
@@ -143,17 +144,8 @@ export default function ExercisePicker() {
             onClick={() => handlePick(ex)}
             className="w-full flex items-center gap-3 p-3 bg-secondary border border-border rounded-2xl hover:border-primary/30 hover:bg-secondary/80 transition-all active:scale-[0.98] text-left group">
             
-              {/* GIF / Fallback */}
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-muted flex-shrink-0 flex items-center justify-center">
-                {ex.gifUrl ?
-              <img
-                src={ex.gifUrl}
-                alt={ex.name}
-                className="w-full h-full object-cover"
-                loading="lazy" /> :
-                <Dumbbell className="w-6 h-6 text-muted-foreground/40" />
-              }
-              </div>
+              {/* Exercise GIF — lazily loaded via backend proxy */}
+              <ExerciseGif exerciseId={ex.id} />
 
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-foreground text-sm capitalize leading-snug">{ex.name}</p>

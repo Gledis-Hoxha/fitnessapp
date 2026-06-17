@@ -1,14 +1,14 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
-
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const url = new URL(req.url);
-    const exerciseId = url.searchParams.get("id");
-    if (!exerciseId) return Response.json({ error: "Missing id" }, { status: 400 });
+    let exerciseId;
+    if (req.method === "GET") {
+      const url = new URL(req.url);
+      exerciseId = url.searchParams.get("id");
+    } else {
+      const body = await req.json().catch(() => ({}));
+      exerciseId = body.exerciseId;
+    }
+    if (!exerciseId) return Response.json({ error: "Missing exerciseId" }, { status: 400 });
 
     const apiKey = Deno.env.get("VITE_WORKOUTX_API_KEY") || "";
 
@@ -21,13 +21,19 @@ Deno.serve(async (req) => {
     }
 
     const buffer = await res.arrayBuffer();
-    return new Response(buffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "image/gif",
-        "Cache-Control": "public, max-age=86400",
-      },
-    });
+    const bytes = new Uint8Array(buffer);
+
+    // Chunked base64 encoding to avoid call stack overflow on large GIFs
+    const CHUNK = 0x8000; // 32KB chunks
+    let base64 = "";
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      const chunk = bytes.subarray(i, i + CHUNK);
+      base64 += String.fromCharCode.apply(null, chunk);
+    }
+    base64 = btoa(base64);
+
+    return Response.json({ dataUrl: `data:image/gif;base64,${base64}` });
+
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
