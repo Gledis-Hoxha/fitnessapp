@@ -21,7 +21,7 @@ export default function Fitness() {
           backgroundImage: `url(https://media.base44.com/images/public/69f4cab318774ed99e230d09/4818d6c8f_Untitleddesign2.png)`,
           backgroundRepeat: "repeat-y",
           backgroundPosition: "center top",
-          backgroundSize: "auto",
+          backgroundSize: "100% auto",
         }}
       />
 
