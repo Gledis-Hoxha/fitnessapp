@@ -94,7 +94,7 @@ export default function OnboardingFlow({ user, onComplete }) {
         value={data.username}
         onChange={(e) => setData({ ...data, username: e.target.value })}
         placeholder="e.g. fitjohn99"
-        className="w-full bg-white/8 border border-white/15 rounded-2xl px-4 py-3 placeholder:text-white/30 outline-none focus:border-green-500/50 text-base text-[#030303]"
+        className="w-full bg-white/8 border border-white/15 rounded-2xl px-4 py-3 placeholder:text-white/30 outline-none focus:border-green-500/50 text-base text-white"
         autoFocus />
       
         <p className="text-xs text-white/30 mt-2">This is how others will see you on VitalFlow.</p>
@@ -241,7 +241,7 @@ export default function OnboardingFlow({ user, onComplete }) {
         </div>
 
         {/* Card */}
-        <div className="bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl">
+        <div className="border border-white/10 rounded-3xl p-6 shadow-2xl" style={{ background: "hsl(248,20%,15%)" }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
