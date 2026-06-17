@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 const BASE_URL = "https://fitgif.vercel.app";
-const API_KEY = "fg-AXTQoBBZu907WpP7K0S9AH45";
+const API_KEY = Deno.env.get("FITGIF_API_KEY");
 
 Deno.serve(async (req) => {
   try {
