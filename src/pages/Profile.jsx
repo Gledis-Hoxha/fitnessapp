@@ -143,7 +143,7 @@ export default function Profile() {
           onSave={handleProfileSaved} />
 
         }
-        {showShare && <ShareProfileModal user={user} workouts={workouts} onClose={() => setShowShare(false)} />}
+        {showShare && <ShareProfileModal user={user} workouts={workouts} meals={meals} onClose={() => setShowShare(false)} />}
         {showInbox && <InboxPanel onClose={() => setShowInbox(false)} />}
       </AnimatePresence>
     </div>);
