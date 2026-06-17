@@ -142,7 +142,7 @@ export default function HeartRateTracker() {
             map((s) =>
             <div key={s.label} className="bg-white/5 rounded-xl px-2 py-2 text-center">
                   <p className="text-xs text-white/35">{s.label}</p>
-                  <p className="text-base font-bold text-white mt-0.5">{s.value} <span className="text-[10px] text-white/30">{s.unit}</span></p>
+                  <p className="text-base font-bold text-white mt-0.5">{s.value} <span className="text-xs text-white/30">{s.unit}</span></p>
                 </div>
             )}
             </div>

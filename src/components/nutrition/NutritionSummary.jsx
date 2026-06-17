@@ -19,7 +19,7 @@ export default function NutritionSummary({ protein = 0, carbs = 0, fat = 0, calo
 
   return (
     <div className="border border-white/10 rounded-2xl px-4 py-3 space-y-3" style={{ background: "hsl(248,20%,15%)" }}>
-      <p className="text-[10px] font-semibold text-white/40 uppercase tracking-wider">This Week</p>
+      <p className="text-xs font-semibold text-white/40 uppercase tracking-wider">This Week</p>
 
       {!hasData ? (
         <p className="text-xs text-white/25 text-center py-3">Log some food to see your summary.</p>

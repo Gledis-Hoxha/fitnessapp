@@ -94,7 +94,7 @@ export default function HydrationTracker({ date }) {
           {/* Center label */}
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
             <span className="text-xl font-bold text-white drop-shadow">{ml}</span>
-            <span className="text-[10px] text-white/70 drop-shadow">/ {GOAL} ml</span>
+            <span className="text-xs text-white/70 drop-shadow">/ {GOAL} ml</span>
           </div>
         </div>
       </div>

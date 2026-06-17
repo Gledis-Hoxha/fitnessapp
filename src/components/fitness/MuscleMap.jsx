@@ -175,8 +175,8 @@ export default function MuscleMap({ workouts = [] }) {
           <div className="grid grid-cols-3 gap-1.5 pt-3 mt-1 border-t border-white/8">
             {axes.map((a) => (
               <div key={a.id} className="flex items-center justify-between bg-white/4 rounded-lg px-2 py-1">
-                <span className="text-[10px] text-white/40 truncate">{a.label}</span>
-                <span className={`text-[11px] font-semibold ${a.count > 0 ? "text-green-400" : "text-white/20"}`}>
+                <span className="text-xs text-white/40 truncate">{a.label}</span>
+                <span className={`text-xs font-semibold ${a.count > 0 ? "text-green-400" : "text-white/20"}`}>
                   {a.count}x
                 </span>
               </div>

@@ -91,7 +91,7 @@ Keep each item practical, quick to prepare, and tasty. Vary between meals (e.g. 
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-purple-400 font-semibold bg-purple-500/15 px-2 py-0.5 rounded-full">AI</span>
+          <span className="text-xs text-purple-400 font-semibold bg-purple-500/15 px-2 py-0.5 rounded-full">AI</span>
           {open ? <ChevronUp className="w-4 h-4 text-white/30" /> : <ChevronDown className="w-4 h-4 text-white/30" />}
         </div>
       </button>
@@ -120,10 +120,10 @@ Keep each item practical, quick to prepare, and tasty. Vary between meals (e.g. 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <p className="text-sm font-semibold text-white truncate">{rec.name}</p>
-                      <span className="text-[10px] text-white/30 capitalize flex-shrink-0">{rec.meal_type}</span>
+                      <span className="text-xs text-white/30 capitalize flex-shrink-0">{rec.meal_type}</span>
                     </div>
                     <p className="text-xs text-white/40 mb-1.5">{rec.why}</p>
-                    <div className="flex gap-3 text-[10px] text-white/40">
+                    <div className="flex gap-3 text-xs text-white/40">
                       <span className="text-green-400 font-semibold">{rec.calories} kcal</span>
                       <span className="text-blue-400">{rec.protein_g}g protein</span>
                       <span>{rec.carbs_g}g carbs</span>

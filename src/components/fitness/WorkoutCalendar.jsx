@@ -39,7 +39,7 @@ function CalendarModal({ workoutsByDate, selectedDay, onSelectDate, onClose }) {
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10"><X className="w-4 h-4 text-white/50" /></button>
         </div>
         <div className="grid grid-cols-7 gap-1 mb-2">
-          {DAYS.map((d) => <p key={d} className="text-[10px] text-white/25 text-center font-medium">{d[0]}</p>)}
+          {DAYS.map((d) => <p key={d} className="text-xs text-white/25 text-center font-medium">{d[0]}</p>)}
         </div>
         <div className="space-y-1">
           {weeks.map((monday, wi) => (
@@ -55,7 +55,7 @@ function CalendarModal({ workoutsByDate, selectedDay, onSelectDate, onClose }) {
                   <button
                     key={di}
                     onClick={() => { onSelectDate(date); onClose(); }}
-                    className={`w-full aspect-square rounded-full flex items-center justify-center text-[11px] font-semibold transition-all ${
+                    className={`w-full aspect-square rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
                       isSelected ? "bg-blue-400 text-black scale-110" :
                       hasWorkout ? "bg-blue-500/80 text-white" :
                       isCurrentDay ? "border border-blue-500/60 text-blue-400" :
@@ -70,8 +70,8 @@ function CalendarModal({ workoutsByDate, selectedDay, onSelectDate, onClose }) {
           ))}
         </div>
         <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/8">
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-[10px] text-white/40">Workout</span></div>
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full border border-blue-500/60" /><span className="text-[10px] text-white/40">Today</span></div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-xs text-white/40">Workout</span></div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full border border-blue-500/60" /><span className="text-xs text-white/40">Today</span></div>
         </div>
       </motion.div>
     </motion.div>
@@ -184,7 +184,7 @@ export default function WorkoutCalendar() {
                 <span className="flex items-center gap-2 text-sm font-semibold text-white">
                   <Dumbbell className="w-3.5 h-3.5 text-blue-400" /> Workout
                 </span>
-                <span className="text-[10px] text-white/40">{fmtDuration(w.duration_seconds)}</span>
+                <span className="text-xs text-white/40">{fmtDuration(w.duration_seconds)}</span>
               </div>
               <div className="space-y-1">
                 {(w.exercises || []).slice(0, 4).map((ex, j) => (
@@ -194,7 +194,7 @@ export default function WorkoutCalendar() {
                   </div>
                 ))}
                 {(w.exercises?.length || 0) > 4 && (
-                  <p className="text-[10px] text-white/30">+{w.exercises.length - 4} more exercises</p>
+                  <p className="text-xs text-white/30">+{w.exercises.length - 4} more exercises</p>
                 )}
               </div>
             </div>

@@ -36,11 +36,11 @@ function MacroStat({ label, value, goal, color, unit = "g" }) {
     <div className="flex flex-col items-center gap-2">
       <div className="relative flex items-center justify-center">
         <Ring pct={pct} size={64} stroke={6} color={over ? "#ef4444" : color} />
-        <span className="absolute text-[11px] font-bold text-white">{pct}%</span>
+        <span className="absolute text-xs font-bold text-white">{pct}%</span>
       </div>
       <div className="text-center">
-        <p className="text-[10px] font-semibold text-white/50">{label}</p>
-        <p className={`text-[11px] font-semibold ${over ? "text-red-400" : "text-white/70"}`}>
+        <p className="text-xs font-semibold text-white/50">{label}</p>
+        <p className={`text-xs font-semibold ${over ? "text-red-400" : "text-white/70"}`}>
           {Math.round(value)}<span className="text-white/25 font-normal">/{goal}{unit}</span>
         </p>
       </div>

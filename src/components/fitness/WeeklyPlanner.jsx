@@ -129,7 +129,7 @@ export default function WeeklyPlanner({ routines = [] }) {
           Enable workout reminders
         </button>
       ) : (
-        <div className="flex items-center justify-center gap-1.5 text-[10px] text-accent pt-3">
+        <div className="flex items-center justify-center gap-1.5 text-xs text-accent pt-3">
           <Bell className="w-3 h-3" /> Reminders active for scheduled days
         </div>
       )}

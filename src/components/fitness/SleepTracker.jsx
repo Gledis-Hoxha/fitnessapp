@@ -174,7 +174,7 @@ export default function SleepTracker() {
             {/* Recent history */}
             {recent.length > 0 &&
           <div>
-                <p className="text-[10px] text-white/30 font-semibold uppercase tracking-wider mb-2">Recent</p>
+                <p className="text-xs text-white/30 font-semibold uppercase tracking-wider mb-2">Recent</p>
                 <div className="space-y-1.5">
                   {recent.map((log) =>
               <div key={log.id} className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2">

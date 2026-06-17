@@ -191,7 +191,7 @@ export default function StepTracker() {
           </div>
           <div>
             <p className="text-sm font-semibold text-white">Step Tracker</p>
-            <p className="text-[10px] text-white/30">{viewingToday ? "Today's activity" : format(new Date(selectedDate), "EEE, MMM d")}</p>
+            <p className="text-xs text-white/30">{viewingToday ? "Today's activity" : format(new Date(selectedDate), "EEE, MMM d")}</p>
           </div>
         </button>
 
@@ -215,7 +215,7 @@ export default function StepTracker() {
             </button>
           }
           {isTracking && viewingToday &&
-          <span className="flex items-center gap-1 text-[10px] text-green-400 font-medium">
+          <span className="flex items-center gap-1 text-xs text-green-400 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               Live
             </span>

@@ -32,7 +32,7 @@ export default function StepCalendarModal({ selectedDate, todaySteps, onSelectDa
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10"><X className="w-4 h-4 text-white/50" /></button>
         </div>
         <div className="grid grid-cols-7 gap-1 mb-2">
-          {DAYS.map((d) => <p key={d} className="text-[10px] text-white/25 text-center font-medium">{d[0]}</p>)}
+          {DAYS.map((d) => <p key={d} className="text-xs text-white/25 text-center font-medium">{d[0]}</p>)}
         </div>
         <div className="space-y-1">
           {weeks.map((monday, wi) => (
@@ -49,7 +49,7 @@ export default function StepCalendarModal({ selectedDate, todaySteps, onSelectDa
                     key={di}
                     disabled={isFuture}
                     onClick={() => { onSelectDate(dateStr); onClose(); }}
-                    className={`w-full aspect-square rounded-full flex items-center justify-center text-[11px] font-semibold transition-all ${
+                    className={`w-full aspect-square rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
                       isSelected ? "bg-green-400 text-black scale-110" :
                       goalHit ? "bg-green-500/80 text-white" :
                       isCurrentDay ? "border border-green-500/60 text-green-400" :
@@ -64,8 +64,8 @@ export default function StepCalendarModal({ selectedDate, todaySteps, onSelectDa
           ))}
         </div>
         <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/8">
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-[10px] text-white/40">Goal hit</span></div>
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full border border-green-500/60" /><span className="text-[10px] text-white/40">Today</span></div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-xs text-white/40">Goal hit</span></div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full border border-green-500/60" /><span className="text-xs text-white/40">Today</span></div>
         </div>
       </motion.div>
     </motion.div>

@@ -30,7 +30,7 @@ function WorkoutCard({ workout }) {
           <p className="font-medium text-xs text-foreground truncate">
             {workout.exercises?.map((e) => e.exercise_name).join(", ") || "Workout"}
           </p>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {workout.date ? format(new Date(workout.date), "MMM d") : ""}
             {" · "}{workout.exercises?.length || 0} ex · {completedSets}/{totalSets} sets
           </p>

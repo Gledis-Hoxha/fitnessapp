@@ -167,7 +167,7 @@ export default function WorkoutRemindersModal({ onClose }) {
                 </button>
               )}
               {pushGranted && reminders.length > 0 && (
-                <div className="flex items-center justify-center gap-1.5 text-[10px] text-green-400 pt-1">
+                <div className="flex items-center justify-center gap-1.5 text-xs text-green-400 pt-1">
                   <Bell className="w-3 h-3" /> Push notifications active
                 </div>
               )}

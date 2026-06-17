@@ -158,7 +158,7 @@ export default function SettingsModal({ onClose }) {
                 <div className="flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8">
                   <div>
                     <p className="text-sm text-white/80">Push Notifications</p>
-                    <p className="text-[10px] text-white/30 mt-0.5">Workout reminders, meal logging prompts</p>
+                    <p className="text-xs text-white/30 mt-0.5">Workout reminders, meal logging prompts</p>
                   </div>
                   <button
                   onClick={toggleNotifications}
@@ -243,13 +243,13 @@ export default function SettingsModal({ onClose }) {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-white/80">Current Session</p>
-                    <p className="text-[10px] text-white/30 mt-0.5">
+                    <p className="text-xs text-white/30 mt-0.5">
                       {navigator.userAgentData?.platform || navigator.platform || "Unknown device"}
                     </p>
-                  </div>
-                  <span className="text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full font-medium">Active</span>
+                    </div>
+                    <span className="text-xs text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full font-medium">Active</span>
                 </div>
-                <p className="text-[10px] text-white/20 px-1 pt-1">
+                <p className="text-xs text-white/20 px-1 pt-1">
                   More device management options coming soon.
                 </p>
               </div>

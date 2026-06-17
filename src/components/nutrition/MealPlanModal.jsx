@@ -8,6 +8,39 @@ import { toast } from "sonner";
 
 const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 
+function MealTypePicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 bg-[#1a1a1a] border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white/80 capitalize hover:border-white/25 transition-colors"
+      >
+        {value}
+        <ChevronDown className="w-3 h-3 text-white/40" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute top-full left-0 mt-1 z-50 bg-[#1a1a1a] border border-white/15 rounded-xl py-1 min-w-[120px] shadow-xl">
+            {MEAL_TYPES.map((t) => (
+              <button
+                key={t}
+                onClick={() => { onChange(t); setOpen(false); }}
+                className={`w-full text-left px-3 py-2 text-xs capitalize transition-colors ${
+                  t === value ? "text-green-400 bg-green-500/10" : "text-white/70 hover:bg-white/8"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function MealPlanModal({ onClose, onLogged }) {
   const queryClient = useQueryClient();
   const today = format(new Date(), "yyyy-MM-dd");
@@ -163,9 +196,7 @@ export default function MealPlanModal({ onClose, onLogged }) {
                 <div key={i} className="bg-white/5 border border-white/8 rounded-2xl p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <input value={food.food_name} onChange={(e) => updateFood(i, "food_name", e.target.value)} placeholder="Food name" className="flex-1 bg-transparent border-b border-white/15 pb-1 text-sm text-white placeholder:text-white/30 outline-none" />
-                    <select value={food.meal_type} onChange={(e) => updateFood(i, "meal_type", e.target.value)} className="bg-[#1a1a1a] border border-white/15 rounded-lg px-2 py-1 text-xs text-white/70 outline-none">
-                      {MEAL_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    <MealTypePicker value={food.meal_type} onChange={(v) => updateFood(i, "meal_type", v)} />
                     {newFoods.length > 1 && (
                       <button onClick={() => removeFood(i)} className="text-white/30 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
                     )}

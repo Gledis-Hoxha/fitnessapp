@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -6,15 +7,22 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AppLayout from '@/components/layout/AppLayout';
-import Fitness from '@/pages/Fitness.jsx';
-import Nutrition from '@/pages/Nutrition.jsx';
 import StartWorkout from '@/pages/fitness/StartWorkout';
 import ExercisePicker from '@/pages/fitness/ExercisePicker';
 import Routines from '@/pages/fitness/Routines';
 import Explore from '@/pages/fitness/Explore';
 import DailyReview from '@/pages/fitness/DailyReview';
 import Profile from '@/pages/Profile.jsx';
-import Coach from '@/pages/Coach.jsx';
+
+const Fitness = React.lazy(() => import('@/pages/Fitness.jsx'));
+const Nutrition = React.lazy(() => import('@/pages/Nutrition.jsx'));
+const Coach = React.lazy(() => import('@/pages/Coach.jsx'));
+
+const PageLoader = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-[#0a0a0f]">
+    <div className="w-8 h-8 border-4 border-white/10 border-t-white/60 rounded-full animate-spin"></div>
+  </div>
+);
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -41,6 +49,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<Profile />} />
@@ -56,6 +65,7 @@ const AuthenticatedApp = () => {
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 
