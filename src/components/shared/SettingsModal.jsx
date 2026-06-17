@@ -1,8 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { X, Bell, SunMoon, Globe, Smartphone, Ruler, Moon, Sun, ChevronRight } from "lucide-react";
+import { X, Bell, SunMoon, Globe, Smartphone, Ruler, Moon, Sun, Monitor, ChevronRight, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const NOTIF_KEY = "app_notifications";
 const THEME_KEY = "app_theme";
@@ -37,9 +47,10 @@ export default function SettingsModal({ onClose }) {
   const [notificationsOn, setNotificationsOn] = useState(() =>
   localStorage.getItem(NOTIF_KEY) !== "false"
   );
-  const [darkMode, setDarkMode] = useState(() =>
-  localStorage.getItem(THEME_KEY) !== "light"
+  const [theme, setTheme] = useState(() =>
+    localStorage.getItem(THEME_KEY) || "system"
   );
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [language, setLanguage] = useState(() =>
   localStorage.getItem(LANG_KEY) || "en"
   );
@@ -47,13 +58,28 @@ export default function SettingsModal({ onClose }) {
 
   // Apply theme
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
+    const applyTheme = (isDark) => {
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+
+    if (theme === "system") {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      applyTheme(mq.matches);
+      const handler = (e) => applyTheme(e.matches);
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
     } else {
-      document.documentElement.classList.remove("dark");
+      applyTheme(theme === "dark");
     }
-    localStorage.setItem(THEME_KEY, darkMode ? "dark" : "light");
-  }, [darkMode]);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
 
   const toggleNotifications = () => {
     const next = !notificationsOn;
@@ -76,6 +102,16 @@ export default function SettingsModal({ onClose }) {
   const handleChangePassword = () => {
     // Redirect to Base44 account settings for password change
     base44.auth.redirectToLogin(window.location.href);
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await base44.asServiceRole.users.deleteMe();
+      base44.auth.logout("/");
+    } catch {
+      toast.error("Failed to delete account. Please try again.");
+    }
+    setShowDeleteConfirm(false);
   };
 
   return (
@@ -146,38 +182,29 @@ export default function SettingsModal({ onClose }) {
           <>
               <p className="text-xs text-white/40">Choose your preferred app appearance.</p>
               <div className="space-y-1">
+                {[
+                  { id: "dark", label: "Dark Mode", icon: Moon, color: "bg-indigo-500/15", iconColor: "text-indigo-400" },
+                  { id: "light", label: "Light Mode", icon: Sun, color: "bg-amber-500/15", iconColor: "text-amber-400" },
+                  { id: "system", label: "System", icon: Monitor, color: "bg-emerald-500/15", iconColor: "text-emerald-400" },
+                ].map(({ id, label, icon: Icon, color, iconColor }) =>
                 <button
-                onClick={() => setDarkMode(true)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
-                darkMode ?
-                "bg-white/10 border-white/20" :
-                "bg-white/4 border-white/8 hover:bg-white/6"}`
-                }>
-                
+                  key={id}
+                  onClick={() => setTheme(id)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
+                    theme === id
+                      ? "bg-white/10 border-white/20"
+                      : "bg-white/4 border-white/8 hover:bg-white/6"
+                  }`}
+                >
                   <div className="flex items-center gap-3">
-                    <div className="p-1.5 rounded-lg bg-indigo-500/15">
-                      <Moon className="w-4 h-4 text-indigo-400" />
+                    <div className={`p-1.5 rounded-lg ${color}`}>
+                      <Icon className={`w-4 h-4 ${iconColor}`} />
                     </div>
-                    <span className="text-sm text-white">Dark Mode</span>
+                    <span className="text-sm text-white">{label}</span>
                   </div>
-                  {darkMode && <div className="w-3 h-3 rounded-full bg-blue-400" />}
+                  {theme === id && <div className="w-3 h-3 rounded-full bg-blue-400" />}
                 </button>
-                <button
-                onClick={() => setDarkMode(false)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
-                !darkMode ?
-                "bg-white/10 border-white/20" :
-                "bg-white/4 border-white/8 hover:bg-white/6"}`
-                }>
-                
-                  <div className="flex items-center gap-3">
-                    <div className="p-1.5 rounded-lg bg-amber-500/15">
-                      <Sun className="w-4 h-4 text-amber-400" />
-                    </div>
-                    <span className="text-sm text-white">Light Mode</span>
-                  </div>
-                  {!darkMode && <div className="w-3 h-3 rounded-full bg-blue-400" />}
-                </button>
+                )}
               </div>
             </>
           }
@@ -277,19 +304,31 @@ export default function SettingsModal({ onClose }) {
               <span className="text-sm text-white/70">Change Password</span>
               <ChevronRight className="w-4 h-4 text-white/25" />
             </button>
-            
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-red-500/5 rounded-xl border border-red-500/15 hover:bg-red-500/10 transition-colors">
+              
+              <span className="text-sm text-red-400/80">Delete Account</span>
+              <Trash2 className="w-4 h-4 text-red-400/40" />
+            </button>
+            </div>
+            </div>
+            </motion.div>
 
-
-
-
-
-
-
-
-            
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>);
+            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+            <AlertDialogContent className="bg-[#15131a] border border-white/10 text-white">
+            <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Account</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/50">
+              This will permanently delete your account and all your data. This action cannot be undone.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700 text-white">Delete Forever</AlertDialogAction>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+            </AlertDialog>
+            </motion.div>);
 
 }

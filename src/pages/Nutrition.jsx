@@ -12,6 +12,7 @@ import FoodSearchModal from "@/components/nutrition/FoodSearchModal";
 import NutritionSummary from "@/components/nutrition/NutritionSummary";
 import WeeklyStreak from "@/components/nutrition/WeeklyStreak";
 import MealRecommender from "@/components/nutrition/MealRecommender";
+import PullToRefresh from "@/components/shared/PullToRefresh";
 
 export default function Nutrition() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -72,7 +73,12 @@ export default function Nutrition() {
     queryClient.invalidateQueries({ queryKey: ["nutrition"] });
   };
 
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries();
+  };
+
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2">
@@ -166,6 +172,7 @@ export default function Nutrition() {
         }
         {showNotifications && <NotificationsModal onClose={() => setShowNotifications(false)} />}
       </AnimatePresence>
-    </div>);
+    </div>
+    </PullToRefresh>);
 
 }

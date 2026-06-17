@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
 import { Plus, CalendarDays, Activity, Bell } from "lucide-react";
 import WorkoutCalendar from "@/components/fitness/WorkoutCalendar";
@@ -7,12 +8,19 @@ import WorkoutRemindersModal from "@/components/fitness/WorkoutRemindersModal";
 import StepTracker from "@/components/fitness/StepTracker";
 import SleepTracker from "@/components/fitness/SleepTracker";
 import HeartRateTracker from "@/components/fitness/HeartRateTracker";
+import PullToRefresh from "@/components/shared/PullToRefresh";
 
 export default function Fitness() {
   const [showStartModal, setShowStartModal] = useState(false);
   const [showReminders, setShowReminders] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries();
+  };
 
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div className="space-y-5 relative">
       {/* Header */}
       <div className="flex items-center gap-2 relative z-10">
@@ -55,6 +63,7 @@ export default function Fitness() {
         {showStartModal && <WorkoutStartModal onClose={() => setShowStartModal(false)} />}
         {showReminders && <WorkoutRemindersModal onClose={() => setShowReminders(false)} />}
       </AnimatePresence>
-    </div>);
+    </div>
+    </PullToRefresh>);
 
 }

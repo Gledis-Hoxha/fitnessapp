@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Dumbbell, Apple, Bot, User, Settings, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import SettingsModal from "@/components/shared/SettingsModal";
 
 const navItems = [
@@ -44,7 +44,7 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
       {/* Top Header */}
-      <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-1.5">
+      <header className="sticky top-0 z-20 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/8 px-4 py-1.5 pt-[calc(env(safe-area-inset-top,0px)+6px)]">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           {!isMainPage ? (
             <button
@@ -71,21 +71,36 @@ export default function AppLayout() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pb-24">
+      <main className="flex-1 pb-[calc(96px+env(safe-area-inset-bottom,0px))]">
         <div className="max-w-2xl mx-auto px-4 pt-6">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -24 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-4 left-0 right-0 z-30 px-4">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)]">
         <div className="max-w-md mx-auto flex items-center justify-between gap-2 bg-[#2e2b3a]/95 backdrop-blur-md rounded-full p-2 shadow-2xl border border-white/8">
           {navItems.map(({ path, label, icon: Icon }) => {
             const active = location.pathname === path || path !== "/" && location.pathname.startsWith(path);
+            const handleNavClick = (e) => {
+              e.preventDefault();
+              navigate(path);
+            };
             return (
               <Link
                 key={path}
                 to={path}
+                onClick={handleNavClick}
                 aria-label={label}
                 className={cn(
                   "flex-1 flex items-center justify-center h-10 rounded-full transition-all duration-200",
