@@ -70,7 +70,7 @@ export default function Coach() {
       <div className="flex-1 overflow-y-auto space-y-4 pb-4">
         {messages.length === 0 && !loading && (
           <div className="pt-6 text-center space-y-5">
-            <div className="w-20 h-20 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto">
+            <div className="w-20 h-20 rounded-3xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center mx-auto">
               <Sparkles className="w-10 h-10 text-blue-400" />
             </div>
             <div>
@@ -89,7 +89,7 @@ export default function Coach() {
 
         {loading && (
           <div className="flex gap-3 justify-start">
-            <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3">
+            <div className="border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: "hsl(248,20%,15%)" }}>
               <div className="flex gap-1.5">
                 {[0, 1, 2].map((i) => (
                   <div

@@ -12,11 +12,10 @@ export default function CoachMessageBubble({ message }) {
     >
       <div className={`max-w-[85%] ${isUser ? "items-end" : "items-start"} flex flex-col`}>
         <div
-          className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-            isUser
-              ? "bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-sm"
-              : "bg-[#1a1a2e] border border-white/10 text-white/90 rounded-tl-sm"
-          }`}
+          className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser
+            ? "bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-sm"
+            : "border border-white/10 text-white/90 rounded-tl-sm"}`}
+          style={!isUser ? { background: "hsl(248,20%,15%)" } : undefined}
         >
           {isUser ? (
             <p>{message.content}</p>
