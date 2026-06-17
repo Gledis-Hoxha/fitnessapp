@@ -63,8 +63,35 @@ export default function ProfileNutritionTab({ meals = [], user }) {
 
   const deletePhoto = (index) => setProgressPhotos((prev) => prev.filter((_, i) => i !== index));
 
+  const goalCalories = user?.weight_kg
+    ? Math.round(user.weight_kg * 22 * (
+      user.activity_level === "sedentary" ? 1.2 :
+      user.activity_level === "lightly_active" ? 1.375 :
+      user.activity_level === "moderately_active" ? 1.55 :
+      user.activity_level === "very_active" ? 1.725 : 1.9
+    ) + (user?.goal_weight_kg && user.goal_weight_kg < user.weight_kg ? -300 : user?.goal_weight_kg && user.goal_weight_kg > user.weight_kg ? 250 : 0))
+    : null;
+
+  const goalProtein = user?.weight_kg ? Math.round(user.weight_kg * 1.8) : null;
+
   return (
     <div className="space-y-4">
+      {/* Nutrition Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+          <p className="text-2xl font-bold text-green-400">{user?.goal_weight_kg ? `${user.goal_weight_kg}kg` : "—"}</p>
+          <p className="text-xs text-white/40 mt-1">Goal Weight</p>
+        </div>
+        <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+          <p className="text-2xl font-bold text-green-300">{goalCalories ? `${goalCalories}` : "—"}</p>
+          <p className="text-xs text-white/40 mt-1">Goal kcal</p>
+        </div>
+        <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+          <p className="text-2xl font-bold text-green-200">{goalProtein ? `${goalProtein}g` : "—"}</p>
+          <p className="text-xs text-white/40 mt-1">Protein Goal</p>
+        </div>
+      </div>
+
       {/* Daily Nutrition Overview (scrollable by day) */}
       <NutritionDailyOverview meals={meals} user={user} />
 
