@@ -16,12 +16,12 @@ export default function Fitness() {
     <div className="space-y-5 relative">
       {/* Background logo — repeats vertically, scrolls with page */}
       <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-50 select-none"
+        className="absolute inset-0 pointer-events-none z-0 opacity-25 select-none"
         style={{
-          backgroundImage: `url(https://media.base44.com/images/public/69f4cab318774ed99e230d09/da8b99afd_stackedstrengthlogopngcopy.png)`,
+          backgroundImage: `url(https://media.base44.com/images/public/69f4cab318774ed99e230d09/4818d6c8f_Untitleddesign2.png)`,
           backgroundRepeat: "repeat-y",
           backgroundPosition: "center top",
-          backgroundSize: "600px auto",
+          backgroundSize: "auto",
         }}
       />
 
