@@ -1,13 +1,13 @@
-// WorkoutX API client — 1,400+ exercises with animated GIFs
-// Calls the API directly from the frontend (CORS is enabled by WorkoutX)
+// WorkoutX exercise API — 1,400+ exercises with animated GIFs
+// Routes through backend function for secure API key handling
 
-const BASE_URL = "https://api.workoutxapp.com/v1";
+import { base44 } from "@/api/base44Client";
+
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
 const cache = new Map();
 
-function cacheKey(query, options) {
-  return JSON.stringify({ q: query || "__default__", ...options });
+function cacheKey(search, options) {
+  return JSON.stringify({ s: search || "__default__", ...options });
 }
 
 function getFromCache(key) {
@@ -24,88 +24,49 @@ function setCache(key, data) {
   cache.set(key, { data, ts: Date.now() });
 }
 
-function getApiKey() {
-  return import.meta.env.VITE_WORKOUTX_API_KEY || "";
-}
-
-export async function searchExercises(query, options = {}) {
-  const ck = cacheKey(query, options);
+export async function searchExercises(search, options = {}) {
+  const ck = cacheKey(search, options);
   const cached = getFromCache(ck);
   if (cached) return cached;
 
-  const params = new URLSearchParams();
-  if (query?.trim()) params.set("search", query.trim());
-  if (options.bodyPart && options.bodyPart !== "all") params.set("bodyPart", options.bodyPart);
-  if (options.equipment) params.set("equipment", options.equipment);
-  if (options.target) params.set("target", options.target);
-  if (options.difficulty) params.set("difficulty", options.difficulty);
-  params.set("limit", "50");
+  const payload = { limit: "50" };
+  if (search?.trim()) payload.search = search.trim();
+  if (options.bodyPart && options.bodyPart !== "all") payload.bodyPart = options.bodyPart;
+  if (options.equipment) payload.equipment = options.equipment;
+  if (options.target) payload.target = options.target;
 
-  const url = `${BASE_URL}/exercises?${params.toString()}`;
-  const res = await fetch(url, {
-    headers: {
-      "X-WorkoutX-Key": getApiKey(),
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    if (res.status === 429) throw new Error("Rate limited. Please try again shortly.");
-    throw new Error(`WorkoutX API error (${res.status})`);
-  }
-
-  const data = await res.json();
-  const results = data.exercises || data.results || data.data || [];
+  const res = await base44.functions.invoke("searchWorkoutX", payload);
+  const results = res.data?.data || [];
   setCache(ck, results);
   return results;
 }
 
 export function mapExercise(ex) {
   return {
-    id: ex.id || ex.name?.replace(/\s+/g, "-").toLowerCase(),
+    id: ex.id,
     name: ex.name,
-    muscle: ex.target || ex.targetMuscle,
+    muscle: ex.target,
     secondaryMuscles: ex.secondaryMuscles || [],
     bodyPart: ex.bodyPart,
     equipment: ex.equipment,
     difficulty: ex.difficulty,
-    gifUrl: ex.gifUrl || ex.gif_url || ex.animationUrl,
-    caloriesPerMinute: ex.caloriesPerMinute || ex.calories_per_minute,
+    gifUrl: ex.gifUrl,
+    caloriesPerMinute: ex.caloriesPerMinute,
     instructions: ex.instructions || [],
     emoji: bodyPartEmoji(ex.bodyPart),
   };
 }
 
-// Valid body parts from WorkoutX API
 export const BODY_PARTS = [
-  "all",
-  "back",
-  "cardio",
-  "chest",
-  "lower arms",
-  "lower legs",
-  "neck",
-  "shoulders",
-  "upper arms",
-  "upper legs",
-  "waist",
+  "all", "back", "cardio", "chest", "lower arms",
+  "lower legs", "neck", "shoulders", "upper arms", "upper legs", "waist",
 ];
 
-// Default exercise terms to show on load
-export const DEFAULT_SEARCHES = [
-  "squat", "bench press", "deadlift", "pull up", "shoulder press",
-  "curl", "row", "lunge", "plank", "push up",
-];
-
-// Load a default set with caching
 export async function loadDefaultExercises() {
-  // Try fetching all exercises first for best results
-  try {
-    const all = await searchExercises("", {});
-    if (all.length > 0) return all;
-  } catch {}
+  const all = await searchExercises("", {});
+  if (all.length > 0) return all;
 
-  // Fallback: search popular terms
+  // Fallback: popular terms
   const terms = ["squat", "bench press", "deadlift", "pull up", "shoulder press"];
   const results = [];
   for (const term of terms) {
@@ -114,7 +75,6 @@ export async function loadDefaultExercises() {
       results.push(...data);
     } catch {}
   }
-  // Deduplicate by name
   const seen = new Set();
   return results.filter((ex) => {
     if (seen.has(ex.name)) return false;
@@ -125,16 +85,10 @@ export async function loadDefaultExercises() {
 
 function bodyPartEmoji(bodyPart) {
   const map = {
-    chest: "🏋️",
-    back: "🔙",
-    shoulders: "💪",
-    "upper arms": "💪",
-    "lower arms": "🤝",
-    "upper legs": "🦵",
-    "lower legs": "🦶",
-    waist: "⚡",
-    cardio: "🏃",
-    neck: "🧠",
+    chest: "🏋️", back: "🔙", shoulders: "💪",
+    "upper arms": "💪", "lower arms": "🤝",
+    "upper legs": "🦵", "lower legs": "🦶",
+    waist: "⚡", cardio: "🏃", neck: "🧠",
   };
   return map[bodyPart?.toLowerCase()] || "🏋️";
 }
