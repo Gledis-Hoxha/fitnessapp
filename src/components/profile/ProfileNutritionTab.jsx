@@ -77,18 +77,18 @@ export default function ProfileNutritionTab({ meals = [], user }) {
   return (
     <div className="space-y-4">
       {/* Nutrition Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
-          <p className="text-2xl font-bold text-green-400">{user?.goal_weight_kg ? `${user.goal_weight_kg}kg` : "—"}</p>
-          <p className="text-xs text-white/40 mt-1">Goal Weight</p>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="border border-white/10 rounded-xl px-2 py-3 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+          <p className="text-lg font-bold text-green-400">{user?.goal_weight_kg ? `${user.goal_weight_kg}kg` : "—"}</p>
+          <p className="text-[10px] text-white/40 mt-0.5">Goal Weight</p>
         </div>
-        <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
-          <p className="text-2xl font-bold text-green-300">{goalCalories ? `${goalCalories}` : "—"}</p>
-          <p className="text-xs text-white/40 mt-1">Goal kcal</p>
+        <div className="border border-white/10 rounded-xl px-2 py-3 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+          <p className="text-lg font-bold text-green-300">{goalCalories ? `${goalCalories}` : "—"}</p>
+          <p className="text-[10px] text-white/40 mt-0.5">Goal kcal</p>
         </div>
-        <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
-          <p className="text-2xl font-bold text-green-200">{goalProtein ? `${goalProtein}g` : "—"}</p>
-          <p className="text-xs text-white/40 mt-1">Protein Goal</p>
+        <div className="border border-white/10 rounded-xl px-2 py-3 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+          <p className="text-lg font-bold text-green-200">{goalProtein ? `${goalProtein}g` : "—"}</p>
+          <p className="text-[10px] text-white/40 mt-0.5">Protein Goal</p>
         </div>
       </div>
 

@@ -13,9 +13,9 @@ import { toast } from "sonner";
 
 function StatPill({ label, value, color }) {
   return (
-    <div className="border border-white/10 rounded-2xl p-4 text-center" style={{ background: "hsl(248,20%,15%)" }}>
-      <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      <p className="text-xs text-white/40 mt-1">{label}</p>
+    <div className="border border-white/10 rounded-xl px-2 py-3 text-center" style={{ background: "hsl(248,20%,15%)" }}>
+      <p className={`text-lg font-bold ${color}`}>{value}</p>
+      <p className="text-[10px] text-white/40 mt-0.5">{label}</p>
     </div>);
 
 }
