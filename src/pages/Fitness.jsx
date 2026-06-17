@@ -15,7 +15,7 @@ export default function Fitness() {
   return (
     <div className="space-y-5 relative">
       {/* Background logo */}
-      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.04] select-none">
+      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-50 select-none">
         <img
           src="https://media.base44.com/images/public/69f4cab318774ed99e230d09/da8b99afd_stackedstrengthlogopngcopy.png"
           alt=""
