@@ -1,4 +1,10 @@
-import { getMacroGoals } from "@/components/shared/SettingsModal";
+const MACRO_GOALS_KEY = "macro_goals";
+const DEFAULT_GOALS = { calories: 2000, protein: 150, carbs: 250, fat: 65 };
+
+function getMacroGoals() {
+  try { return JSON.parse(localStorage.getItem(MACRO_GOALS_KEY)) || DEFAULT_GOALS; }
+  catch { return DEFAULT_GOALS; }
+}
 
 function Ring({ pct, size, stroke, color, trackColor = "rgba(255,255,255,0.08)" }) {
   const radius = (size - stroke) / 2;

@@ -1,19 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { X, Target, Key, Ruler, Bell, LogOut, User, ChevronRight } from "lucide-react";
+import { X, Bell, SunMoon, Globe, Smartphone, Ruler, Moon, Sun, ChevronRight } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
-import { setUsdaApiKey } from "@/lib/usdaApi";
 
-const MACRO_GOALS_KEY = "macro_goals";
+const NOTIF_KEY = "app_notifications";
+const THEME_KEY = "app_theme";
+const LANG_KEY = "app_language";
 const UNIT_PREF_KEY = "unit_prefs";
-const DEFAULT_GOALS = { calories: 2000, protein: 150, carbs: 250, fat: 65 };
 const DEFAULT_UNITS = { weight: "kg", distance: "km", height: "cm" };
 
-export function getMacroGoals() {
-  try { return JSON.parse(localStorage.getItem(MACRO_GOALS_KEY)) || DEFAULT_GOALS; }
-  catch { return DEFAULT_GOALS; }
-}
+const LANGUAGES = [
+  { code: "en", label: "English" },
+  { code: "sq", label: "Shqip" },
+  { code: "es", label: "Español" },
+  { code: "fr", label: "Français" },
+  { code: "de", label: "Deutsch" },
+  { code: "it", label: "Italiano" },
+];
 
 export function getUnitPrefs() {
   try { return JSON.parse(localStorage.getItem(UNIT_PREF_KEY)) || DEFAULT_UNITS; }
@@ -21,26 +25,47 @@ export function getUnitPrefs() {
 }
 
 const TABS = [
-  { id: "goals", label: "Goals", icon: Target },
+  { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "appearance", label: "Appearance", icon: SunMoon },
+  { id: "language", label: "Language", icon: Globe },
+  { id: "devices", label: "Devices", icon: Smartphone },
   { id: "units", label: "Units", icon: Ruler },
-  { id: "api", label: "API Keys", icon: Key },
-  { id: "account", label: "Account", icon: User },
 ];
 
 export default function SettingsModal({ onClose }) {
-  const [tab, setTab] = useState("goals");
-  const [goals, setGoals] = useState(getMacroGoals());
+  const [tab, setTab] = useState("notifications");
+  const [notificationsOn, setNotificationsOn] = useState(() =>
+    localStorage.getItem(NOTIF_KEY) !== "false"
+  );
+  const [darkMode, setDarkMode] = useState(() =>
+    localStorage.getItem(THEME_KEY) !== "light"
+  );
+  const [language, setLanguage] = useState(() =>
+    localStorage.getItem(LANG_KEY) || "en"
+  );
   const [units, setUnits] = useState(getUnitPrefs());
-  const [usdaKey, setUsdaKeyState] = useState(localStorage.getItem("usda_api_key") || "");
 
-  const saveGoals = () => {
-    localStorage.setItem(MACRO_GOALS_KEY, JSON.stringify({
-      calories: Number(goals.calories),
-      protein: Number(goals.protein),
-      carbs: Number(goals.carbs),
-      fat: Number(goals.fat),
-    }));
-    toast.success("Daily goals saved!");
+  // Apply theme
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem(THEME_KEY, darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  const toggleNotifications = () => {
+    const next = !notificationsOn;
+    setNotificationsOn(next);
+    localStorage.setItem(NOTIF_KEY, String(next));
+    toast.success(next ? "Notifications enabled" : "Notifications disabled");
+  };
+
+  const setLang = (code) => {
+    setLanguage(code);
+    localStorage.setItem(LANG_KEY, code);
+    toast.success(`Language set to ${LANGUAGES.find((l) => l.code === code)?.label}`);
   };
 
   const saveUnits = () => {
@@ -48,13 +73,9 @@ export default function SettingsModal({ onClose }) {
     toast.success("Units saved!");
   };
 
-  const saveApiKeys = () => {
-    if (usdaKey.trim()) setUsdaApiKey(usdaKey.trim());
-    toast.success("API keys saved!");
-  };
-
-  const handleLogout = () => {
-    base44.auth.logout();
+  const handleChangePassword = () => {
+    // Redirect to Base44 account settings for password change
+    base44.auth.redirectToLogin(window.location.href);
   };
 
   return (
@@ -77,7 +98,7 @@ export default function SettingsModal({ onClose }) {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 px-4 pt-3 pb-1 overflow-x-auto">
+        <div className="flex gap-1 px-4 pt-3 pb-1 overflow-x-auto no-scrollbar">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -93,34 +114,118 @@ export default function SettingsModal({ onClose }) {
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
 
-          {/* ── Goals ── */}
-          {tab === "goals" && (
+          {/* ── Notifications ── */}
+          {tab === "notifications" && (
             <>
-              <p className="text-xs text-white/40">Set your daily nutrition targets. These apply to the progress bars across the app.</p>
-              <div className="space-y-3">
-                {[
-                  { key: "calories", label: "Calories", unit: "kcal", color: "text-green-400" },
-                  { key: "protein", label: "Protein", unit: "g", color: "text-blue-400" },
-                  { key: "carbs", label: "Carbs", unit: "g", color: "text-yellow-400" },
-                  { key: "fat", label: "Fat", unit: "g", color: "text-orange-400" },
-                ].map(({ key, label, unit, color }) => (
-                  <div key={key}>
-                    <label className={`text-xs font-semibold mb-1.5 block ${color}`}>{label}</label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        value={goals[key]}
-                        onChange={(e) => setGoals({ ...goals, [key]: e.target.value })}
-                        className="w-full bg-white/8 border border-white/12 rounded-xl px-3 py-2.5 pr-12 text-sm text-white outline-none focus:border-green-500/50"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30">{unit}</span>
-                    </div>
+              <p className="text-xs text-white/40">Control which notifications you receive from the app.</p>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8">
+                  <div>
+                    <p className="text-sm text-white/80">Push Notifications</p>
+                    <p className="text-[10px] text-white/30 mt-0.5">Workout reminders, meal logging prompts</p>
                   </div>
+                  <button
+                    onClick={toggleNotifications}
+                    className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
+                      notificationsOn ? "bg-blue-500" : "bg-white/10"
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${
+                        notificationsOn ? "left-6" : "left-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Appearance ── */}
+          {tab === "appearance" && (
+            <>
+              <p className="text-xs text-white/40">Choose your preferred app appearance.</p>
+              <div className="space-y-1">
+                <button
+                  onClick={() => setDarkMode(true)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
+                    darkMode
+                      ? "bg-white/10 border-white/20"
+                      : "bg-white/4 border-white/8 hover:bg-white/6"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 rounded-lg bg-indigo-500/15">
+                      <Moon className="w-4 h-4 text-indigo-400" />
+                    </div>
+                    <span className="text-sm text-white">Dark Mode</span>
+                  </div>
+                  {darkMode && <div className="w-3 h-3 rounded-full bg-blue-400" />}
+                </button>
+                <button
+                  onClick={() => setDarkMode(false)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
+                    !darkMode
+                      ? "bg-white/10 border-white/20"
+                      : "bg-white/4 border-white/8 hover:bg-white/6"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 rounded-lg bg-amber-500/15">
+                      <Sun className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <span className="text-sm text-white">Light Mode</span>
+                  </div>
+                  {!darkMode && <div className="w-3 h-3 rounded-full bg-blue-400" />}
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* ── Language ── */}
+          {tab === "language" && (
+            <>
+              <p className="text-xs text-white/40">Choose your preferred language.</p>
+              <div className="space-y-1">
+                {LANGUAGES.map(({ code, label }) => (
+                  <button
+                    key={code}
+                    onClick={() => setLang(code)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
+                      language === code
+                        ? "bg-white/10 border-white/20"
+                        : "bg-white/4 border-white/8 hover:bg-white/6"
+                    }`}
+                  >
+                    <span className="text-sm text-white">{label}</span>
+                    {language === code && <div className="w-3 h-3 rounded-full bg-blue-400" />}
+                  </button>
                 ))}
               </div>
-              <button onClick={saveGoals} className="w-full py-3 rounded-xl bg-green-500 hover:bg-green-400 text-white font-bold text-sm transition-all">
-                Save Goals
-              </button>
+            </>
+          )}
+
+          {/* ── Linked Devices ── */}
+          {tab === "devices" && (
+            <>
+              <p className="text-xs text-white/40">Devices connected to your account.</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 px-4 py-3 bg-white/4 rounded-xl border border-white/8">
+                  <div className="p-1.5 rounded-lg bg-blue-500/15">
+                    <Smartphone className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-white/80">Current Session</p>
+                    <p className="text-[10px] text-white/30 mt-0.5">
+                      {navigator.userAgentData?.platform || navigator.platform || "Unknown device"}
+                    </p>
+                  </div>
+                  <span className="text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full font-medium">Active</span>
+                </div>
+                <p className="text-[10px] text-white/20 px-1 pt-1">
+                  More device management options coming soon.
+                </p>
+              </div>
             </>
           )}
 
@@ -154,91 +259,35 @@ export default function SettingsModal({ onClose }) {
                   </div>
                 ))}
               </div>
-              <button onClick={saveUnits} className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all border border-white/10">
+              <button
+                onClick={saveUnits}
+                className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all border border-white/10"
+              >
                 Save Units
               </button>
             </>
           )}
 
-          {/* ── API Keys ── */}
-          {tab === "api" && (
-            <>
-              <p className="text-xs text-white/40">API keys are stored locally on your device only and never sent to our servers.</p>
-              <div className="space-y-4">
-                 <div className="bg-blue-500/8 border border-blue-500/15 rounded-xl px-4 py-3 flex items-start gap-2.5">
-                   <span className="text-blue-400 text-lg">🏋️</span>
-                   <div>
-                     <p className="text-xs font-semibold text-blue-400 mb-0.5">FitGIF Exercise Library</p>
-                     <p className="text-[10px] text-white/35 leading-relaxed">1,300+ animated exercise GIFs are built-in — no API key needed!</p>
-                   </div>
-                 </div>
-                 <div>
-                   <label className="text-xs font-semibold text-green-400 mb-1.5 block">USDA FoodData (API Key)</label>
-                   <input
-                     type="password"
-                     value={usdaKey}
-                     onChange={(e) => setUsdaKeyState(e.target.value)}
-                     placeholder="Paste your USDA API key…"
-                     className="w-full bg-white/8 border border-white/12 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-green-500/50"
-                   />
-                   <p className="text-[10px] text-white/25 mt-1">Powers food search with 300,000+ items and full nutritional data</p>
-                 </div>
-               </div>
-               <div className="bg-white/4 border border-white/8 rounded-xl px-4 py-3">
-                 <p className="text-[10px] text-white/35 leading-relaxed">
-                   🔒 Keys are saved to your browser's local storage only. Get a free USDA key at <span className="text-green-400">fdc.nal.usda.gov</span>.
-                 </p>
-               </div>
-              <button onClick={saveApiKeys} className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all border border-white/10">
-                Save API Keys
-              </button>
-            </>
-          )}
-
-          {/* ── Account ── */}
-          {tab === "account" && (
-            <div className="space-y-3">
-              <p className="text-xs text-white/40">Manage your account and app data.</p>
-
-              <div className="space-y-1">
-                <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">App Info</p>
-                {[
-                  { label: "Version", value: "1.0.0" },
-                  { label: "Platform", value: "Protein Tracker" },
-                  { label: "Data storage", value: "Secure cloud" },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8">
-                    <span className="text-sm text-white/60">{label}</span>
-                    <span className="text-xs text-white/30">{value}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-1 pt-2">
-                <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Data & Privacy</p>
-                <button
-                  onClick={() => {
-                    localStorage.clear();
-                    toast.success("Local preferences cleared!");
-                  }}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8 hover:bg-white/8 transition-colors"
-                >
-                  <span className="text-sm text-white/70">Clear local preferences</span>
-                  <ChevronRight className="w-4 h-4 text-white/25" />
-                </button>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-500/15 border border-red-500/25 text-red-400 font-semibold text-sm hover:bg-red-500/25 transition-all"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Footer actions */}
+          <div className="pt-2 space-y-2">
+            <button
+              onClick={handleChangePassword}
+              className="w-full flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8 hover:bg-white/8 transition-colors"
+            >
+              <span className="text-sm text-white/70">Change Password</span>
+              <ChevronRight className="w-4 h-4 text-white/25" />
+            </button>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                toast.success("Local preferences cleared!");
+              }}
+              className="w-full flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8 hover:bg-white/8 transition-colors"
+            >
+              <span className="text-sm text-white/60">Clear local preferences</span>
+              <ChevronRight className="w-4 h-4 text-white/25" />
+            </button>
+          </div>
         </div>
       </motion.div>
     </motion.div>
