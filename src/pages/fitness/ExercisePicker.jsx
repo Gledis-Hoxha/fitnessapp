@@ -107,21 +107,21 @@ export default function ExercisePicker() {
 
       {/* Body Part Filter */}
       <div className="flex flex-wrap gap-2">
-        {BODY_PARTS.map((bp) => null
-
-
-
-
-
-
-
-
-
-
-
-
-        )}
-      </div>
+        {BODY_PARTS.map((bp) => (
+          <button
+            key={bp}
+            onClick={() => handleBodyPartChange(bp)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+              selectedBodyPart === bp
+                ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25"
+                : "bg-white/8 text-white/50 hover:bg-white/12"
+            }`}
+          >
+            <span>{BODY_PART_EMOJIS[bp]}</span>
+            {bp === "all" ? "All" : bp}
+          </button>
+          ))}
+          </div>
 
       {/* Error */}
       {error &&

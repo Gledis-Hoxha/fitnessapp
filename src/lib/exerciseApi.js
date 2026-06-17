@@ -1,5 +1,6 @@
-// WorkoutX exercise API — 1,400+ exercises with animated GIFs
+// WorkoutX exercise API — 1,300+ exercises
 // Routes through backend function for secure API key handling
+// Implements client-side search since the API's search param is unreliable
 
 import { base44 } from "@/api/base44Client";
 
@@ -24,19 +25,37 @@ function setCache(key, data) {
   cache.set(key, { data, ts: Date.now() });
 }
 
+let _allExercises = null;
+
 export async function searchExercises(search, options = {}) {
   const ck = cacheKey(search, options);
   const cached = getFromCache(ck);
   if (cached) return cached;
 
-  const payload = { limit: "50" };
-  if (search?.trim()) payload.search = search.trim();
+  const payload = { limit: options.limit || "200" };
   if (options.bodyPart && options.bodyPart !== "all") payload.bodyPart = options.bodyPart;
   if (options.equipment) payload.equipment = options.equipment;
   if (options.target) payload.target = options.target;
 
   const res = await base44.functions.invoke("searchWorkoutX", payload);
-  const results = res.data?.data || [];
+  let results = (res.data?.data || []).map(mapExercise);
+
+  // Client-side text search
+  if (search?.trim()) {
+    const q = search.trim().toLowerCase();
+    results = results.filter((ex) =>
+      ex.name.toLowerCase().includes(q) ||
+      ex.muscle?.toLowerCase().includes(q) ||
+      ex.bodyPart?.toLowerCase().includes(q) ||
+      ex.equipment?.toLowerCase().includes(q)
+    );
+  }
+
+  // Also cache as "all exercises" for future searches
+  if (!_allExercises && !search && !options.bodyPart && results.length > 0) {
+    _allExercises = results;
+  }
+
   setCache(ck, results);
   return results;
 }
@@ -50,7 +69,7 @@ export function mapExercise(ex) {
     bodyPart: ex.bodyPart,
     equipment: ex.equipment,
     difficulty: ex.difficulty,
-    gifUrl: ex.gifUrl,
+    gifUrl: ex.id ? `/functions/getExerciseGif?id=${ex.id}` : null,
     caloriesPerMinute: ex.caloriesPerMinute,
     instructions: ex.instructions || [],
     emoji: bodyPartEmoji(ex.bodyPart),
@@ -63,7 +82,8 @@ export const BODY_PARTS = [
 ];
 
 export async function loadDefaultExercises() {
-  const all = await searchExercises("", {});
+  // Load a good batch of exercises
+  const all = await searchExercises("", { limit: "100" });
   if (all.length > 0) return all;
 
   // Fallback: popular terms
