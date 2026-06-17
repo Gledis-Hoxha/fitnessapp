@@ -42,7 +42,21 @@ export default function SleepTracker() {
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.FitnessActivity.create(data),
-    onSuccess: () => {
+    onMutate: async (newLog) => {
+      await queryClient.cancelQueries({ queryKey: ["sleep"] });
+      const previous = queryClient.getQueryData(["sleep"]);
+      const optimistic = {
+        id: "optimistic-" + Date.now(),
+        ...newLog,
+        created_date: new Date().toISOString(),
+      };
+      queryClient.setQueryData(["sleep"], (old = []) => [optimistic, ...old]);
+      return { previous };
+    },
+    onError: (_err, _newLog, context) => {
+      if (context?.previous) queryClient.setQueryData(["sleep"], context.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["sleep"] });
       setOpen(false);
     }
@@ -50,7 +64,16 @@ export default function SleepTracker() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.FitnessActivity.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["sleep"] })
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["sleep"] });
+      const previous = queryClient.getQueryData(["sleep"]);
+      queryClient.setQueryData(["sleep"], (old) => (old || []).filter((l) => l.id !== id));
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) queryClient.setQueryData(["sleep"], context.previous);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["sleep"] })
   });
 
   const todayLog = sleepLogs.find((s) => s.date === today);

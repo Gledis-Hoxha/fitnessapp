@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Dumbbell, Apple, Bot, User, Settings, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ const navItems = [
 { path: "/profile", label: "Profile", icon: User },
 { path: "/coach", label: "Coach", icon: Bot }];
 
+const TAB_ROOTS = navItems.map((n) => n.path);
 
 const PAGE_TITLES = {
   "/": "Profile",
@@ -33,13 +34,81 @@ function getPageTitle(pathname) {
   return match ? PAGE_TITLES[match] : "StrengthStack";
 }
 
+function getTabRoot(pathname) {
+  return TAB_ROOTS.find((r) => pathname === r || pathname.startsWith(r + "/")) || "/profile";
+}
+
+const slideForward = {
+  initial: { opacity: 0, x: 32 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -32 },
+};
+
+const slideBackward = {
+  initial: { opacity: 0, x: -32 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 32 },
+};
+
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
+  const [direction, setDirection] = useState(1); // 1=forward, -1=backward
+  const prevPathRef = useRef(location.pathname);
+  const scrollPositions = useRef({});
+
+  // Save scroll position on navigation
+  useEffect(() => {
+    const savePos = () => {
+      const tab = getTabRoot(location.pathname);
+      scrollPositions.current[tab] = window.scrollY;
+    };
+    window.addEventListener("beforeunload", savePos);
+    return () => window.removeEventListener("beforeunload", savePos);
+  }, []);
+
+  // Detect navigation direction
+  useEffect(() => {
+    const prev = prevPathRef.current;
+    const curr = location.pathname;
+    const prevTab = getTabRoot(prev);
+    const currTab = getTabRoot(curr);
+    const prevSegs = prev.split("/").filter(Boolean);
+    const currSegs = curr.split("/").filter(Boolean);
+
+    if (prevTab !== currTab) {
+      setDirection(1); // switching tabs = forward push
+    } else if (currSegs.length > prevSegs.length) {
+      setDirection(1); // deeper in same tab = push
+    } else {
+      setDirection(-1); // shallower / back = pop
+    }
+
+    prevPathRef.current = curr;
+  }, [location.pathname]);
+
+  // Restore scroll position when entering a tab
+  useEffect(() => {
+    const tab = getTabRoot(location.pathname);
+    const saved = scrollPositions.current[tab];
+    if (saved !== undefined) {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, saved);
+      });
+    }
+  }, [location.pathname]);
+
+  // Save scroll before tab switch
+  const saveCurrentScroll = () => {
+    const tab = getTabRoot(location.pathname);
+    scrollPositions.current[tab] = window.scrollY;
+  };
 
   const pageTitle = getPageTitle(location.pathname);
   const isMainPage = navItems.some((n) => n.path === location.pathname) || location.pathname === "/";
+
+  const variants = direction === 1 ? slideForward : slideBackward;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
@@ -48,7 +117,10 @@ export default function AppLayout() {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           {!isMainPage ? (
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                saveCurrentScroll();
+                navigate(-1);
+              }}
               aria-label="Go back"
               className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/50 hover:text-white">
               <ArrowLeft className="w-4 h-4" />
@@ -76,10 +148,11 @@ export default function AppLayout() {
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, x: 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -24 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
+              variants={variants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
             >
               <Outlet />
             </motion.div>
@@ -94,6 +167,7 @@ export default function AppLayout() {
             const active = location.pathname === path || path !== "/" && location.pathname.startsWith(path);
             const handleNavClick = (e) => {
               e.preventDefault();
+              saveCurrentScroll();
               navigate(path);
             };
             return (

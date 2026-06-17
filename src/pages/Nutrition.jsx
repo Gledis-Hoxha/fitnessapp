@@ -50,26 +50,46 @@ export default function Nutrition() {
   };
 
   const handleFoodAdded = async (foodData) => {
-    await base44.entities.NutritionEntry.create({
-      ...foodData,
-      date: selectedDate,
-      meal_type: addingMealType
-    });
-    queryClient.invalidateQueries({ queryKey: ["nutrition"] });
+    const newEntry = { ...foodData, date: selectedDate, meal_type: addingMealType };
+    const previous = queryClient.getQueryData(["nutrition"]);
+    // Optimistic update
+    queryClient.setQueryData(["nutrition"], (old = []) => [
+      { id: "opt-" + Date.now(), ...newEntry, created_date: new Date().toISOString() },
+      ...old,
+    ]);
     setShowFoodSearch(false);
     setAddingMealType(null);
+    try {
+      await base44.entities.NutritionEntry.create(newEntry);
+    } catch {
+      if (previous !== undefined) queryClient.setQueryData(["nutrition"], previous);
+    }
+    queryClient.invalidateQueries({ queryKey: ["nutrition"] });
   };
 
   const handleDeleteMeal = async (id) => {
-    await base44.entities.NutritionEntry.delete(id);
+    const previous = queryClient.getQueryData(["nutrition"]);
+    queryClient.setQueryData(["nutrition"], (old) => (old || []).filter((m) => m.id !== id));
+    try {
+      await base44.entities.NutritionEntry.delete(id);
+    } catch {
+      if (previous !== undefined) queryClient.setQueryData(["nutrition"], previous);
+    }
     queryClient.invalidateQueries({ queryKey: ["nutrition"] });
   };
 
   const handleMealRecommenderAdd = async (foodData) => {
-    await base44.entities.NutritionEntry.create({
-      ...foodData,
-      date: selectedDate
-    });
+    const newEntry = { ...foodData, date: selectedDate };
+    const previous = queryClient.getQueryData(["nutrition"]);
+    queryClient.setQueryData(["nutrition"], (old = []) => [
+      { id: "opt-" + Date.now(), ...newEntry, created_date: new Date().toISOString() },
+      ...old,
+    ]);
+    try {
+      await base44.entities.NutritionEntry.create(newEntry);
+    } catch {
+      if (previous !== undefined) queryClient.setQueryData(["nutrition"], previous);
+    }
     queryClient.invalidateQueries({ queryKey: ["nutrition"] });
   };
 

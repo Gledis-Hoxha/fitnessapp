@@ -1,11 +1,33 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check, Copy, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
 
 export default function ExerciseBlock({ exercise, onChange, onRemove }) {
   const [showGif, setShowGif] = useState(false);
+  const previousExerciseRef = useRef(null);
+
+  const toggleMutation = useMutation({
+    mutationFn: async ({ setIdx }) => {
+      // Optimistically already applied; this is a no-op placeholder
+      // Actual persistence happens when the workout is saved
+      return { setIdx, completed: !exercise.sets[setIdx].completed };
+    },
+    onMutate: async ({ setIdx }) => {
+      previousExerciseRef.current = JSON.parse(JSON.stringify(exercise));
+      const newSets = exercise.sets.map((s, i) =>
+        i === setIdx ? { ...s, completed: !s.completed } : s
+      );
+      onChange({ ...exercise, sets: newSets });
+    },
+    onError: () => {
+      if (previousExerciseRef.current) {
+        onChange(previousExerciseRef.current);
+      }
+    },
+  });
 
   const updateSet = (setIdx, field, value) => {
     const newSets = exercise.sets.map((s, i) =>
@@ -15,7 +37,7 @@ export default function ExerciseBlock({ exercise, onChange, onRemove }) {
   };
 
   const toggleComplete = (setIdx) => {
-    updateSet(setIdx, "completed", !exercise.sets[setIdx].completed);
+    toggleMutation.mutate({ setIdx });
   };
 
   const duplicateSet = (setIdx) => {
