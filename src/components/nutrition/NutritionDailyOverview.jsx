@@ -1,12 +1,17 @@
 import { useState } from "react";
-import { format, subDays, addDays, isToday, isAfter, startOfDay } from "date-fns";
-import { ChevronLeft, ChevronRight, Apple, Scale } from "lucide-react";
+import { format, addDays, isToday, isAfter, startOfDay, startOfWeek, addWeeks, isSameDay, isBefore } from "date-fns";
+import { ChevronLeft, ChevronRight, Apple, Scale, CalendarDays, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import NutritionRadarChart from "@/components/profile/NutritionRadarChart";
 
 export default function NutritionDailyOverview({ meals = [], user }) {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
   const viewingToday = selectedDate === format(new Date(), "yyyy-MM-dd");
+
+  // Build set of dates with meals for calendar highlighting
+  const mealDates = new Set(meals.map((m) => m.date));
 
   const changeDate = (offset) => {
     const next = addDays(new Date(selectedDate), offset);
@@ -56,13 +61,20 @@ export default function NutritionDailyOverview({ meals = [], user }) {
         <span className="text-sm font-semibold text-white">
           {viewingToday ? "Today" : format(new Date(selectedDate), "EEEE, MMM d")}
         </span>
-        <button
-          onClick={() => changeDate(1)}
-          disabled={viewingToday}
-          className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:hover:bg-white/5">
-          
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setShowCalendar(true)}
+            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/40 hover:text-white">
+            <CalendarDays className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => changeDate(1)}
+            disabled={viewingToday}
+            className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:hover:bg-white/5">
+            
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Radar chart with selected day data */}
@@ -114,6 +126,93 @@ export default function NutritionDailyOverview({ meals = [], user }) {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Calendar Modal */}
+      <AnimatePresence>
+        {showCalendar && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
+            onClick={() => setShowCalendar(false)}
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#111] border border-white/10 rounded-3xl p-5 w-full max-w-sm"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-1">
+                  <button onClick={() => setCalendarMonth((d) => addDays(d, -30))} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <p className="text-sm font-bold text-white">{format(calendarMonth, "MMMM yyyy")}</p>
+                  <button onClick={() => setCalendarMonth((d) => addDays(d, 30))} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <button onClick={() => setShowCalendar(false)} className="p-1.5 rounded-lg hover:bg-white/10"><X className="w-4 h-4 text-white/50" /></button>
+              </div>
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {["M", "T", "W", "T", "F", "S", "S"].map((d) => <p key={d} className="text-[10px] text-white/25 text-center font-medium">{d}</p>)}
+              </div>
+              <div className="space-y-1">
+                {(() => {
+                  const monthStart = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
+                  const monthEnd = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0);
+                  const startDay = (monthStart.getDay() + 6) % 7;
+                  const weeks = [];
+                  let day = 1 - startDay;
+                  for (let w = 0; w < 6; w++) {
+                    const weekDays = [];
+                    let lastDate = null;
+                    for (let d = 0; d < 7; d++) {
+                      const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day);
+                      weekDays.push(date);
+                      lastDate = date;
+                      day++;
+                    }
+                    weeks.push(weekDays);
+                    if (lastDate > monthEnd && w >= 3) break;
+                  }
+                  return weeks.slice(0, 5).map((week, wi) => (
+                    <div key={wi} className="grid grid-cols-7 gap-1">
+                      {week.map((date, di) => {
+                        const dateStr = format(date, "yyyy-MM-dd");
+                        const isInMonth = date.getMonth() === calendarMonth.getMonth();
+                        const hasMeals = mealDates.has(dateStr);
+                        const isSelected = isSameDay(date, new Date(selectedDate));
+                        const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
+                        const isCurrentDay = isToday(date);
+                        const isFuture = isAfter(startOfDay(date), startOfDay(new Date()));
+                        if (!isInMonth) return <div key={di} />;
+                        return (
+                          <button
+                            key={di}
+                            onClick={() => { if (!isFuture) { setSelectedDate(dateStr); setShowCalendar(false); } }}
+                            disabled={isFuture}
+                            className={`w-full aspect-square rounded-full flex items-center justify-center text-[11px] font-semibold transition-all ${
+                              isSelected ? "bg-green-400 text-black scale-110" :
+                              hasMeals ? "bg-green-500/80 text-white" :
+                              isCurrentDay ? "border border-green-500/60 text-green-400" :
+                              isPast ? "text-white/15" : "text-white/20"
+                            }`}
+                          >
+                            {hasMeals ? "✓" : format(date, "d")}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ));
+                })()}
+              </div>
+              <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/8">
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-[10px] text-white/40">Meals logged</span></div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full border border-green-500/60" /><span className="text-[10px] text-white/40">Today</span></div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>);
 
 }
