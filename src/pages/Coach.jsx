@@ -56,7 +56,7 @@ export default function Coach() {
         </div>
         <div>
           <h1 className="text-lg font-bold text-white">AI Fitness Coach</h1>
-          <p className="text-xs text-white/35">Personalized fitness & nutrition guidance</p>
+          <p className="text-xs text-white/35 hidden">Personalized fitness & nutrition guidance</p>
         </div>
         <div className="ml-auto">
           
