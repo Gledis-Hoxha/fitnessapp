@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,12 @@ const MEAL_CONFIG = {
 };
 
 export default function MealSection({ mealType, entries = [], onAdd, onDelete }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (entries.length > 0) setOpen(true);
+    else setOpen(false);
+  }, [entries.length]);
   const cfg = MEAL_CONFIG[mealType];
   const totalCal = entries.reduce((s, e) => s + (e.calories || 0), 0);
 
