@@ -1,23 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Plus, Search, Loader2, Dumbbell } from "lucide-react";
+import { Plus, Search, Loader2, Dumbbell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { searchExercises, mapExercise, BODY_PARTS, loadDefaultExercises } from "@/lib/exerciseApi";
-
-const BODY_PART_EMOJIS = {
-  all: "⚡",
-  back: "🔙",
-  cardio: "🏃",
-  chest: "🏋️",
-  "lower arms": "🤝",
-  "lower legs": "🦶",
-  neck: "🧠",
-  shoulders: "💪",
-  "upper arms": "💪",
-  "upper legs": "🦵",
-  waist: "⚡"
-};
 
 export default function ExercisePicker() {
   const navigate = useNavigate();
@@ -95,12 +81,12 @@ export default function ExercisePicker() {
 
         
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search exercises (e.g. squat, bench...)"
-            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/25 h-11 focus:border-blue-500/40"
+            className="pl-9 bg-secondary border-border text-foreground placeholder:text-muted-foreground h-11 focus:border-primary/50"
             autoFocus />
         </div>
       </div>
@@ -111,13 +97,12 @@ export default function ExercisePicker() {
           <button
             key={bp}
             onClick={() => handleBodyPartChange(bp)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold capitalize transition-all border ${
               selectedBodyPart === bp
-                ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25"
-                : "bg-white/8 text-white/50 hover:bg-white/12"
+                ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
+                : "bg-secondary border-white/5 text-muted-foreground hover:text-foreground hover:border-white/10"
             }`}
           >
-            <span>{BODY_PART_EMOJIS[bp]}</span>
             {bp === "all" ? "All" : bp}
           </button>
           ))}
@@ -125,7 +110,7 @@ export default function ExercisePicker() {
 
       {/* Error */}
       {error &&
-      <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-sm text-center">
+      <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-destructive text-sm text-center">
           {error}
         </div>
       }
@@ -134,16 +119,16 @@ export default function ExercisePicker() {
       <div className="space-y-2">
         {loading &&
         <div className="flex flex-col items-center justify-center py-12 gap-3">
-            <Loader2 className="w-7 h-7 text-blue-400 animate-spin" />
-            <p className="text-white/30 text-sm">Loading exercises...</p>
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
+            <p className="text-muted-foreground text-sm">Loading exercises...</p>
           </div>
         }
 
         {!loading && exercises.length === 0 && !error &&
         <div className="text-center py-12">
-            <Dumbbell className="w-10 h-10 text-white/20 mx-auto mb-3" />
-            <p className="text-white/30 text-sm">No exercises found</p>
-            <p className="text-white/20 text-xs mt-1">Try a different search term</p>
+            <Dumbbell className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
+            <p className="text-muted-foreground text-sm">No exercises found</p>
+            <p className="text-muted-foreground/50 text-xs mt-1">Try a different search term</p>
           </div>
         }
 
@@ -156,45 +141,43 @@ export default function ExercisePicker() {
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ delay: Math.min(i * 0.025, 0.25) }}
             onClick={() => handlePick(ex)}
-            className="w-full flex items-center gap-3 p-3 bg-[#161618] border border-white/8 rounded-2xl hover:border-blue-500/40 hover:bg-[#1a1a1f] transition-all active:scale-[0.98] text-left group">
+            className="w-full flex items-center gap-3 p-3 bg-secondary border border-border rounded-2xl hover:border-primary/30 hover:bg-secondary/80 transition-all active:scale-[0.98] text-left group">
             
               {/* GIF / Fallback */}
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-muted flex-shrink-0 flex items-center justify-center">
                 {ex.gifUrl ?
               <img
                 src={ex.gifUrl}
                 alt={ex.name}
                 className="w-full h-full object-cover"
                 loading="lazy" /> :
-
-
-              <span className="text-2xl">{ex.emoji}</span>
+                <Dumbbell className="w-6 h-6 text-muted-foreground/40" />
               }
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-white text-sm capitalize leading-snug">{ex.name}</p>
+                <p className="font-semibold text-foreground text-sm capitalize leading-snug">{ex.name}</p>
                 <div className="flex flex-wrap gap-1 mt-1.5">
                   {ex.muscle &&
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium capitalize">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium capitalize">
                       {ex.muscle}
                     </span>
                 }
                   {ex.bodyPart &&
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/8 text-white/40 capitalize">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground capitalize">
                       {ex.bodyPart}
                     </span>
                 }
                   {ex.equipment &&
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/30 capitalize">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground/60 capitalize">
                       {ex.equipment}
                     </span>
                 }
                 </div>
               </div>
 
-              <div className="p-2 rounded-xl bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors flex-shrink-0">
-                <Plus className="w-4 h-4 text-blue-400" />
+              <div className="p-2 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors flex-shrink-0">
+                <Plus className="w-4 h-4 text-primary" />
               </div>
             </motion.button>
           )}
