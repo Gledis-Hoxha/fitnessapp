@@ -65,15 +65,15 @@ export default function Profile() {
               <p className="text-xs text-white/40 mt-0.5 break-all">
                 {user?.email || ""}
               </p>
-              {user?.fitness_goals?.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {user.fitness_goals.slice(0, 3).map((g) => (
-                    <span key={g} className="text-[10px] bg-blue-500/10 text-blue-300 border border-blue-500/15 px-2 py-0.5 rounded-full whitespace-nowrap">
+              {user?.fitness_goals?.length > 0 &&
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                  {user.fitness_goals.slice(0, 3).map((g) =>
+                <span key={g} className="text-[10px] bg-blue-500/10 text-blue-300 border border-blue-500/15 px-2 py-0.5 rounded-full whitespace-nowrap hidden">
                       {GOAL_LABELS[g] || g.replace(/_/g, " ")}
                     </span>
-                  ))}
+                )}
                 </div>
-              )}
+              }
             </div>
 
             {/* Action buttons — vertical stack on right */}
@@ -99,11 +99,11 @@ export default function Profile() {
         {/* Stat cards */}
         <div className="grid grid-cols-3 divide-x divide-white/8 border-t border-white/8">
           {[
-            { value: user?.height_cm ? `${user.height_cm}cm` : "—", label: "Height" },
-            { value: user?.weight_kg ? `${user.weight_kg}kg` : "—", label: "Weight" },
-            { value: user?.age ? `${user.age}yo` : "—", label: "Age" }
-          ].map((s) =>
-            <div key={s.label} className="py-4 text-center">
+          { value: user?.height_cm ? `${user.height_cm}cm` : "—", label: "Height" },
+          { value: user?.weight_kg ? `${user.weight_kg}kg` : "—", label: "Weight" },
+          { value: user?.age ? `${user.age}yo` : "—", label: "Age" }].
+          map((s) =>
+          <div key={s.label} className="py-4 text-center">
               <p className="text-lg font-bold text-blue-400">{s.value}</p>
               <p className="text-[10px] text-white/35 mt-0.5 uppercase tracking-wider">{s.label}</p>
             </div>
@@ -114,18 +114,18 @@ export default function Profile() {
       {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/8">
         {[
-          { id: "fitness", label: "Fitness", icon: Dumbbell },
-          { id: "nutrition", label: "Nutrition", icon: Apple }
-        ].map(({ id, label, icon: Icon }) =>
-          <button
-            key={id}
-            onClick={() => setTab(id)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${
-              tab === id
-                ? "bg-white/10 text-white"
-                : "text-white/40 hover:text-white"
-            }`}
-          >
+        { id: "fitness", label: "Fitness", icon: Dumbbell },
+        { id: "nutrition", label: "Nutrition", icon: Apple }].
+        map(({ id, label, icon: Icon }) =>
+        <button
+          key={id}
+          onClick={() => setTab(id)}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${
+          tab === id ?
+          "bg-white/10 text-white" :
+          "text-white/40 hover:text-white"}`
+          }>
+          
             <Icon className="w-4 h-4" />
             {label}
           </button>
@@ -137,15 +137,15 @@ export default function Profile() {
 
       <AnimatePresence>
         {showEdit &&
-          <EditProfileModal
-            user={user}
-            onClose={() => setShowEdit(false)}
-            onSave={handleProfileSaved}
-          />
+        <EditProfileModal
+          user={user}
+          onClose={() => setShowEdit(false)}
+          onSave={handleProfileSaved} />
+
         }
         {showShare && <ShareProfileModal user={user} workouts={workouts} onClose={() => setShowShare(false)} />}
         {showInbox && <InboxPanel onClose={() => setShowInbox(false)} />}
       </AnimatePresence>
-    </div>
-  );
+    </div>);
+
 }
