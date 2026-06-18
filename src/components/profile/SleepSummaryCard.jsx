@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceDot
 } from "recharts";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 
 const TABS = [
   { key: "bed", label: "Went to bed" },
@@ -41,7 +41,7 @@ export default function SleepSummaryCard() {
   const [tab, setTab] = useState("bed");
   const { data: sleepLogs = [] } = useQuery({
     queryKey: ["sleep"],
-    queryFn: () => base44.entities.FitnessActivity.filter({ activity_type: "sleep" }, "-date", 14)
+    queryFn: () => app.entities.FitnessActivity.filter({ activity_type: "sleep" }, "-date", 14)
   });
 
   // Last 7 nights aligned to calendar days
