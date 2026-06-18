@@ -1,39 +1,26 @@
-**Welcome to your Base44 project** 
+# StrengthStack
 
-**About**
+StrengthStack is a fitness and nutrition app I built to keep my training, meals, and recovery in one place — without juggling three different apps that never talk to each other.
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+It started as a tool for tracking my own workouts and slowly grew into a full companion: an exercise library with demos, routine planning, nutrition logging, sleep and step tracking, and an AI coach that actually knows my history.
 
-This project contains everything you need to run your app locally.
+## What it does
 
-**Edit the code in your local development environment**
+- **Workouts** — Start a live session, log sets, reps, and weight, and track your progress over time. Build reusable routines and plan your training week.
+- **Exercise library** — Browse and search a large database of exercises with animated demonstrations, target muscles, equipment, and step-by-step instructions.
+- **Nutrition** — Log meals, track calories and macros, save meal plans, and stay on top of hydration with a daily overview.
+- **Activity tracking** — Steps, sleep, heart rate, and general fitness activities, all visualized so the trends are easy to read.
+- **AI coach** — A personal coach that reads your actual workout, nutrition, and activity logs to give direct, tailored advice instead of generic tips.
+- **Profile & progress** — Your stats, calendars, charts, and a shareable profile.
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+## Design
 
-**Prerequisites:** 
+The whole app runs on a clean dark theme with a blue and green accent palette, designed to feel calm and focused — the kind of interface you don't mind opening at 6am or right before bed. It's fully responsive, so it works just as well on a phone at the gym as it does on a laptop.
 
-1. Clone the repository using the project's Git URL 
-2. Navigate to the project directory
-3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
+## Tech
 
-```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
+Built with React and Tailwind CSS, with a component library for consistent UI. Exercise data comes from the WorkoutX API and nutrition data from the USDA food database, both proxied through secure backend functions. Authentication, storage, and the database are handled on the backend so the app stays fast and secure.
 
-e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
-```
+## Status
 
-Run the app: `npm run dev`
-
-**Publish your changes**
-
-Open [Base44.com](http://Base44.com) and click on Publish.
-
-**Docs & Support**
-
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
-
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+StrengthStack is actively maintained and evolving. New features get added as I find gaps in my own routine — if something's missing, it's probably on the list.
