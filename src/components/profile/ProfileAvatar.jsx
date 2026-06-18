@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -16,8 +16,8 @@ export default function ProfileAvatar({ user, onUpdated }) {
     }
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      await base44.auth.updateMe({ avatar_url: file_url });
+      const { file_url } = await app.integrations.Core.UploadFile({ file });
+      await app.auth.updateMe({ avatar_url: file_url });
       toast.success("Profile picture updated!");
       onUpdated?.();
     } catch {

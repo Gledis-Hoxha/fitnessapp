@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { format } from "date-fns";
 import { Clock, Dumbbell, TrendingUp, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
@@ -64,7 +64,7 @@ function WorkoutCard({ workout }) {
 export default function WorkoutHistory() {
   const { data: workouts = [], isLoading } = useQuery({
     queryKey: ["workouts"],
-    queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 20),
+    queryFn: () => app.entities.Workout.filter({ status: "completed" }, "-date", 20),
   });
 
   // Chart data: last 7 workouts duration in minutes

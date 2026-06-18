@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, BookOpen, Play, Trash2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import WeeklyPlanner from "@/components/fitness/WeeklyPlanner";
@@ -12,11 +12,11 @@ export default function Routines() {
 
   const { data: routines = [], isLoading } = useQuery({
     queryKey: ["routines"],
-    queryFn: () => base44.entities.Routine.list("-created_date", 50)
+    queryFn: () => app.entities.Routine.list("-created_date", 50)
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Routine.delete(id),
+    mutationFn: (id) => app.entities.Routine.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["routines"] })
   });
 

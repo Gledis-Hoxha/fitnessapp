@@ -2,7 +2,7 @@
 // Routes through backend function for secure API key handling
 // Implements client-side search since the API's search param is unreliable
 
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const cache = new Map();
@@ -37,7 +37,7 @@ export async function searchExercises(search, options = {}) {
   if (options.equipment) payload.equipment = options.equipment;
   if (options.target) payload.target = options.target;
 
-  const res = await base44.functions.invoke("searchWorkoutX", payload);
+  const res = await app.functions.invoke("searchWorkoutX", payload);
   let results = (res.data?.data || []).map(mapExercise);
 
   // Client-side text search

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ArrowLeft, Footprints, Flame, MapPin, Dumbbell, Apple, Target, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 
 const DAILY_STEP_GOAL = 10000;
 const today = format(new Date(), "yyyy-MM-dd");
@@ -32,12 +32,12 @@ export default function DailyReview() {
 
   const { data: workouts = [] } = useQuery({
     queryKey: ["dailyReviewWorkouts", today],
-    queryFn: () => base44.entities.Workout.filter({ status: "completed", date: today }, "-date", 20),
+    queryFn: () => app.entities.Workout.filter({ status: "completed", date: today }, "-date", 20),
   });
 
   const { data: meals = [] } = useQuery({
     queryKey: ["dailyReviewMeals", today],
-    queryFn: () => base44.entities.NutritionEntry.filter({ date: today }, "-created_date", 50),
+    queryFn: () => app.entities.NutritionEntry.filter({ date: today }, "-created_date", 50),
   });
 
   const totalSets = workouts.reduce(

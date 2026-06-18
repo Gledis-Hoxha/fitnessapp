@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { X, Plus, Trash2, Bell, BellOff, Smartphone } from "lucide-react";
@@ -59,7 +59,7 @@ export default function WorkoutRemindersModal({ onClose }) {
 
   const { data: reminders = [], isLoading } = useQuery({
     queryKey: ["workout-reminders"],
-    queryFn: () => base44.entities.WorkoutReminder.list("-created_date", 50),
+    queryFn: () => app.entities.WorkoutReminder.list("-created_date", 50),
   });
 
   usePushNotifications(reminders);
@@ -72,17 +72,17 @@ export default function WorkoutRemindersModal({ onClose }) {
   };
 
   const createReminder = useMutation({
-    mutationFn: (data) => base44.entities.WorkoutReminder.create(data),
+    mutationFn: (data) => app.entities.WorkoutReminder.create(data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["workout-reminders"] }); setView("list"); toast.success("Reminder saved!"); },
   });
 
   const toggleEnabled = useMutation({
-    mutationFn: ({ id, enabled }) => base44.entities.WorkoutReminder.update(id, { enabled }),
+    mutationFn: ({ id, enabled }) => app.entities.WorkoutReminder.update(id, { enabled }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["workout-reminders"] }),
   });
 
   const deleteReminder = useMutation({
-    mutationFn: (id) => base44.entities.WorkoutReminder.delete(id),
+    mutationFn: (id) => app.entities.WorkoutReminder.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["workout-reminders"] }),
   });
 

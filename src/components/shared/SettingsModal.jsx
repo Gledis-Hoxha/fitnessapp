@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X, Bell, SunMoon, Globe, Smartphone, Ruler, Moon, Sun, Monitor, ChevronRight, Trash2 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -101,13 +101,13 @@ export default function SettingsModal({ onClose }) {
 
   const handleChangePassword = () => {
     // Redirect to Base44 account settings for password change
-    base44.auth.redirectToLogin(window.location.href);
+    app.auth.redirectToLogin(window.location.href);
   };
 
   const handleDeleteAccount = async () => {
     try {
-      await base44.asServiceRole.users.deleteMe();
-      base44.auth.logout("/");
+      await app.asServiceRole.users.deleteMe();
+      app.auth.logout("/");
     } catch {
       toast.error("Failed to delete account. Please try again.");
     }

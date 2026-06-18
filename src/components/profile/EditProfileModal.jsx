@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { X, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -29,7 +29,7 @@ export default function EditProfileModal({ user, onClose, onSaved }) {
 
   const save = async () => {
     setSaving(true);
-    await base44.auth.updateMe({
+    await app.auth.updateMe({
       ...form,
       age: Number(form.age) || undefined,
       height_cm: Number(form.height_cm) || undefined,

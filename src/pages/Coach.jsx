@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { Send, Bot, Sparkles } from "lucide-react";
 import CoachMessageBubble from "@/components/coach/CoachMessageBubble";
 import CoachSuggestions from "@/components/coach/CoachSuggestions";
@@ -12,7 +12,7 @@ export default function Coach() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    base44.agents.createConversation({ agent_name: "vitalflow_coach" }).
+    app.agents.createConversation({ agent_name: "vitalflow_coach" }).
     then((conv) => {
       setConversation(conv);
       setMessages(conv.messages || []);
@@ -22,7 +22,7 @@ export default function Coach() {
 
   useEffect(() => {
     if (!conversation?.id) return;
-    const unsub = base44.agents.subscribeToConversation(conversation.id, (data) => {
+    const unsub = app.agents.subscribeToConversation(conversation.id, (data) => {
       setMessages(data.messages || []);
       setLoading(false);
     });
@@ -37,7 +37,7 @@ export default function Coach() {
     if (!text.trim() || !conversation || loading) return;
     setInput("");
     setLoading(true);
-    await base44.agents.addMessage(conversation, { role: "user", content: text });
+    await app.agents.addMessage(conversation, { role: "user", content: text });
   };
 
   const handleKeyDown = (e) => {

@@ -5,7 +5,7 @@ import {
 } from "date-fns";
 import { Dumbbell, CalendarDays, ChevronLeft, ChevronRight, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -85,12 +85,12 @@ export default function WorkoutCalendar() {
 
   const { data: workouts = [] } = useQuery({
     queryKey: ["calendarWorkouts"],
-    queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 200),
+    queryFn: () => app.entities.Workout.filter({ status: "completed" }, "-date", 200),
   });
 
   const { data: reminders = [] } = useQuery({
     queryKey: ["calendarReminders"],
-    queryFn: () => base44.entities.WorkoutReminder.filter({ enabled: true }, "-created_date", 50),
+    queryFn: () => app.entities.WorkoutReminder.filter({ enabled: true }, "-created_date", 50),
   });
 
   // Map workouts by date string

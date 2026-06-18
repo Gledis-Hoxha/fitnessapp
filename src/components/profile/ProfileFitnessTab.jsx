@@ -8,7 +8,7 @@ import StepSummaryCard from "@/components/profile/StepSummaryCard";
 import SleepSummaryCard from "@/components/profile/SleepSummaryCard";
 import FitnessAchievements from "@/components/fitness/FitnessAchievements";
 import WorkoutCalendarModal from "@/components/profile/WorkoutCalendarModal";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { toast } from "sonner";
 
 function StatPill({ label, value, color }) {
@@ -39,19 +39,19 @@ export default function ProfileFitnessTab({ workouts = [], user }) {
   const [goalsVal, setGoalsVal] = useState(user?.fitness_goals || []);
 
   const saveWeight = async () => {
-    await base44.auth.updateMe({ weight_kg: Number(weightVal) || undefined });
+    await app.auth.updateMe({ weight_kg: Number(weightVal) || undefined });
     toast.success("Weight updated!");
     setEditingWeight(false);
   };
 
   const saveGoalWeight = async () => {
-    await base44.auth.updateMe({ goal_weight_kg: Number(goalWeightVal) || undefined });
+    await app.auth.updateMe({ goal_weight_kg: Number(goalWeightVal) || undefined });
     toast.success("Goal weight updated!");
     setEditingGoalWeight(false);
   };
 
   const saveGoals = async () => {
-    await base44.auth.updateMe({ fitness_goals: goalsVal });
+    await app.auth.updateMe({ fitness_goals: goalsVal });
     toast.success("Goals updated!");
     setEditingGoals(false);
   };

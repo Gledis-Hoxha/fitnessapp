@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Check, Dumbbell, Apple, Zap, Target, Flame, Heart, Scale } from "lucide-react";
 
@@ -67,7 +67,7 @@ export default function OnboardingFlow({ user, onComplete }) {
 
   const finish = async () => {
     setSaving(true);
-    await base44.auth.updateMe({
+    await app.auth.updateMe({
       ...data,
       age: Number(data.age),
       height_cm: Number(data.height_cm),

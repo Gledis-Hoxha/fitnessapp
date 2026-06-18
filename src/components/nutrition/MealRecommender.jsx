@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { Sparkles, ChevronDown, ChevronUp, Loader2, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,7 +19,7 @@ export default function MealRecommender({ todayCalories = 0, todayProtein = 0, o
     setError(null);
     setRecommendations([]);
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await app.integrations.Core.InvokeLLM({
         prompt: `You are a nutrition coach. The user has eaten ${todayCalories} kcal and ${todayProtein}g protein today.
 Their daily goals are ${DAILY_GOALS.calories} kcal and ${DAILY_GOALS.protein}g protein.
 Remaining: ${remainingCal} kcal and ${remainingProtein}g protein.

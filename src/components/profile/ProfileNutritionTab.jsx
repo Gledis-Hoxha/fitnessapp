@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { Bell, StickyNote, Image, Trash2, Plus } from "lucide-react";
 import { useState, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { toast } from "sonner";
 import NutritionDailyOverview from "@/components/nutrition/NutritionDailyOverview";
 
@@ -54,7 +54,7 @@ export default function ProfileNutritionTab({ meals = [], user }) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const { file_url } = await app.integrations.Core.UploadFile({ file });
     setProgressPhotos((prev) => [...prev, { url: file_url, date: new Date().toISOString() }]);
     setUploading(false);
     toast.success("Progress photo uploaded!");

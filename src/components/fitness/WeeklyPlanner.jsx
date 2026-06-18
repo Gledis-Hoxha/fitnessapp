@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { CalendarDays, Plus, X, Bell, BellOff } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
@@ -27,7 +27,7 @@ export default function WeeklyPlanner({ routines = [] }) {
 
   const { data: plans = [] } = useQuery({
     queryKey: ["weeklyPlan"],
-    queryFn: () => base44.entities.WeeklyPlan.list("-created_date", 50),
+    queryFn: () => app.entities.WeeklyPlan.list("-created_date", 50),
   });
 
   usePlanNotifications(plans);
@@ -36,7 +36,7 @@ export default function WeeklyPlanner({ routines = [] }) {
   plans.forEach((p) => { planByDay[p.day] = p; });
 
   const timeMutation = useMutation({
-    mutationFn: ({ id, reminder_time }) => base44.entities.WeeklyPlan.update(id, { reminder_time }),
+    mutationFn: ({ id, reminder_time }) => app.entities.WeeklyPlan.update(id, { reminder_time }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["weeklyPlan"] }),
   });
 
@@ -51,8 +51,8 @@ export default function WeeklyPlanner({ routines = [] }) {
     mutationFn: async ({ day, routine }) => {
       const existing = planByDay[day];
       const payload = { day, routine_id: routine.id, routine_name: routine.name };
-      if (existing) return base44.entities.WeeklyPlan.update(existing.id, payload);
-      return base44.entities.WeeklyPlan.create({ ...payload, reminder_time: "07:00" });
+      if (existing) return app.entities.WeeklyPlan.update(existing.id, payload);
+      return app.entities.WeeklyPlan.create({ ...payload, reminder_time: "07:00" });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["weeklyPlan"] });
@@ -61,7 +61,7 @@ export default function WeeklyPlanner({ routines = [] }) {
   });
 
   const clearMutation = useMutation({
-    mutationFn: (id) => base44.entities.WeeklyPlan.delete(id),
+    mutationFn: (id) => app.entities.WeeklyPlan.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["weeklyPlan"] }),
   });
 

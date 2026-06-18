@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SleepClock from "@/components/fitness/SleepClock";
 import TimeSummaryCard from "@/components/fitness/TimeSummaryCard";
 import TimePickerModal from "@/components/fitness/TimePickerModal";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { format } from "date-fns";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -37,11 +37,11 @@ export default function SleepTracker() {
 
   const { data: sleepLogs = [] } = useQuery({
     queryKey: ["sleep"],
-    queryFn: () => base44.entities.FitnessActivity.filter({ activity_type: "sleep" }, "-date", 14)
+    queryFn: () => app.entities.FitnessActivity.filter({ activity_type: "sleep" }, "-date", 14)
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.FitnessActivity.create(data),
+    mutationFn: (data) => app.entities.FitnessActivity.create(data),
     onMutate: async (newLog) => {
       await queryClient.cancelQueries({ queryKey: ["sleep"] });
       const previous = queryClient.getQueryData(["sleep"]);
@@ -63,7 +63,7 @@ export default function SleepTracker() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.FitnessActivity.delete(id),
+    mutationFn: (id) => app.entities.FitnessActivity.delete(id),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ["sleep"] });
       const previous = queryClient.getQueryData(["sleep"]);

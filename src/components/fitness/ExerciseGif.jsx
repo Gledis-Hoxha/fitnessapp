@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { Dumbbell, Loader2 } from "lucide-react";
 
 const gifCache = new Map();
@@ -17,7 +17,7 @@ export default function ExerciseGif({ exerciseId, className = "" }) {
     }
     let cancelled = false;
     setLoading(true);
-    base44.functions.invoke("getExerciseGif", { exerciseId })
+    app.functions.invoke("getExerciseGif", { exerciseId })
       .then((res) => {
         if (cancelled) return;
         const url = res.data?.dataUrl;

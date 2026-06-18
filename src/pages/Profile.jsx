@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
 import { Dumbbell, Apple, Pencil, Share2, Inbox } from "lucide-react";
@@ -29,21 +29,21 @@ export default function Profile() {
   const [showInbox, setShowInbox] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    app.auth.me().then(setUser).catch(() => {});
   }, []);
 
   const { data: workouts = [] } = useQuery({
     queryKey: ["workouts"],
-    queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 50)
+    queryFn: () => app.entities.Workout.filter({ status: "completed" }, "-date", 50)
   });
 
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
-    queryFn: () => base44.entities.NutritionEntry.list("-date", 200)
+    queryFn: () => app.entities.NutritionEntry.list("-date", 200)
   });
 
   const handleProfileSaved = async () => {
-    const updated = await base44.auth.me();
+    const updated = await app.auth.me();
     setUser(updated);
     setShowEdit(false);
   };

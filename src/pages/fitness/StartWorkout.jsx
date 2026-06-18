@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { Input } from "@/components/ui/input";
 import { Plus, ArrowLeft, BookMarked, Dumbbell, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
@@ -71,7 +71,7 @@ export default function StartWorkout() {
     const endedAt = new Date().toISOString();
     const durationSeconds = Math.floor((new Date(endedAt) - new Date(startedAt.current)) / 1000);
 
-    await base44.entities.Workout.create({
+    await app.entities.Workout.create({
       status: "completed",
       started_at: startedAt.current,
       ended_at: endedAt,
@@ -91,7 +91,7 @@ export default function StartWorkout() {
 
   const handleSaveRoutine = async () => {
     if (!routineName.trim() || exercises.length === 0) return;
-    await base44.entities.Routine.create({
+    await app.entities.Routine.create({
       name: routineName.trim(),
       exercises: exercises.map((e) => ({
         exercise_id: e.exercise_id,

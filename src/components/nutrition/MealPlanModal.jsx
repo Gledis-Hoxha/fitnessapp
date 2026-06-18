@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Trash2, PlayCircle, ChevronDown, ChevronRight } from "lucide-react";
@@ -52,16 +52,16 @@ export default function MealPlanModal({ onClose, onLogged }) {
 
   const { data: plans = [], isLoading } = useQuery({
     queryKey: ["meal-plans"],
-    queryFn: () => base44.entities.MealPlan.list("-created_date", 50),
+    queryFn: () => app.entities.MealPlan.list("-created_date", 50),
   });
 
   const createPlan = useMutation({
-    mutationFn: (data) => base44.entities.MealPlan.create(data),
+    mutationFn: (data) => app.entities.MealPlan.create(data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["meal-plans"] }); setView("list"); },
   });
 
   const deletePlan = useMutation({
-    mutationFn: (id) => base44.entities.MealPlan.delete(id),
+    mutationFn: (id) => app.entities.MealPlan.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["meal-plans"] }),
   });
 
@@ -77,7 +77,7 @@ export default function MealPlanModal({ onClose, onLogged }) {
         serving_size: f.serving_size || "",
         date: today,
       }));
-      return base44.entities.NutritionEntry.bulkCreate(entries);
+      return app.entities.NutritionEntry.bulkCreate(entries);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nutrition"] });

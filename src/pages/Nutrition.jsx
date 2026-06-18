@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { format } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import { Plus, ChevronLeft, ChevronRight, Bell } from "lucide-react";
@@ -23,7 +23,7 @@ export default function Nutrition() {
 
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
-    queryFn: () => base44.entities.NutritionEntry.list("-date", 200)
+    queryFn: () => app.entities.NutritionEntry.list("-date", 200)
   });
 
   const dayMeals = meals.filter((m) => m.date === selectedDate);
@@ -60,7 +60,7 @@ export default function Nutrition() {
     setShowFoodSearch(false);
     setAddingMealType(null);
     try {
-      await base44.entities.NutritionEntry.create(newEntry);
+      await app.entities.NutritionEntry.create(newEntry);
     } catch {
       if (previous !== undefined) queryClient.setQueryData(["nutrition"], previous);
     }
@@ -71,7 +71,7 @@ export default function Nutrition() {
     const previous = queryClient.getQueryData(["nutrition"]);
     queryClient.setQueryData(["nutrition"], (old) => (old || []).filter((m) => m.id !== id));
     try {
-      await base44.entities.NutritionEntry.delete(id);
+      await app.entities.NutritionEntry.delete(id);
     } catch {
       if (previous !== undefined) queryClient.setQueryData(["nutrition"], previous);
     }
@@ -86,7 +86,7 @@ export default function Nutrition() {
       ...old,
     ]);
     try {
-      await base44.entities.NutritionEntry.create(newEntry);
+      await app.entities.NutritionEntry.create(newEntry);
     } catch {
       if (previous !== undefined) queryClient.setQueryData(["nutrition"], previous);
     }

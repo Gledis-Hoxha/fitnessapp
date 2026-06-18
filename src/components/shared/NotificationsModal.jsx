@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { app } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { X, Dumbbell, Apple, Bell, CheckCircle2, Flame, TrendingUp, Clock } from "lucide-react";
 import { format } from "date-fns";
@@ -16,17 +16,17 @@ function getGreeting() {
 export default function NotificationsModal({ onClose }) {
   const { data: workouts = [] } = useQuery({
     queryKey: ["workouts"],
-    queryFn: () => base44.entities.Workout.filter({ status: "completed" }, "-date", 20),
+    queryFn: () => app.entities.Workout.filter({ status: "completed" }, "-date", 20),
   });
 
   const { data: meals = [] } = useQuery({
     queryKey: ["nutrition"],
-    queryFn: () => base44.entities.NutritionEntry.list("-date", 200),
+    queryFn: () => app.entities.NutritionEntry.list("-date", 200),
   });
 
   const { data: reminders = [] } = useQuery({
     queryKey: ["workout-reminders"],
-    queryFn: () => base44.entities.WorkoutReminder.list("-created_date", 50),
+    queryFn: () => app.entities.WorkoutReminder.list("-created_date", 50),
   });
 
   const todayMeals = meals.filter((m) => m.date === today);
