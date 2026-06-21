@@ -168,7 +168,7 @@ export default function ExerciseBlock({ exercise, onChange, onRemove }) {
             value={set.reps || ""}
             onChange={(e) => updateSet(i, "reps", Number(e.target.value))}
             placeholder="0"
-            className="h-8 text-center text-sm px-1 border-white/10 bg-[#2d2a38] text-gray-50" />
+            className="h-8 text-center text-sm px-1 border-white/10 bg-[#2d2a38] text-[#fff5f5]" />
           
             <button
             onClick={() => duplicateSet(i)}
