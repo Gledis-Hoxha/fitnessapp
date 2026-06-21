@@ -161,7 +161,7 @@ export default function ExerciseBlock({ exercise, onChange, onRemove }) {
             value={set.weight_kg || ""}
             onChange={(e) => updateSet(i, "weight_kg", Number(e.target.value))}
             placeholder="0"
-            className="h-8 text-center text-sm px-1 border-white/10 text-gray-50 bg-[#b09c9c]/[0.1]" />
+            className="h-8 text-center text-sm px-1 border-white/10 text-gray-50 bg-gray-600" />
           
             <Input
             type="number"
