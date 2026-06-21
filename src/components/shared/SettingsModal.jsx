@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { X, Bell, SunMoon, Globe, Smartphone, Ruler, Moon, Sun, Monitor, ChevronRight, Trash2 } from "lucide-react";
 import { app } from "@/api/base44Client";
 import { toast } from "sonner";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +17,6 @@ import {
 
 const NOTIF_KEY = "app_notifications";
 const THEME_KEY = "app_theme";
-const LANG_KEY = "app_language";
 const UNIT_PREF_KEY = "unit_prefs";
 const DEFAULT_UNITS = { weight: "kg", distance: "km", height: "cm" };
 
@@ -35,14 +35,15 @@ export function getUnitPrefs() {
 }
 
 const TABS = [
-{ id: "notifications", label: "Notifications", icon: Bell },
-{ id: "appearance", label: "Appearance", icon: SunMoon },
-{ id: "language", label: "Language", icon: Globe },
-{ id: "devices", label: "Devices", icon: Smartphone },
-{ id: "units", label: "Units", icon: Ruler }];
+{ id: "notifications", labelKey: "settings.tab.notifications", icon: Bell },
+{ id: "appearance", labelKey: "settings.tab.appearance", icon: SunMoon },
+{ id: "language", labelKey: "settings.tab.language", icon: Globe },
+{ id: "devices", labelKey: "settings.tab.devices", icon: Smartphone },
+{ id: "units", labelKey: "settings.tab.units", icon: Ruler }];
 
 
 export default function SettingsModal({ onClose }) {
+  const { t, language, setLanguage } = useTranslation();
   const [tab, setTab] = useState("notifications");
   const [notificationsOn, setNotificationsOn] = useState(() =>
   localStorage.getItem(NOTIF_KEY) !== "false"
@@ -51,9 +52,6 @@ export default function SettingsModal({ onClose }) {
     localStorage.getItem(THEME_KEY) || "system"
   );
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [language, setLanguage] = useState(() =>
-  localStorage.getItem(LANG_KEY) || "en"
-  );
   const [units, setUnits] = useState(getUnitPrefs());
 
   // Apply theme
@@ -85,18 +83,17 @@ export default function SettingsModal({ onClose }) {
     const next = !notificationsOn;
     setNotificationsOn(next);
     localStorage.setItem(NOTIF_KEY, String(next));
-    toast.success(next ? "Notifications enabled" : "Notifications disabled");
+    toast.success(next ? t("settings.notifications.enabled") : t("settings.notifications.disabled"));
   };
 
   const setLang = (code) => {
     setLanguage(code);
-    localStorage.setItem(LANG_KEY, code);
-    toast.success(`Language set to ${LANGUAGES.find((l) => l.code === code)?.label}`);
+    toast.success(`${t("settings.language.changed")} ${LANGUAGES.find((l) => l.code === code)?.label}`);
   };
 
   const saveUnits = () => {
     localStorage.setItem(UNIT_PREF_KEY, JSON.stringify(units));
-    toast.success("Units saved!");
+    toast.success(t("settings.units.saved"));
   };
 
   const handleChangePassword = () => {
@@ -109,7 +106,7 @@ export default function SettingsModal({ onClose }) {
       await app.asServiceRole.users.deleteMe();
       app.auth.logout("/");
     } catch {
-      toast.error("Failed to delete account. Please try again.");
+      toast.error(t("settings.deleteAccount.failed"));
     }
     setShowDeleteConfirm(false);
   };
@@ -127,7 +124,7 @@ export default function SettingsModal({ onClose }) {
         
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-          <h2 className="font-bold text-white text-base">Settings</h2>
+          <h2 className="font-bold text-white text-base">{t("settings.title")}</h2>
           <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-white/10 text-white/50 transition-colors">
             <X className="w-4 h-4" />
           </button>
@@ -135,7 +132,7 @@ export default function SettingsModal({ onClose }) {
 
         {/* Tabs */}
         <div className="flex gap-1 px-4 pt-3 pb-1 overflow-x-auto no-scrollbar">
-          {TABS.map(({ id, label, icon: Icon }) =>
+          {TABS.map(({ id, labelKey, icon: Icon }) =>
           <button
             key={id}
             onClick={() => setTab(id)}
@@ -143,7 +140,7 @@ export default function SettingsModal({ onClose }) {
             tab === id ? "bg-white/15 text-white" : "text-white/40 hover:text-white/60"}`
             }>
             
-              <Icon className="w-3.5 h-3.5" /> {label}
+              <Icon className="w-3.5 h-3.5" /> {t(labelKey)}
             </button>
           )}
         </div>
@@ -153,12 +150,12 @@ export default function SettingsModal({ onClose }) {
           {/* ── Notifications ── */}
           {tab === "notifications" &&
           <>
-              <p className="text-xs text-white/40">Control which notifications you receive from the app.</p>
+              <p className="text-xs text-white/40">{t("settings.notifications.desc")}</p>
               <div className="space-y-1">
                 <div className="flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8">
                   <div>
-                    <p className="text-sm text-white/80">Push Notifications</p>
-                    <p className="text-xs text-white/30 mt-0.5">Workout reminders, meal logging prompts</p>
+                    <p className="text-sm text-white/80">{t("settings.notifications.push")}</p>
+                    <p className="text-xs text-white/30 mt-0.5">{t("settings.notifications.pushDesc")}</p>
                   </div>
                   <button
                   onClick={toggleNotifications}
@@ -180,12 +177,12 @@ export default function SettingsModal({ onClose }) {
           {/* ── Appearance ── */}
           {tab === "appearance" &&
           <>
-              <p className="text-xs text-white/40">Choose your preferred app appearance.</p>
+              <p className="text-xs text-white/40">{t("settings.appearance.desc")}</p>
               <div className="space-y-1">
                 {[
-                  { id: "dark", label: "Dark Mode", icon: Moon, color: "bg-indigo-500/15", iconColor: "text-indigo-400" },
-                  { id: "light", label: "Light Mode", icon: Sun, color: "bg-amber-500/15", iconColor: "text-amber-400" },
-                  { id: "system", label: "System", icon: Monitor, color: "bg-emerald-500/15", iconColor: "text-emerald-400" },
+                  { id: "dark", label: t("settings.appearance.dark"), icon: Moon, color: "bg-indigo-500/15", iconColor: "text-indigo-400" },
+                  { id: "light", label: t("settings.appearance.light"), icon: Sun, color: "bg-amber-500/15", iconColor: "text-amber-400" },
+                  { id: "system", label: t("settings.appearance.system"), icon: Monitor, color: "bg-emerald-500/15", iconColor: "text-emerald-400" },
                 ].map(({ id, label, icon: Icon, color, iconColor }) =>
                 <button
                   key={id}
@@ -212,7 +209,7 @@ export default function SettingsModal({ onClose }) {
           {/* ── Language ── */}
           {tab === "language" &&
           <>
-              <p className="text-xs text-white/40">Choose your preferred language.</p>
+              <p className="text-xs text-white/40">{t("settings.language.desc")}</p>
               <div className="space-y-1">
                 {LANGUAGES.map(({ code, label }) =>
               <button
@@ -235,22 +232,22 @@ export default function SettingsModal({ onClose }) {
           {/* ── Linked Devices ── */}
           {tab === "devices" &&
           <>
-              <p className="text-xs text-white/40">Devices connected to your account.</p>
+              <p className="text-xs text-white/40">{t("settings.devices.desc")}</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-3 px-4 py-3 bg-white/4 rounded-xl border border-white/8">
                   <div className="p-1.5 rounded-lg bg-blue-500/15">
                     <Smartphone className="w-4 h-4 text-blue-400" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-white/80">Current Session</p>
+                    <p className="text-sm text-white/80">{t("settings.devices.currentSession")}</p>
                     <p className="text-xs text-white/30 mt-0.5">
                       {navigator.userAgentData?.platform || navigator.platform || "Unknown device"}
                     </p>
                     </div>
-                    <span className="text-xs text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full font-medium">Active</span>
+                    <span className="text-xs text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full font-medium">{t("settings.devices.active")}</span>
                 </div>
                 <p className="text-xs text-white/20 px-1 pt-1">
-                  More device management options coming soon.
+                  {t("settings.devices.comingSoon")}
                 </p>
               </div>
             </>
@@ -259,12 +256,12 @@ export default function SettingsModal({ onClose }) {
           {/* ── Units ── */}
           {tab === "units" &&
           <>
-              <p className="text-xs text-white/40">Choose your preferred measurement units used throughout the app.</p>
+              <p className="text-xs text-white/40">{t("settings.units.desc")}</p>
               <div className="space-y-4">
                 {[
-              { key: "weight", label: "Body Weight", options: ["kg", "lbs"] },
-              { key: "distance", label: "Distance", options: ["km", "miles"] },
-              { key: "height", label: "Height", options: ["cm", "ft/in"] }].
+              { key: "weight", label: t("settings.units.weight"), options: ["kg", "lbs"] },
+              { key: "distance", label: t("settings.units.distance"), options: ["km", "miles"] },
+              { key: "height", label: t("settings.units.height"), options: ["cm", "ft/in"] }].
               map(({ key, label, options }) =>
               <div key={key}>
                     <p className="text-xs font-semibold text-white/60 mb-2">{label}</p>
@@ -290,7 +287,7 @@ export default function SettingsModal({ onClose }) {
               onClick={saveUnits}
               className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all border border-white/10">
               
-                Save Units
+                {t("settings.units.save")}
               </button>
             </>
           }
@@ -301,14 +298,14 @@ export default function SettingsModal({ onClose }) {
               onClick={handleChangePassword}
               className="w-full flex items-center justify-between px-4 py-3 bg-white/4 rounded-xl border border-white/8 hover:bg-white/8 transition-colors">
               
-              <span className="text-sm text-white/70">Change Password</span>
+              <span className="text-sm text-white/70">{t("settings.changePassword")}</span>
               <ChevronRight className="w-4 h-4 text-white/25" />
             </button>
             <button
               onClick={() => setShowDeleteConfirm(true)}
               className="w-full flex items-center justify-between px-4 py-3 bg-red-500/5 rounded-xl border border-red-500/15 hover:bg-red-500/10 transition-colors">
               
-              <span className="text-sm text-red-400/80">Delete Account</span>
+              <span className="text-sm text-red-400/80">{t("settings.deleteAccount")}</span>
               <Trash2 className="w-4 h-4 text-red-400/40" />
             </button>
             </div>
@@ -318,14 +315,14 @@ export default function SettingsModal({ onClose }) {
             <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
             <AlertDialogContent className="bg-[#15131a] border border-white/10 text-white">
             <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete Account</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">{t("settings.deleteAccount.title")}</AlertDialogTitle>
             <AlertDialogDescription className="text-white/50">
-              This will permanently delete your account and all your data. This action cannot be undone.
+              {t("settings.deleteAccount.desc")}
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700 text-white">Delete Forever</AlertDialogAction>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700 text-white">{t("settings.deleteAccount.confirm")}</AlertDialogAction>
             </AlertDialogFooter>
             </AlertDialogContent>
             </AlertDialog>

@@ -4,34 +4,35 @@ import { Dumbbell, Apple, Bot, User, Settings, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import SettingsModal from "@/components/shared/SettingsModal";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 const navItems = [
-{ path: "/fitness", label: "Fitness", icon: Dumbbell },
-{ path: "/nutrition", label: "Nutrition", icon: Apple },
-{ path: "/profile", label: "Profile", icon: User },
-{ path: "/coach", label: "Coach", icon: Bot }];
+{ path: "/fitness", labelKey: "nav.fitness", icon: Dumbbell },
+{ path: "/nutrition", labelKey: "nav.nutrition", icon: Apple },
+{ path: "/profile", labelKey: "nav.profile", icon: User },
+{ path: "/coach", labelKey: "nav.coach", icon: Bot }];
 
 const TAB_ROOTS = navItems.map((n) => n.path);
 
-const PAGE_TITLES = {
-  "/": "Profile",
-  "/profile": "Profile",
-  "/fitness": "Fitness",
-  "/fitness/start-workout": "Start Workout",
-  "/fitness/exercise-picker": "Exercises",
-  "/fitness/routines": "Routines",
-  "/fitness/explore": "Explore",
-  "/fitness/daily-review": "Daily Review",
-  "/nutrition": "Nutrition",
-  "/coach": "Coach"
+const PAGE_TITLE_KEYS = {
+  "/": "page.profile",
+  "/profile": "page.profile",
+  "/fitness": "page.fitness",
+  "/fitness/start-workout": "page.startWorkout",
+  "/fitness/exercise-picker": "page.exercises",
+  "/fitness/routines": "page.routines",
+  "/fitness/explore": "page.explore",
+  "/fitness/daily-review": "page.dailyReview",
+  "/nutrition": "page.nutrition",
+  "/coach": "page.coach"
 };
 
-function getPageTitle(pathname) {
-  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
-  const match = Object.keys(PAGE_TITLES).
+function getPageTitleKey(pathname) {
+  if (PAGE_TITLE_KEYS[pathname]) return PAGE_TITLE_KEYS[pathname];
+  const match = Object.keys(PAGE_TITLE_KEYS).
   filter((p) => p !== "/" && pathname.startsWith(p)).
   sort((a, b) => b.length - a.length)[0];
-  return match ? PAGE_TITLES[match] : "StrengthStack";
+  return match ? PAGE_TITLE_KEYS[match] : null;
 }
 
 function getTabRoot(pathname) {
@@ -53,6 +54,7 @@ const slideBackward = {
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [showSettings, setShowSettings] = useState(false);
   const [direction, setDirection] = useState(1); // 1=forward, -1=backward
   const prevPathRef = useRef(location.pathname);
@@ -105,7 +107,8 @@ export default function AppLayout() {
     scrollPositions.current[tab] = window.scrollY;
   };
 
-  const pageTitle = getPageTitle(location.pathname);
+  const titleKey = getPageTitleKey(location.pathname);
+  const pageTitle = titleKey ? t(titleKey) : "StrengthStack";
   const isMainPage = navItems.some((n) => n.path === location.pathname) || location.pathname === "/";
 
   const variants = direction === 1 ? slideForward : slideBackward;
@@ -163,7 +166,8 @@ export default function AppLayout() {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)]">
         <div className="max-w-md mx-auto flex items-center justify-between gap-2 bg-[#2e2b3a]/95 backdrop-blur-md rounded-full p-2 shadow-2xl border border-white/8">
-          {navItems.map(({ path, label, icon: Icon }) => {
+          {navItems.map(({ path, labelKey, icon: Icon }) => {
+            const label = t(labelKey);
             const active = location.pathname === path || path !== "/" && location.pathname.startsWith(path);
             const handleNavClick = (e) => {
               e.preventDefault();
