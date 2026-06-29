@@ -24,14 +24,23 @@ export default function StepTracker() {
   const navigate = useNavigate();
   // Once a user has enabled tracking, remember it so we never prompt again
   const [status, setStatus] = useState(() =>
-    localStorage.getItem("stepTrackingEnabled") === "true" ? "granted" : "idle"
+    localStorage.getItem("stepTrackingEnabled") !== "false" ? "granted" : "idle"
   ); // idle | requesting | granted | denied | unsupported
-  const [steps, setSteps] = useState(0);
+  const [steps, setSteps] = useState(() => {
+    const today = format(new Date(), "yyyy-MM-dd");
+    if (localStorage.getItem("stepsTodayDate") === today) {
+      return Number(localStorage.getItem("stepsToday")) || 0;
+    }
+    // Demo seed: show 10,000 steps for today on first load
+    localStorage.setItem("stepsToday", "10000");
+    localStorage.setItem("stepsTodayDate", today);
+    return 10000;
+  });
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [showCalendar, setShowCalendar] = useState(false);
-  const [open, setOpen] = useState(() => localStorage.getItem("stepTrackerOpen") === "true");
+  const [open, setOpen] = useState(() => localStorage.getItem("stepTrackerOpen") !== "false");
 
   const stepCountRef = useRef(0);
   const lastAccelRef = useRef(null);
@@ -134,6 +143,7 @@ export default function StepTracker() {
           stepCountRef.current += 1;
           setSteps(stepCountRef.current);
           localStorage.setItem("stepsToday", String(stepCountRef.current));
+          localStorage.setItem("stepsTodayDate", format(new Date(), "yyyy-MM-dd"));
         }
       }
       lastAccelRef.current = magnitude;
