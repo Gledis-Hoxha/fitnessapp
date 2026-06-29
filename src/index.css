@@ -67,6 +67,14 @@
     @apply bg-background text-foreground font-inter;
     overscroll-behavior: none;
   }
+  /* Hide scrollbars everywhere while keeping scroll functionality */
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
   button, a, [role="button"], nav * {
     user-select: none;
     -webkit-touch-callout: none;
